@@ -2,6 +2,7 @@
 using Windows.Devices.Gpio;
 using greenhouse_controller.Drivers.Events;
 using greenhouse_controller.Drivers.reed_switch.Enums;
+using System;
 
 namespace greenhouse_controller.Drivers.reed_switch
 {
@@ -26,7 +27,8 @@ namespace greenhouse_controller.Drivers.reed_switch
         {
             OnStateChanged(this, new ReedSwitchStateChangedEventArgs { GpioPinValueChangedEventArgs = e });
 
-            if (e.Edge == GpioPinEdge.RisingEdge)
+            var currentState = GetState();
+            if (currentState == ReedShiftState.Opened)
             {
                 OnOpened(this, new ReedSwitchOpenedEventArgs());
             }
