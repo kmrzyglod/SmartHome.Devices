@@ -19,7 +19,11 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Core\Gpio\GpioPins.cs" />
-    <Compile Include="Drivers\bme280\Bme280.cs" />
+    <Compile Include="Core\I2c\I2cException.cs" />
+    <Compile Include="Core\I2c\I2cExtensions.cs" />
+    <Compile Include="Core\Messaging\IMqttClient.cs" />
+    <Compile Include="Drivers\bh1750\Bh1750.cs" />
+    <Compile Include="Drivers\bme280\Bme280Driver.cs" />
     <Compile Include="Drivers\reed-switch\Enums\ReedShiftState.cs" />
     <Compile Include="Drivers\reed-switch\Events\ReedSwitchStateChangedEventArgs.cs" />
     <Compile Include="Drivers\reed-switch\Events\ReedSwitchOpenedEventArgs.cs" />
@@ -28,6 +32,8 @@
     <Compile Include="Drivers\reed-switch\Events\ReedSwitchStateChangedEventHandler.cs" />
     <Compile Include="Drivers\reed-switch\Events\ReedSwitchOpenedEventHandler.cs" />
     <Compile Include="Drivers\reed-switch\ReedSwitchDriver.cs" />
+    <Compile Include="Messaging\azure-iot-hub-mqtt-client\AzureIotMqttClient.cs" />
+    <Compile Include="Messaging\wifi\WifiDriver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -36,7 +42,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Drivers\bh1750\" />
     <Folder Include="Drivers\dfrobot-soil-moisture-sensor\" />
     <Folder Include="Drivers\seedstudio-yf-s201c-water-flow-sensor\" />
     <Folder Include="Drivers\soild-state-relay\" />
@@ -44,6 +49,11 @@
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.2.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.2.1-preview-001\lib\mscorlib.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="MSMqtt.nanoFramework, Version=4.3.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\m2qtt.nanoFramework.1.0.0\lib\netnanoframework10\MSMqtt.nanoFramework.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
