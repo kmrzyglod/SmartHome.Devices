@@ -162,8 +162,8 @@ namespace greenhouse_controller.Drivers.Bme280
         public Bme280Driver(standbySettings_e t_sb = standbySettings_e.tsb_1000ms,
                       mode_e mode = mode_e.smNormal,
                       filterCoefficient_e filter = filterCoefficient_e.fc_16,
-                      oversampling_e osrs_p = oversampling_e.os4x,
-                      oversampling_e osrs_t = oversampling_e.os4x,
+                      oversampling_e osrs_p = oversampling_e.os16x,
+                      oversampling_e osrs_t = oversampling_e.os16x,
                       oversampling_e osrs_h = oversampling_e.os8x)
         {
             this.t_sb = (byte)t_sb;
@@ -432,15 +432,15 @@ namespace greenhouse_controller.Drivers.Bme280
         }
 
         //Method to take the sea level pressure in Hectopascals(hPa) as a parameter and calculate the altitude using current pressure.
-        public float ReadAltitude(float seaLevel)
-        {
-            //Read the pressure first
-            float pressure = ReadPreasure();
-            //Convert the pressure to Hectopascals(hPa)
-            pressure /= 100;
+        //public float ReadAltitude(float seaLevel)
+        //{
+        //    //Read the pressure first
+        //    float pressure = ReadPreasure();
+        //    //Convert the pressure to Hectopascals(hPa)
+        //    pressure /= 100;
 
-            //Calculate and return the altitude using the international barometric formula
-            return 44330.0f * (1.0f - (float)Math.Pow((pressure / seaLevel), 0.1903f));
-        }
+        //    //Calculate and return the altitude using the international barometric formula
+        //    return 44330.0f * (1.0f - (float)Math.Pow((pressure / seaLevel), 0.1903f));
+        //}
     }
 }

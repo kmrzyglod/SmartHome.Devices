@@ -5,7 +5,7 @@ namespace greenhouse_controller.Core.I2c
     public static class I2cExtensions
     {
         //Method to read bytes from registers
-        public static int ReadBytes(this I2cDevice device, byte register, short numOfBytes = 1, short retries = 2)
+        public static int ReadBytes(this I2cDevice device, byte register, short numOfBytes = 1, short retries = 3)
         {
             byte[] writeBuffer = new byte[] { 0x00 };
             byte[] readBuffer = new byte[numOfBytes];
@@ -15,9 +15,13 @@ namespace greenhouse_controller.Core.I2c
             for (short i = 0; i < retries; i++)
             {
                 status = device.WriteReadPartial(writeBuffer, readBuffer).Status;
+                if(status == I2cTransferStatus.FullTransfer)
+                {
+                    break;
+                }
             }
 
-            if (status == I2cTransferStatus.SlaveAddressNotAcknowledged || status == I2cTransferStatus.UnknownError)
+            if (status != I2cTransferStatus.FullTransfer)
             {
                 throw new I2cTransferException("Error during read byte", status);
             }
