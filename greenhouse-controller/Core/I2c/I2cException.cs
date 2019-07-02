@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Devices.I2c;
 
-namespace greenhouse_controller.Core.I2c
+namespace GreenhouseController.Core.I2c
 {
     public class I2cTransferException : Exception
     {

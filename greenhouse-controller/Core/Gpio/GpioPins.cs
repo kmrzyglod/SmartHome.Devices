@@ -1,4 +1,4 @@
-﻿namespace greenhouse_controller.Core.Gpio
+﻿namespace GreenhouseController.Core.Gpio
 {
     public enum GpioPins
     {

@@ -1,13 +1,13 @@
 ﻿// MIT License
 // Original Source: https://github.com/ms-iot/adafruitsample/tree/master/Lesson_203/FullSolution
 
-using greenhouse_controller.Core.I2c;
+using GreenhouseController.Core.I2c;
 using System;
 using System.Threading;
 using Windows.Devices.I2c;
 
 
-namespace greenhouse_controller.Drivers.Bme280
+namespace GreenhouseController.Drivers.Bme280
 {
     public class BME280_CalibrationData
     {
@@ -35,7 +35,7 @@ namespace greenhouse_controller.Drivers.Bme280
     }
 
 
-    public class Bme280Driver
+    public class Bme280
     {
         const byte BME280_Address = 0x76;
         const byte BME280_Signature = 0x60;
@@ -143,56 +143,49 @@ namespace greenhouse_controller.Drivers.Bme280
         };
 
 
-        //String for the friendly name of the I2C bus 
-        private const string I2CControllerName = "I2C2";
-        //Create an I2C device
-        private I2cDevice bme280 = null;
-        //Create new calibration data for the sensor
-        private BME280_CalibrationData CalibrationData;
+        private readonly string _i2cControllerName;
+        private I2cDevice _bme280 = null;
+        private BME280_CalibrationData _calibrationData;
 
         // Value hold sensor operation parameters
-        private byte int_mode = (byte)interface_mode_e.i2c;
-        private byte t_sb;
-        private byte mode;
-        private byte filter;
-        private byte osrs_p;
-        private byte osrs_t;
-        private byte osrs_h;
+        private byte _intMode = (byte)interface_mode_e.i2c;
+        private byte _tSb;
+        private byte _mode;
+        private byte _filter;
+        private byte _osrsP;
+        private byte _osrsT;
+        private byte _osrsH;
 
-        public Bme280Driver(standbySettings_e t_sb = standbySettings_e.tsb_1000ms,
+        public Bme280(string i2CControllerName, standbySettings_e t_sb = standbySettings_e.tsb_1000ms,
                       mode_e mode = mode_e.smNormal,
                       filterCoefficient_e filter = filterCoefficient_e.fc_16,
                       oversampling_e osrs_p = oversampling_e.os4x,
                       oversampling_e osrs_t = oversampling_e.os2x,
                       oversampling_e osrs_h = oversampling_e.os8x)
         {
-            this.t_sb = (byte)t_sb;
-            this.mode = (byte)mode;
-            this.filter = (byte)filter;
-            this.osrs_p = (byte)osrs_p;
-            this.osrs_t = (byte)osrs_t;
-            this.osrs_h = (byte)osrs_h;
+            
+            _i2cControllerName = i2CControllerName;
+            _tSb = (byte)t_sb;
+            _mode = (byte)mode;
+            _filter = (byte)filter;
+            _osrsP = (byte)osrs_p;
+            _osrsT = (byte)osrs_t;
+            _osrsH = (byte)osrs_h;
         }
 
-
-        //Method to initialize the BME280 sensor
         public void Initialize()
         {
             Console.WriteLine("BME280::Initialize");
-
             try
             {
-                //Instantiate the I2CConnectionSettings using the device address of the BME280
+               
                 var settings = new I2cConnectionSettings(BME280_Address);
-                //Set the I2C bus speed of connection to fast mode
-                settings.BusSpeed = I2cBusSpeed.FastMode;//.StandardMode;//.FastMode;
+                settings.BusSpeed = I2cBusSpeed.StandardMode;
                 settings.SharingMode = I2cSharingMode.Shared;
-                //Use the I2CBus device selector to create an advanced query syntax string
-                string aqs = I2cDevice.GetDeviceSelector(I2CControllerName);
-                //Instantiate the the BME280 I2C device using the device id of the I2CBus and the I2CConnectionSettings
-                bme280 = I2cDevice.FromId(I2CControllerName, settings);
-                //Check if device was found
-                if (bme280 == null)
+                string aqs = I2cDevice.GetDeviceSelector(_i2cControllerName);
+                _bme280 = I2cDevice.FromId(_i2cControllerName, settings);
+                
+                if (_bme280 == null)
                 {
                     Console.WriteLine("Device not found");
                 }
@@ -207,7 +200,7 @@ namespace greenhouse_controller.Drivers.Bme280
             byte[] ReadBuffer = new byte[] { 0xFF };
 
             //Read the device signature
-            bme280.WriteReadPartial(readChipID, ReadBuffer);
+            _bme280.WriteReadPartial(readChipID, ReadBuffer);
             Console.WriteLine("BME280 Signature: " + ReadBuffer[0].ToString());
 
             //Verify the device signature
@@ -228,7 +221,7 @@ namespace greenhouse_controller.Drivers.Bme280
             WriteControlRegisterHumidity();
 
             //Read the coefficients table
-            CalibrationData = ReadCoefficeints();
+            _calibrationData = ReadCoefficeints();
 
             //Dummy read temp to setup t_fine
             ReadTemperature();
@@ -242,9 +235,9 @@ namespace greenhouse_controller.Drivers.Bme280
         // ↑t_sb = 0.5ms
         private void WriteConfigRegister()
         {
-            byte value = (byte)(int_mode + (filter << 2) + (t_sb << 5));
+            byte value = (byte)(_intMode + (_filter << 2) + (_tSb << 5));
             byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONFIG, value };
-            bme280.Write(WriteBuffer);
+            _bme280.Write(WriteBuffer);
             return;
         }
 
@@ -255,18 +248,18 @@ namespace greenhouse_controller.Drivers.Bme280
         // ↑ Temperature oversampling
         private void WriteControlMeasurementRegister()
         {
-            byte value = (byte)(mode + (osrs_p << 2) + (osrs_t << 5));
+            byte value = (byte)(_mode + (_osrsP << 2) + (_osrsT << 5));
             byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONTROL, value };
-            bme280.Write(WriteBuffer);
+            _bme280.Write(WriteBuffer);
             return;
         }
 
         //Method to write the humidity control register (default 01)
         private void WriteControlRegisterHumidity()
         {
-            byte value = osrs_h;
+            byte value = _osrsH;
             byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONTROLHUMID, value };
-            bme280.Write(WriteBuffer);
+            _bme280.Write(WriteBuffer);
             return;
         }
 
@@ -274,39 +267,39 @@ namespace greenhouse_controller.Drivers.Bme280
         private BME280_CalibrationData ReadCoefficeints()
         {
             // 16 bit calibration data is stored as Little Endian, the helper method will do the byte swap.
-            CalibrationData = new BME280_CalibrationData();
+            _calibrationData = new BME280_CalibrationData();
 
 
             // Read temperature calibration data
-            CalibrationData.dig_T1 = (ushort)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_T1, 2);
-            CalibrationData.dig_T2 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_T2, 2);
-            CalibrationData.dig_T3 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_T3, 2);
+            _calibrationData.dig_T1 = (ushort)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T1, 2);
+            _calibrationData.dig_T2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T2, 2);
+            _calibrationData.dig_T3 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T3, 2);
 
             // Read presure calibration data
-            CalibrationData.dig_P9 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P9, 2);
-            CalibrationData.dig_P8 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P8, 2);
-            CalibrationData.dig_P7 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P7, 2);
-            CalibrationData.dig_P6 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P6, 2);
-            CalibrationData.dig_P5 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P5, 2);
-            CalibrationData.dig_P4 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P4, 2);
-            CalibrationData.dig_P3 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P3, 2);
-            CalibrationData.dig_P2 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P2, 2);
-            CalibrationData.dig_P1 = (ushort)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_P1, 2);
+            _calibrationData.dig_P9 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P9, 2);
+            _calibrationData.dig_P8 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P8, 2);
+            _calibrationData.dig_P7 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P7, 2);
+            _calibrationData.dig_P6 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P6, 2);
+            _calibrationData.dig_P5 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P5, 2);
+            _calibrationData.dig_P4 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P4, 2);
+            _calibrationData.dig_P3 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P3, 2);
+            _calibrationData.dig_P2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P2, 2);
+            _calibrationData.dig_P1 = (ushort)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P1, 2);
 
             // Read humidity calibration data
 
-            CalibrationData.dig_H1 = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H1);
-            CalibrationData.dig_H2 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H2, 2);
-            CalibrationData.dig_H3 = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H3);
-            short e4 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H4_L);    // Read 0xE4
-            short e5 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H4_H);    // Read 0xE5
-            short e6 = (short)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H5_H);    // Read 0xE6
-            CalibrationData.dig_H6 = (sbyte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_DIG_H6);
+            _calibrationData.dig_H1 = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H1);
+            _calibrationData.dig_H2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H2, 2);
+            _calibrationData.dig_H3 = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H3);
+            short e4 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H4_L);    // Read 0xE4
+            short e5 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H4_H);    // Read 0xE5
+            short e6 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H5_H);    // Read 0xE6
+            _calibrationData.dig_H6 = (sbyte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H6);
 
-            CalibrationData.dig_H4 = (short)((e4 << 4) + (e5 & 0x0F));
-            CalibrationData.dig_H5 = (short)((e5 >> 4) + (e6 << 4));
+            _calibrationData.dig_H4 = (short)((e4 << 4) + (e5 & 0x0F));
+            _calibrationData.dig_H5 = (short)((e5 >> 4) + (e6 << 4));
 
-            return CalibrationData;
+            return _calibrationData;
         }
 
 
@@ -318,8 +311,8 @@ namespace greenhouse_controller.Drivers.Bme280
         {
             int var1, var2;
             double T;
-            var1 = ((((adc_T >> 3) - (CalibrationData.dig_T1 << 1))) * (CalibrationData.dig_T2)) >> 11;
-            var2 = (((((adc_T >> 4) - (CalibrationData.dig_T1)) * ((adc_T >> 4) - (CalibrationData.dig_T1))) >> 12) * (CalibrationData.dig_T3)) >> 14;
+            var1 = ((((adc_T >> 3) - (_calibrationData.dig_T1 << 1))) * (_calibrationData.dig_T2)) >> 11;
+            var2 = (((((adc_T >> 4) - (_calibrationData.dig_T1)) * ((adc_T >> 4) - (_calibrationData.dig_T1))) >> 12) * (_calibrationData.dig_T3)) >> 14;
 
             t_fine = var1 + var2;
             T = (t_fine * 5 + 128) >> 8;
@@ -335,11 +328,11 @@ namespace greenhouse_controller.Drivers.Bme280
 
             //The pressure is calculated using the compensation formula in the BME280 datasheet
             var1 = (long)t_fine - 128000;
-            var2 = var1 * var1 * CalibrationData.dig_P6;
-            var2 = var2 + ((var1 * CalibrationData.dig_P5) << 17);
-            var2 = var2 + ((long)CalibrationData.dig_P4 << 35);
-            var1 = ((var1 * var1 * CalibrationData.dig_P3) >> 8) + ((var1 * CalibrationData.dig_P2) << 12);
-            var1 = (((long)1 << 47) + var1) * CalibrationData.dig_P1 >> 33;
+            var2 = var1 * var1 * _calibrationData.dig_P6;
+            var2 = var2 + ((var1 * _calibrationData.dig_P5) << 17);
+            var2 = var2 + ((long)_calibrationData.dig_P4 << 35);
+            var1 = ((var1 * var1 * _calibrationData.dig_P3) >> 8) + ((var1 * _calibrationData.dig_P2) << 12);
+            var1 = (((long)1 << 47) + var1) * _calibrationData.dig_P1 >> 33;
             if (var1 == 0)
             {
                 Console.WriteLine("BME280_compensate_P_Int64 Jump out to avoid / 0");
@@ -348,9 +341,9 @@ namespace greenhouse_controller.Drivers.Bme280
             //Perform calibration operations as per datasheet: 
             p = 1048576 - adc_P;
             p = (((p << 31) - var2) * 3125) / var1;
-            var1 = ((long)CalibrationData.dig_P9 * (p >> 13) * (p >> 13)) >> 25;
-            var2 = ((long)CalibrationData.dig_P8 * p) >> 19;
-            p = ((p + var1 + var2) >> 8) + ((long)CalibrationData.dig_P7 << 4);
+            var1 = ((long)_calibrationData.dig_P9 * (p >> 13) * (p >> 13)) >> 25;
+            var2 = ((long)_calibrationData.dig_P8 * p) >> 19;
+            p = ((p + var1 + var2) >> 8) + ((long)_calibrationData.dig_P7 << 4);
             return p;
         }
 
@@ -361,10 +354,10 @@ namespace greenhouse_controller.Drivers.Bme280
             double var_H;
 
             var_H = t_fine - 76800.0;
-            var_H = (adc_H - (CalibrationData.dig_H4 * 64.0 + CalibrationData.dig_H5 / 16384.0 * var_H)) *
-                CalibrationData.dig_H2 / 65536.0 * (1.0 + CalibrationData.dig_H6 / 67108864.0 * var_H *
-                (1.0 + CalibrationData.dig_H3 / 67108864.0 * var_H));
-            var_H = var_H * (1.0 - CalibrationData.dig_H1 * var_H / 524288.0);
+            var_H = (adc_H - (_calibrationData.dig_H4 * 64.0 + _calibrationData.dig_H5 / 16384.0 * var_H)) *
+                _calibrationData.dig_H2 / 65536.0 * (1.0 + _calibrationData.dig_H6 / 67108864.0 * var_H *
+                (1.0 + _calibrationData.dig_H3 / 67108864.0 * var_H));
+            var_H = var_H * (1.0 - _calibrationData.dig_H1 * var_H / 524288.0);
 
             if (var_H > 100.0)
             {
@@ -384,9 +377,9 @@ namespace greenhouse_controller.Drivers.Bme280
         public float ReadTemperature()
         {
             //Read the MSB, LSB and bits 7:4 (XLSB) of the temperature from the BME280 registers
-            byte tmsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_TEMPDATA_MSB);
-            byte tlsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_TEMPDATA_LSB);
-            byte txlsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_TEMPDATA_XLSB); // bits 7:4
+            byte tmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_MSB);
+            byte tlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_LSB);
+            byte txlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_XLSB); // bits 7:4
 
             //Combine the values into a 32-bit integer
             int t = ((tmsb << 12) | (tlsb << 4) | (txlsb >> 4));
@@ -401,9 +394,9 @@ namespace greenhouse_controller.Drivers.Bme280
         public float ReadPreasure()
         {
             //Read the MSB, LSB and bits 7:4 (XLSB) of the pressure from the BME280 registers
-            byte pmsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_MSB);
-            byte plsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_LSB);
-            byte pxlsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_XLSB); // bits 7:4
+            byte pmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_MSB);
+            byte plsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_LSB);
+            byte pxlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_XLSB); // bits 7:4
 
             //Combine the values into a 32-bit integer
             int p = (pmsb << 12) | (plsb << 4) | (pxlsb >> 4);
@@ -418,8 +411,8 @@ namespace greenhouse_controller.Drivers.Bme280
         public float ReadHumidity()
         {
             //Read the MSB and LSB of the humidity from the BME280 registers
-            byte hmsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_HUMIDDATA_MSB);
-            byte hlsb = (byte)bme280.ReadBytes((byte)eRegisters.BME280_REGISTER_HUMIDDATA_LSB);
+            byte hmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_HUMIDDATA_MSB);
+            byte hlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_HUMIDDATA_LSB);
 
             //Combine the values into a 32-bit integer
             int h = (hmsb << 8) + hlsb;

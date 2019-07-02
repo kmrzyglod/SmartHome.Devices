@@ -3,7 +3,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 
-namespace greenhouse_controller.Messaging.wifi
+namespace GreenhouseController.Drivers.Wifi
 {
     public static class WifiDriver
     {

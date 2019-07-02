@@ -1,6 +1,6 @@
 ﻿using Windows.Devices.Gpio;
 
-namespace greenhouse_controller.Drivers.Events
+namespace GreenhouseController.Drivers.ReedSwitch.Events
 {
     public class ReedSwitchStateChangedEventArgs
     {

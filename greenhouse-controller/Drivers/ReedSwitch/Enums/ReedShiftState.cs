@@ -1,4 +1,4 @@
-﻿namespace greenhouse_controller.Drivers.reed_switch.Enums
+﻿namespace GreenhouseController.Drivers.ReedSwitch.Enums
 {
     public enum ReedShiftState
     {

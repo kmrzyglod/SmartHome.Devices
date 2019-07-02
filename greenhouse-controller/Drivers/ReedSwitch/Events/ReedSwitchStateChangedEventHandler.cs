@@ -1,4 +1,4 @@
-﻿namespace greenhouse_controller.Drivers.Events
+﻿namespace GreenhouseController.Drivers.ReedSwitch.Events
 {
     public delegate void ReedSwitchStateChangedEventHandler(object sender, ReedSwitchStateChangedEventArgs e);
 }

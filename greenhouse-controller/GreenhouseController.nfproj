@@ -19,21 +19,26 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Core\Gpio\GpioPins.cs" />
+    <Compile Include="Core\I2c\I2cControllerName.cs" />
     <Compile Include="Core\I2c\I2cException.cs" />
     <Compile Include="Core\I2c\I2cExtensions.cs" />
     <Compile Include="Core\Messaging\IMqttClient.cs" />
-    <Compile Include="Drivers\bh1750\Bh1750.cs" />
-    <Compile Include="Drivers\bme280\Bme280Driver.cs" />
-    <Compile Include="Drivers\reed-switch\Enums\ReedShiftState.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchStateChangedEventArgs.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchOpenedEventArgs.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchClosedEventArgs.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchClosedEventHandler.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchStateChangedEventHandler.cs" />
-    <Compile Include="Drivers\reed-switch\Events\ReedSwitchOpenedEventHandler.cs" />
-    <Compile Include="Drivers\reed-switch\ReedSwitchDriver.cs" />
-    <Compile Include="Messaging\mqtt\MqttClientWrapper.cs" />
-    <Compile Include="Messaging\wifi\WifiDriver.cs" />
+    <Compile Include="Drivers\Bh1750\Bh1750.cs" />
+    <Compile Include="Drivers\Bme280\Bme280.cs" />
+    <Compile Include="Drivers\DfrobotSoilMoistureSensor\DfrobotSoilMoistureSensor.cs" />
+    <Compile Include="Drivers\ReedSwitch\Enums\ReedShiftState.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchStateChangedEventArgs.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchOpenedEventArgs.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchClosedEventArgs.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchClosedEventHandler.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchStateChangedEventHandler.cs" />
+    <Compile Include="Drivers\ReedSwitch\Events\ReedSwitchOpenedEventHandler.cs" />
+    <Compile Include="Drivers\ReedSwitch\ReedSwitchDriver.cs" />
+    <Compile Include="Drivers\SeedstudioWaterFlowSensor\WaterFlowSensor.cs" />
+    <Compile Include="Drivers\SoildStateRelay\Mode.cs" />
+    <Compile Include="Drivers\SoildStateRelay\SolidStateRelays.cs" />
+    <Compile Include="Drivers\Mqtt\MqttClientWrapper.cs" />
+    <Compile Include="Drivers\Wifi\WifiDriver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -42,46 +47,60 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Drivers\dfrobot-soil-moisture-sensor\" />
-    <Folder Include="Drivers\seedstudio-yf-s201c-water-flow-sensor\" />
-    <Folder Include="Drivers\soild-state-relay\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib, Version=1.2.5.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.2.5-preview.1\lib\mscorlib.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.2.6.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.2.6-preview.7\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="MSMqtt.nanoFramework, Version=4.3.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\m2qtt.nanoFramework.1.0.2\lib\netnanoframework10\MSMqtt.nanoFramework.dll</HintPath>
+      <HintPath>..\packages\m2qtt.nanoFramework.1.0.3\lib\netnanoframework10\MSMqtt.nanoFramework.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="nanoFramework.Hardware.Esp32, Version=1.0.10.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.Hardware.Esp32.1.0.10-preview.16\lib\nanoFramework.Hardware.Esp32.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.Runtime.Events, Version=1.0.8.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Runtime.Events.1.0.8-preview.5\lib\nanoFramework.Runtime.Events.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Runtime.Events.1.0.8-preview.14\lib\nanoFramework.Runtime.Events.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.Runtime.Native, Version=1.0.7.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Runtime.Native.1.0.7-preview.5\lib\nanoFramework.Runtime.Native.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Runtime.Native.1.0.7-preview.15\lib\nanoFramework.Runtime.Native.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="System.Net, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.System.Net.1.1.1-preview.9\lib\System.Net.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Net.1.1.1-preview.18\lib\System.Net.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="Windows.Devices.Adc, Version=1.2.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.Windows.Devices.Adc.1.2.1-preview.14\lib\Windows.Devices.Adc.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Windows.Devices.Gpio, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Windows.Devices.Gpio.1.1.1-preview.6\lib\Windows.Devices.Gpio.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Windows.Devices.Gpio.1.1.1-preview.15\lib\Windows.Devices.Gpio.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="Windows.Devices.I2c, Version=1.1.6.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Windows.Devices.I2c.1.1.6-preview.6\lib\Windows.Devices.I2c.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Windows.Devices.I2c.1.1.6-preview.14\lib\Windows.Devices.I2c.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Messaging\Commands\Handler\" />
+    <Folder Include="Messaging\Commands\Command\" />
+    <Folder Include="Messaging\Queries\Handler\" />
+    <Folder Include="Messaging\Queries\Query\" />
+    <Folder Include="Services\Irigation\" />
+    <Folder Include="Services\WindowsManager\" />
+    <Folder Include="Services\Telemetry\" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

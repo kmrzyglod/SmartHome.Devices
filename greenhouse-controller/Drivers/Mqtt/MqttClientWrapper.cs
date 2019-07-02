@@ -4,7 +4,7 @@ using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
-namespace greenhouse_controller.Messaging.azure_iot_hub_mqtt_client
+namespace GreenhouseController.Drivers.Mqtt
 {
     public class MqttClientWrapper
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace greenhouse_controller.Core.Messaging
+namespace GreenhouseController.Core.Messaging
 {
     public interface IMqttClient
     {

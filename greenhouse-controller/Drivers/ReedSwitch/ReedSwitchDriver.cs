@@ -1,10 +1,9 @@
-﻿using greenhouse_controller.Core.Gpio;
+﻿using GreenhouseController.Core.Gpio;
 using Windows.Devices.Gpio;
-using greenhouse_controller.Drivers.Events;
-using greenhouse_controller.Drivers.reed_switch.Enums;
-using System;
+using GreenhouseController.Drivers.ReedSwitch.Events;
+using GreenhouseController.Drivers.ReedSwitch.Enums;
 
-namespace greenhouse_controller.Drivers.reed_switch
+namespace GreenhouseController.Drivers.ReedSwitch
 {
     public class ReedSwitchDriver
     {
