@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <NanoFrameworkProjectSystemPath>$(MSBuildToolsPath)..\..\..\nanoFramework\v1.0\</NanoFrameworkProjectSystemPath>
@@ -8,22 +8,38 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{11A8DD76-328B-46DF-9F39-F559912D0360};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>2011508f-ac85-43cf-9777-ed8af23e5340</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>1e78e55b-c443-42b0-8aec-4ab60a5d47b8</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>GreenhouseController</RootNamespace>
-    <AssemblyName>GreenhouseController</AssemblyName>
+    <RootNamespace>EspIot.Drivers</RootNamespace>
+    <AssemblyName>EspIot.Drivers</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="bh1750\Bh1750.cs" />
+    <Compile Include="Bme280\Bme280.cs" />
+    <Compile Include="DfrobotSoilMoistureSensor\DfrobotSoilMoistureSensor.cs" />
+    <Compile Include="Mqtt\Events\MqttConnectedEventHandler.cs" />
+    <Compile Include="Mqtt\Events\MqttDisconnectedEventHandler.cs" />
+    <Compile Include="Mqtt\MqttClientWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <Compile Include="ReedSwitch\Enums\ReedShiftState.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchClosedEventArgs.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchClosedEventHandler.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchOpenedEventArgs.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchOpenedEventHandler.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchStateChangedEventArgs.cs" />
+    <Compile Include="ReedSwitch\Events\ReedSwitchStateChangedEventHandler.cs" />
+    <Compile Include="ReedSwitch\ReedSwitchDriver.cs" />
+    <Compile Include="SeedstudioWaterFlowSensor\WaterFlowSensor.cs" />
+    <Compile Include="SoildStateRelay\Mode.cs" />
+    <Compile Include="SoildStateRelay\SolidStateRelays.cs" />
+    <Compile Include="StatusLed\StatusLed.cs" />
+    <Compile Include="Wifi\Events\WifiConnectedEventHandler.cs" />
+    <Compile Include="Wifi\Events\WifiDisconnectedEventHandler.cs" />
+    <Compile Include="Wifi\WifiDriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.2.6.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
@@ -33,11 +49,6 @@
     </Reference>
     <Reference Include="MSMqtt.nanoFramework, Version=4.3.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\m2qtt.nanoFramework.1.0.3\lib\netnanoframework10\MSMqtt.nanoFramework.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
-    </Reference>
-    <Reference Include="nanoFramework.Hardware.Esp32, Version=1.0.10.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Hardware.Esp32.1.0.10-preview.16\lib\nanoFramework.Hardware.Esp32.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
@@ -73,11 +84,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
-    <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
-    <ProjectReference Include="..\Json.NetMF\Json.NetMF.nfproj" />
-    <ProjectReference Include="..\Messages\Messages.nfproj" />
-    <ProjectReference Include="..\Services\Services.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
