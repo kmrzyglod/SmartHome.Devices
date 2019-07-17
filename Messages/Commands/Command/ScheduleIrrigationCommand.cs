@@ -4,6 +4,7 @@ namespace Messages.Commands.Command
 {
     public class ScheduleIrrigationCommand : ICommand
     {
-        public string CorrelationId { get;}
+        public string CorrelationId { get; }
+        public string IrigationTimetable { get; }
     }
 }

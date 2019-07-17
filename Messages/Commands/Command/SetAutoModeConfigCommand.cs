@@ -1,6 +1,9 @@
-﻿namespace Messages.Commands.Command
+﻿using EspIot.Core.Messaging.Interfaces;
+
+namespace Messages.Commands.Command
 {
-    class SetAutoModeConfigCommand
+    public class SetAutoModeConfigCommand: ICommand
     {
+        public string CorrelationId { get; }
     }
 }

@@ -1,6 +1,10 @@
-﻿namespace Messages.Commands.Command
+﻿using EspIot.Core.Messaging.Interfaces;
+
+namespace Messages.Commands.Command
 {
-    class CloseWindowCommand
+    public class CloseWindowCommand : ICommand
     {
+        public string CorrelationId { get; }
+        public ushort WindowNum { get; }
     }
 }
