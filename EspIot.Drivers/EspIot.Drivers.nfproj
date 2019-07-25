@@ -21,6 +21,8 @@
     <Compile Include="bh1750\Bh1750.cs" />
     <Compile Include="Bme280\Bme280.cs" />
     <Compile Include="DfrobotSoilMoistureSensor\DfrobotSoilMoistureSensor.cs" />
+    <Compile Include="LinearActuator\LinearActuatorDriver.cs" />
+    <Compile Include="LinearActuator\Mode.cs" />
     <Compile Include="Mqtt\Events\MqttConnectedEventHandler.cs" />
     <Compile Include="Mqtt\Events\MqttDisconnectedEventHandler.cs" />
     <Compile Include="Mqtt\MqttClientWrapper.cs" />

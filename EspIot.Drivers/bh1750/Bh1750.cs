@@ -27,7 +27,9 @@ namespace EspIot.Drivers.Bh1750
         private readonly PinConnection _pinConnection;
         private I2cDevice device = null;
 
-        public Bh1750(string i2CControllerName, PinConnection pinConnection = PinConnection.PIN_LOW, MeasurementMode measurementMode = MeasurementMode.ContinuouslyHighResolutionMode2)
+        public Bh1750(string i2CControllerName, 
+            PinConnection pinConnection = PinConnection.PIN_LOW, 
+            MeasurementMode measurementMode = MeasurementMode.ContinuouslyHighResolutionMode2)
         {
             _pinConnection = pinConnection;
             _i2CControllerName = i2CControllerName;

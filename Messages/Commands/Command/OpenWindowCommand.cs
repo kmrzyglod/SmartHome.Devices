@@ -1,6 +1,16 @@
-﻿namespace Messages.Commands.Command
+﻿using EspIot.Core.Messaging.Interfaces;
+
+namespace Messages.Commands.Command
 {
-    class OpenWindowCommand
+    class OpenWindowCommand: ICommand
     {
+        public OpenWindowCommand(string correlationId, short[] windowIds)
+        {
+            CorrelationId = correlationId;
+            WindowIds = windowIds;
+        }
+
+        public string CorrelationId { get; }
+        public short[] WindowIds { get; }
     }
 }

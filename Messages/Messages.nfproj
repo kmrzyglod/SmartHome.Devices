@@ -22,11 +22,17 @@
     <Compile Include="Commands\Command\IrrigateCommand.cs" />
     <Compile Include="Commands\Command\OpenWindowCommand.cs" />
     <Compile Include="Commands\Command\ScheduleIrrigationCommand.cs" />
-    <Compile Include="Commands\Command\SetAutoModeConfigCommand.cs" />
-    <Compile Include="Commands\Command\SetModeCommand.cs" />
+    <Compile Include="Commands\Command\SetAutoModeCommand.cs" />
+    <Compile Include="Commands\Command\SetConfigCommand.cs" />
+    <Compile Include="Commands\Command\SetManualModeCommand.cs" />
     <Compile Include="Commands\Command\SetTelemetryIntervalCommand.cs" />
+    <Compile Include="Commands\Handler\CloseWindowCommandHandler.cs" />
     <Compile Include="Errors\ErrorMessage.cs" />
+    <Compile Include="Events\Outbound\CriticalHumidityValueEvent.cs" />
+    <Compile Include="Events\Outbound\CriticalTemperatureValueEvent.cs" />
     <Compile Include="Events\Outbound\DoorClosedEvent.cs" />
+    <Compile Include="Events\Outbound\NotOptimalHumidityValueEvent.cs" />
+    <Compile Include="Events\Outbound\NotOptimalTemperatureValueEvent.cs" />
     <Compile Include="Events\Outbound\WindowClosedEvent.cs" />
     <Compile Include="Events\Outbound\DoorOpenedEvent.cs" />
     <Compile Include="Events\Outbound\WindowOpenedEvent.cs" />
@@ -37,7 +43,6 @@
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\Handler\" />
     <Folder Include="Events\Inbound\" />
   </ItemGroup>
   <ItemGroup>

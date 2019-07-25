@@ -3,8 +3,10 @@ using EspIot.Core.I2c;
 using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
+using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.Mqtt;
 using EspIot.Drivers.ReedSwitch;
+using EspIot.Drivers.SeedstudioWaterFlowSensor;
 using EspIot.Drivers.SoildStateRelay;
 using EspIot.Drivers.StatusLed;
 using EspIot.Drivers.Wifi;
@@ -66,14 +68,10 @@ namespace GreenhouseController
             var soilMoisture = new DfrobotSoilMoistureSensor(0);
 
             var solidStateRelays = new SolidStateRelays(GpioController.GetDefault(), new[]{
-                (short) GpioPins.GPIO_NUM_13,
-                (short) GpioPins.GPIO_NUM_12,
                 (short) GpioPins.GPIO_NUM_14,
                 (short) GpioPins.GPIO_NUM_27,
                 (short) GpioPins.GPIO_NUM_26,
                 (short) GpioPins.GPIO_NUM_25,
-                (short) GpioPins.GPIO_NUM_33,
-                (short) GpioPins.GPIO_NUM_32
                 });
 
             var reedSwitchDriver = new ReedSwitchDriver(GpioController.GetDefault(), GpioPins.GPIO_NUM_15);
@@ -82,16 +80,16 @@ namespace GreenhouseController
             reedSwitchDriver.OnClosed += (sender, e) =>
             {
                 Console.WriteLine("Closed");
-                solidStateRelays.Off(0, 1, 2, 3, 4, 5, 6, 7);
+                solidStateRelays.Off(0, 1, 2, 3);
             };
 
             reedSwitchDriver.OnOpened += (sender, e) =>
             {
                 Console.WriteLine("Opened");
-                solidStateRelays.On(0, 1, 2, 3, 4, 5, 6, 7);
+                solidStateRelays.On(0, 1, 2, 3);
             };
 
-            //  var waterFlowSensor = new WaterFlowSensor(GpioController.GetDefault(), GpioPins.GPIO_NUM_39, 1000);
+            //var waterFlowSensor = new WaterFlowSensor(GpioController.GetDefault(), GpioPins.GPIO_NUM_39, 1000);
 
 
             var iotHubClient = new MqttClientWrapper(DeviceConfiguration.BROKER_ADDRESS, DeviceConfiguration.DEVICE_ID);
@@ -106,6 +104,13 @@ namespace GreenhouseController
             {
                 Console.WriteLine(deserialized.ToString());   
             }
+
+            var linearActuator = new LinearActuatorDriver(GpioController.GetDefault(), GpioPins.GPIO_NUM_33, GpioPins.GPIO_NUM_32, EspIot.Drivers.LinearActuator.Mode.DefaultHighState);
+            linearActuator.StartMovingExtensionDirection();
+            Thread.Sleep(5000);
+            linearActuator.StartMovingReductionDirection();
+            Thread.Sleep(5000);
+            linearActuator.StopMoving();
 
             while (true)
             {

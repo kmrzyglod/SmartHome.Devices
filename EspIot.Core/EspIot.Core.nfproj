@@ -18,6 +18,8 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Configuration\IConfiguration.cs" />
+    <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Gpio\GpioPins.cs" />
     <Compile Include="I2c\I2cControllerName.cs" />
     <Compile Include="I2c\I2cException.cs" />
