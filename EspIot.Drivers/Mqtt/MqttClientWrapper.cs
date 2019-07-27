@@ -1,5 +1,7 @@
-﻿using EspIot.Drivers.Wifi.Events;
+﻿using EspIot.Core.Collections;
+using EspIot.Drivers.Wifi.Events;
 using System;
+using System.Collections;
 using System.Text;
 using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
@@ -9,13 +11,17 @@ namespace EspIot.Drivers.Mqtt
 {
     public class MqttClientWrapper
     {
+        private const ushort MESSAGE_QUEUE_SIZE_LIMIT = 50; //Limit maximum queued messages to avoid potential OutOfMemory Exception
         private readonly string _brokerAddress;
         private readonly string _deviceId;
         private readonly string _sendTopic;
         private readonly string _readTopic;
         private readonly MqttClient _client;
         private bool _status = false;
-        private Thread _connectionWatcherThread; 
+        private Thread _connectionWatcherThread;
+        private Thread _outoboundMessageSendingThread;
+        private ConcurrentQueue _messageQue = new ConcurrentQueue();
+        
         public event MqttConnectedEventHandler OnMqttClientConnected;
         public event MqttDisconnectedEventHandler OnMqttClientDisconnected;
 
@@ -33,15 +39,17 @@ namespace EspIot.Drivers.Mqtt
         {
             TryConnect();
             StartConnectionWatcher();
+            StartOutboundMessageWorker();
         }
 
-        public void Publish(string message, string properties = "")
+        public void Publish(MqttOutboundMessage message)
         {
-            if (!_client.IsConnected)
+            if(_messageQue.Count >= MESSAGE_QUEUE_SIZE_LIMIT)
             {
-                TryConnect();
+                return; //ignore message if queue is full
             }
-            _client.Publish(string.Format("{0}{1}", _sendTopic, properties), Encoding.UTF8.GetBytes(message), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+            
+            _messageQue.Enqueue(message);
         }
 
         public void Subscribe(string[] topics)
@@ -61,6 +69,47 @@ namespace EspIot.Drivers.Mqtt
         private void OnSubscribed(object sender, MqttMsgSubscribedEventArgs e)
         {
             Console.WriteLine("Client_MqttMsgSubscribed ");
+        }
+
+        private void StartOutboundMessageWorker()
+        {
+
+            _outoboundMessageSendingThread = new Thread(new ThreadStart(() =>
+            {
+                while (true)
+                {
+                    var message = _messageQue.Dequeue() as MqttOutboundMessage;
+
+                    bool isMessageSent = false;
+                    
+                    for (ushort i = 0; i < 3; i++)
+                    {
+                        try
+                        {
+                            if (!_client.IsConnected)
+                            {
+                                TryConnect();
+                            }
+
+                            _client.Publish(string.Format("{0}{1}", _sendTopic, message.Params), Encoding.UTF8.GetBytes(message.Payload), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+                            isMessageSent = true;
+                            break;
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if(!isMessageSent)
+                    {
+                        throw new Exception("MqttClient critical exception: Cannot publish message despite of connection with broker.");
+                    }
+
+                }
+            }));
+
+            _outoboundMessageSendingThread.Start();
         }
 
         private void TryConnect()
@@ -94,7 +143,7 @@ namespace EspIot.Drivers.Mqtt
 
         private void StartConnectionWatcher()
         {
-            if(_connectionWatcherThread != null)
+            if (_connectionWatcherThread != null)
             {
                 return;
             }
@@ -103,7 +152,7 @@ namespace EspIot.Drivers.Mqtt
             {
                 while (true)
                 {
-                    if(!_client.IsConnected)
+                    if (!_client.IsConnected)
                     {
                         TryConnect();
                     }
@@ -112,5 +161,7 @@ namespace EspIot.Drivers.Mqtt
             }));
             _connectionWatcherThread.Start();
         }
+
+
     }
 }

@@ -18,6 +18,7 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Commands\CommandResultEvent.cs" />
     <Compile Include="Commands\Command\CloseWindowCommand.cs" />
     <Compile Include="Commands\Command\IrrigateCommand.cs" />
     <Compile Include="Commands\Command\OpenWindowCommand.cs" />
@@ -33,6 +34,7 @@
     <Compile Include="Events\Outbound\DoorClosedEvent.cs" />
     <Compile Include="Events\Outbound\NotOptimalHumidityValueEvent.cs" />
     <Compile Include="Events\Outbound\NotOptimalTemperatureValueEvent.cs" />
+    <Compile Include="Events\Outbound\OutboundEventBus.cs" />
     <Compile Include="Events\Outbound\WindowClosedEvent.cs" />
     <Compile Include="Events\Outbound\DoorOpenedEvent.cs" />
     <Compile Include="Events\Outbound\WindowOpenedEvent.cs" />
@@ -41,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
+    <ProjectReference Include="..\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Events\Inbound\" />

@@ -91,7 +91,6 @@ namespace GreenhouseController
 
             //var waterFlowSensor = new WaterFlowSensor(GpioController.GetDefault(), GpioPins.GPIO_NUM_39, 1000);
 
-
             var iotHubClient = new MqttClientWrapper(DeviceConfiguration.BROKER_ADDRESS, DeviceConfiguration.DEVICE_ID);
             iotHubClient.OnMqttClientConnected += () => { statusLedDriver.SetMqttBrokerConnected(); };
             iotHubClient.OnMqttClientDisconnected += () => { statusLedDriver.SetMqttBrokerDisconnected(); };
