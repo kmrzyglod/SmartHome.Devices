@@ -2,11 +2,11 @@
 using EspIot.Core.Messaging.Interfaces;
 using System;
 
-namespace Messages.Commands
+namespace Infrastructure.Commands
 {
     public class CommandResultEvent : ICommandResultEvent
     {
-        public CommandResultEvent(string correlationId, StatusCode status, string errorMessage)
+        public CommandResultEvent(string correlationId, StatusCode status, string errorMessage = "")
         {
             CorrelationId = correlationId;
             Status = status;

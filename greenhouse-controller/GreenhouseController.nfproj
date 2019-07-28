@@ -78,8 +78,7 @@
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
     <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
     <ProjectReference Include="..\Json.NetMF\Json.NetMF.nfproj" />
-    <ProjectReference Include="..\Messages\Messages.nfproj" />
-    <ProjectReference Include="..\Services\Services.nfproj" />
+    <ProjectReference Include="..\Messages\Infrastructure.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

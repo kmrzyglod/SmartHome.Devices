@@ -1,4 +1,4 @@
-﻿namespace Messages.Events.Outbound
+﻿namespace Infrastructure.Events.Outbound
 {
     class CriticalHumidityValueEvent
     {

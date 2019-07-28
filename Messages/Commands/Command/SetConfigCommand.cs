@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Interfaces;
 
-namespace Messages.Commands.Command
+namespace Infrastructure.Commands.Command
 {
     class SetConfigCommand : ICommand
     {

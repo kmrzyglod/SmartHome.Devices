@@ -1,4 +1,4 @@
-﻿namespace Services.WindowsManager
+﻿namespace Infrastructure.Services.WindowsManager
 {
     enum Operation
     {

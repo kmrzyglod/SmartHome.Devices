@@ -1,7 +1,7 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace Messages.Errors.Events
+namespace Infrastructure.Errors.Events
 {
     public class ErrorMessage : IMessage
     {

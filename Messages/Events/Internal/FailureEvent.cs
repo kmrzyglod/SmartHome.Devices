@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Enum;
 
-namespace Services.Events
+namespace Infrastructure.Events.Internal
 {
     public class FailureEvent
     {

@@ -2,12 +2,12 @@
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.ReedSwitch;
 using EspIot.Drivers.ReedSwitch.Enums;
-using Messages.Events.Outbound;
-using Services.Events;
+using Infrastructure.Events.Outbound;
+using Infrastructure.Events.Internal;
 using System.Collections;
 using System.Threading;
 
-namespace Services.WindowsManager
+namespace Infrastructure.Services.WindowsManager
 {
     public class WindowsManagerService
     {
@@ -33,12 +33,7 @@ namespace Services.WindowsManager
             _outboundEventBus = outboundEventBus;
             SubscribeToEventHandlers();
         }
-
-        public void OpenWindows(ushort[] windowIds)
-        {
-
-        }
-
+ 
         public void CloseWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler, OnFailureEventHandler onFailureEventHandler)
         {
             lock (this)
@@ -70,12 +65,56 @@ namespace Services.WindowsManager
             new Thread(new ThreadStart(() =>
             {
                 Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
-
                 foreach (var windowId in windowIds)
                 {
+                    _windowActuators[windowId].StopMoving();
                     if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
                     {
                         onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still opened."));
+                        _actionsOnWindows.Remove(windowId);
+                    }
+                }
+            })).Start();
+        }
+
+        public void OpenWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler, OnFailureEventHandler onFailureEventHandler)
+        {
+            lock (this)
+            {
+                foreach (var windowId in windowIds)
+                {
+                    if (_actionsOnWindows.Contains(windowId))
+                    {
+                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
+                        break;
+                    }
+
+                    if (windowId >= _windowActuators.Length)
+                    {
+                        onFailureEventHandler(this, new FailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
+                        break;
+                    }
+
+                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
+                    {
+                        continue;
+                    }
+
+                    _actionsOnWindows.Add(windowId, Operation.Opening);
+                    _windowActuators[windowId].StartMovingReductionDirection();
+                }
+            }
+
+            new Thread(new ThreadStart(() =>
+            {
+                Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
+
+                foreach (var windowId in windowIds)
+                {
+                    _windowActuators[windowId].StopMoving();
+                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
+                    {
+                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still closed."));
                         _actionsOnWindows.Remove(windowId);
                     }
                 }
@@ -99,23 +138,33 @@ namespace Services.WindowsManager
                 _outboundEventBus.Send(new DoorOpenedEvent());
             };
 
-            for (ushort i = 0; i < _windowReedSwitches.Length; i++)
+            _windowReedSwitches[0].OnClosed += (sender, e) =>
             {
-                _windowReedSwitches[i].OnClosed += (sender, e) =>
+                _outboundEventBus.Send(new WindowClosedEvent(0));
+                if (_actionsOnWindows.Contains(0))
                 {
-                    _outboundEventBus.Send(new WindowClosedEvent(i));
-                    if (_actionsOnWindows.Contains(i))
-                    {
-                        _windowActuators[i].StopMoving();
-                    }
+                    _windowActuators[0].StopMoving();
+                }
+            };
 
-                };
+            _windowReedSwitches[0].OnOpened += (sender, e) =>
+            {
+                _outboundEventBus.Send(new WindowOpenedEvent(0));
+            };
 
-                _windowReedSwitches[i].OnOpened += (sender, e) =>
+            _windowReedSwitches[1].OnClosed += (sender, e) =>
+            {
+                _outboundEventBus.Send(new WindowClosedEvent(1));
+                if (_actionsOnWindows.Contains(1))
                 {
-                    _outboundEventBus.Send(new WindowOpenedEvent(i));
-                };
-            }
+                    _windowActuators[1].StopMoving();
+                }
+            };
+
+            _windowReedSwitches[1].OnOpened += (sender, e) =>
+            {
+                _outboundEventBus.Send(new WindowOpenedEvent(1));
+            };
         }
     }
 }

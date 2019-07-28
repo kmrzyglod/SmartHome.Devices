@@ -1,16 +1,16 @@
 ﻿using EspIot.Core.Messaging.Interfaces;
 
-namespace Messages.Commands.Command
+namespace Infrastructure.Commands.Command
 {
     class CloseWindowCommand : ICommand
     {
-        public CloseWindowCommand(string correlationId, short[] windowIds)
+        public CloseWindowCommand(string correlationId, ushort[] windowIds)
         {
             CorrelationId = correlationId;
             WindowIds = windowIds;
         }
 
         public string CorrelationId { get; }
-        public short[] WindowIds { get;}
+        public ushort[] WindowIds { get;}
     }
 }

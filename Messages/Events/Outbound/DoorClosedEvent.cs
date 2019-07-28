@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Interfaces;
 
-namespace Messages.Events.Outbound
+namespace Infrastructure.Events.Outbound
 {
     public class DoorClosedEvent : IMessage
     {

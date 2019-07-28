@@ -1,7 +1,7 @@
 ﻿using EspIot.Core.Messaging.Interfaces;
 using System;
 
-namespace Messages.Events.Outbound
+namespace Infrastructure.Events.Outbound
 {
     public class WindowOpenedEvent : IMessage
     {

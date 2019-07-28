@@ -1,24 +1,25 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Events;
+using Infrastructure.Commands;
 using Infrastructure.Commands.Command;
 using Infrastructure.Services.WindowsManager;
 
-namespace Infrastructure.Commands.Handler
+namespace Messages.Commands.Handler
 {
-    class CloseWindowCommandHandler
+    class OpenWindowCommandHandler
     {
         private readonly WindowsManagerService _windowsManagerServices;
         private readonly CommandResultEventHandler _commandResultEventHandler;
 
-        public CloseWindowCommandHandler(WindowsManagerService windowsManagerServices, CommandResultEventHandler commandResultEventHandler)
+        public OpenWindowCommandHandler(WindowsManagerService windowsManagerServices, CommandResultEventHandler commandResultEventHandler)
         {
             _windowsManagerServices = windowsManagerServices;
             _commandResultEventHandler = commandResultEventHandler;
         }
 
-        public void Handle(CloseWindowCommand command)
+        public void Handle(OpenWindowCommand command)
         {
-            _windowsManagerServices.CloseWindows(command.WindowIds,
+            _windowsManagerServices.OpenWindows(command.WindowIds,
                 (sender) =>
                 {
                     _commandResultEventHandler(this, new CommandResultEvent(command.CorrelationId, StatusCode.Success));

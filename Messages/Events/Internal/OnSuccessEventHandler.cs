@@ -1,4 +1,4 @@
-﻿namespace Services.Events
+﻿namespace Infrastructure.Events.Internal
 {
     public delegate void OnSuccessEventHandler(object sender);
 }

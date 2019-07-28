@@ -3,7 +3,7 @@ using EspIot.Core.Messaging.Interfaces;
 using EspIot.Drivers.Mqtt;
 using Json.NetMF;
 
-namespace Messages.Events.Outbound
+namespace Infrastructure.Events.Outbound
 {
     public class MqttOutboundEventBus : IOutboundEventBus
     {

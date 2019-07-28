@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Interfaces;
 
-namespace Messages.Telemetry
+namespace Infrastructure.Telemetry
 {
     public class StatusMessage : IMessage
     {
