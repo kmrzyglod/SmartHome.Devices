@@ -4,9 +4,8 @@ namespace Infrastructure.Telemetry
 {
     public class StatusMessage : IMessage
     {
-        public StatusMessage(string correlationId, double temperature, double pressure, double humidity, int lightLevel, int soilMoisture, int waterFlow, bool isDoorOpen, bool isWindow1Open, bool isWindow2Open)
+        public StatusMessage(double temperature, double pressure, double humidity, int lightLevel, int soilMoisture, int waterFlow, bool isDoorOpen, bool isWindow1Open, bool isWindow2Open)
         {
-            CorrelationId = correlationId;
             Temperature = temperature;
             Pressure = pressure;
             Humidity = humidity;
@@ -18,7 +17,7 @@ namespace Infrastructure.Telemetry
             IsWindow2Open = isWindow2Open;
         }
 
-        public string CorrelationId { get; }
+        public string CorrelationId {get; } = new System.Guid().ToString();
         public double Temperature { get; }
         public double Pressure { get; }
         public double Humidity { get; }

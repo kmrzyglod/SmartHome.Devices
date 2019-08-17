@@ -10,9 +10,9 @@ namespace Infrastructure.Commands.Handler
         private readonly WindowsManagerService _windowsManagerServices;
         private readonly CommandResultEventHandler _commandResultEventHandler;
 
-        public CloseWindowCommandHandler(WindowsManagerService windowsManagerServices, CommandResultEventHandler commandResultEventHandler)
+        public CloseWindowCommandHandler(WindowsManagerService windowsManagerService, CommandResultEventHandler commandResultEventHandler)
         {
-            _windowsManagerServices = windowsManagerServices;
+            _windowsManagerServices = windowsManagerService;
             _commandResultEventHandler = commandResultEventHandler;
         }
 
