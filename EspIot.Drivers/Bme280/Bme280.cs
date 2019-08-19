@@ -171,7 +171,7 @@ namespace EspIot.Drivers.Bme280
             _osrsH = (byte)osrs_h;
         }
 
-        public void Initialize()
+        public Bme280 Initialize()
         {
             Console.WriteLine("BME280::Initialize");
             try
@@ -205,7 +205,7 @@ namespace EspIot.Drivers.Bme280
             if (ReadBuffer[0] != BME280_Signature)
             {
                 Console.WriteLine("BME280::Begin Signature Mismatch.");
-                return;
+                return this;
             }
 
             //Set configuration registers
@@ -223,6 +223,8 @@ namespace EspIot.Drivers.Bme280
 
             //Dummy read temp to setup t_fine
             ReadTemperature();
+
+            return this;
         }
 
 
