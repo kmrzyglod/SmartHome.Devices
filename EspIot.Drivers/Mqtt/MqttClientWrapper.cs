@@ -91,7 +91,9 @@ namespace EspIot.Drivers.Mqtt
                                 TryConnect();
                             }
 
-                            _client.Publish(string.Format("{0}{1}", _sendTopic, message.Params), Encoding.UTF8.GetBytes(message.Payload), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+                            var topic = string.Format("{0}{1}", _sendTopic, message.Params);
+                            Console.WriteLine("Publish on Topic:" + topic + " Message:" + message.Payload);
+                            _client.Publish(topic, Encoding.UTF8.GetBytes(message.Payload), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
                             isMessageSent = true;
                             break;
                         }

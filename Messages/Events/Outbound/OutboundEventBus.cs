@@ -8,7 +8,6 @@ namespace Infrastructure.Events.Outbound
     public class MqttOutboundEventBus : IOutboundEventBus
     {
         private readonly MqttClientWrapper _mqttClient;
-        private const string OUTBOUND_EVENTS_TOPIC = "outbound-events/";
 
         public MqttOutboundEventBus(MqttClientWrapper mqttClient)
         {
@@ -17,7 +16,7 @@ namespace Infrastructure.Events.Outbound
         
         public void Send(IMessage eventMessage)
         {
-            _mqttClient.Publish(new MqttOutboundMessage($"{OUTBOUND_EVENTS_TOPIC}{eventMessage.GetType().Name}", JsonSerializer.SerializeObject(eventMessage)));
+            _mqttClient.Publish(new MqttOutboundMessage($"MessageType={eventMessage.GetType().Name}", JsonSerializer.SerializeObject(eventMessage)));
         }
     }
 }

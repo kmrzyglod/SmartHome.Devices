@@ -24,15 +24,16 @@ namespace EspIot.Core.Collections
         {
             while (true)
             {
-                try
+                _manualReset.WaitOne();
+                lock (_messageQue.SyncRoot)
                 {
-                    _manualReset.WaitOne();
-                    return _messageQue.Dequeue();
+                    if (Count > 0)
+                    {
+                        return _messageQue.Dequeue();
+                    }
                 }
-                catch (InvalidOperationException e)
-                {
-                    _manualReset.Reset();
-                }
+                _manualReset.Reset();
+
             }
         }
     }

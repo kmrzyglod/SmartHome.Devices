@@ -2,12 +2,19 @@
 using EspIot.Core.Gpio;
 using EspIot.Core.I2c;
 using EspIot.Drivers.LinearActuator;
+using System.Net.NetworkInformation;
 
 namespace GreenhouseController.Config
 {
     class GreenhouseControllerConfiguration : IConfiguration
     {
         //General config
+        //WIFI config
+        public string NetworkSsid { get; } = "";
+        public string NetworkPassword { get; } = "";
+        public Wireless80211Configuration.AuthenticationType NetworkAuthType { get; } = Wireless80211Configuration.AuthenticationType.WPA;
+        public Wireless80211Configuration.EncryptionType NetworkEncryptionType { get; } = Wireless80211Configuration.EncryptionType.WPA_PSK;
+
         public string MqttBrokerAddress { get; } = "192.168.2.108";
         public string DeviceId { get; } = "esp32-greenhouse";
 
