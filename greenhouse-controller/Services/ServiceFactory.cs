@@ -54,7 +54,7 @@ namespace GreenhouseController.Services
                 _driversFactory.WaterFlowSensor
                 );
 
-            _telemetryService.SetInterval(1000);
+            _telemetryService.SetInterval(10000);
             _telemetryService.Start();
 
             return this;
