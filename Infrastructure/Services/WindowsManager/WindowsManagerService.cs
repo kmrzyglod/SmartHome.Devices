@@ -62,7 +62,7 @@ namespace Infrastructure.Services.WindowsManager
                 }
             }
 
-            new Thread(new ThreadStart(() =>
+            new Thread(() =>
             {
                 Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
                 foreach (var windowId in windowIds)
@@ -74,7 +74,7 @@ namespace Infrastructure.Services.WindowsManager
                         _actionsOnWindows.Remove(windowId);
                     }
                 }
-            })).Start();
+            }).Start();
         }
 
         public void OpenWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler, OnFailureEventHandler onFailureEventHandler)
@@ -105,7 +105,7 @@ namespace Infrastructure.Services.WindowsManager
                 }
             }
 
-            new Thread(new ThreadStart(() =>
+            new Thread(() =>
             {
                 Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
 
@@ -118,7 +118,7 @@ namespace Infrastructure.Services.WindowsManager
                         _actionsOnWindows.Remove(windowId);
                     }
                 }
-            })).Start();
+            }).Start();
         }
 
         public WindowsState GetWindowsState()

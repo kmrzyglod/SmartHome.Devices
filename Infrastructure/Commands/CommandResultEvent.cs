@@ -1,6 +1,5 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Interfaces;
-using System;
 
 namespace Infrastructure.Commands
 {

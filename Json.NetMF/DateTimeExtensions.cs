@@ -120,7 +120,7 @@ namespace Json.NetMF
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public static string ToASPNetAjax(DateTime dt)
+        public static string ToAspNetAjax(DateTime dt)
         {
             string value = dt.Ticks.ToString();
 
@@ -132,7 +132,7 @@ namespace Json.NetMF
         /// </summary>
         /// <param name="ajax"></param>
         /// <returns></returns>
-        public static DateTime FromASPNetAjax(string ajax)
+        public static DateTime FromAspNetAjax(string ajax)
         {
             string[] parts = ajax.Split(new char[] { '(', ')' });
 

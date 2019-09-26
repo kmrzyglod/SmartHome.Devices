@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Threading;
 
 namespace EspIot.Core.Collections
@@ -8,8 +7,8 @@ namespace EspIot.Core.Collections
     {
         public int Count => _messageQue.Count;
 
-        private Queue _messageQue = new Queue();
-        private ManualResetEvent _manualReset = new ManualResetEvent(false);
+        private readonly Queue _messageQue = new Queue();
+        private readonly ManualResetEvent _manualReset = new ManualResetEvent(false);
 
         public void Enqueue(object value)
         {

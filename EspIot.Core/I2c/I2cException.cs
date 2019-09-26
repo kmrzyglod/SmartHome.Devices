@@ -3,19 +3,19 @@ using Windows.Devices.I2c;
 
 namespace EspIot.Core.I2c
 {
-    public class I2cTransferException : Exception
+    public class I2CTransferException : Exception
     {
-        public I2cTransferStatus _transferStatus {get; } 
-        public I2cTransferException(I2cTransferStatus transferStatus)
+        public I2cTransferStatus TransferStatus {get; } 
+        public I2CTransferException(I2cTransferStatus transferStatus)
         {
         }
 
-        public I2cTransferException(string message, I2cTransferStatus transferStatus)
+        public I2CTransferException(string message, I2cTransferStatus transferStatus)
             : base(message)
         {
         }
 
-        public I2cTransferException(string message, I2cTransferStatus transferStatus, Exception inner)
+        public I2CTransferException(string message, I2cTransferStatus transferStatus, Exception inner)
             : base(message, inner)
         {
         }

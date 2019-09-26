@@ -1,7 +1,6 @@
 ﻿using EspIot.Core.Collections;
 using EspIot.Drivers.Wifi.Events;
 using System;
-using System.Collections;
 using System.Text;
 using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
@@ -11,7 +10,7 @@ namespace EspIot.Drivers.Mqtt
 {
     public class MqttClientWrapper
     {
-        private const ushort MESSAGE_QUEUE_SIZE_LIMIT = 50; //Limit maximum queued messages to avoid potential OutOfMemory Exception
+        private const ushort MessageQueueSizeLimit = 50; //Limit maximum queued messages to avoid potential OutOfMemory Exception
         private readonly string _brokerAddress;
         private readonly string _deviceId;
         private readonly string _sendTopic;
@@ -19,8 +18,8 @@ namespace EspIot.Drivers.Mqtt
         private readonly MqttClient _client;
         private bool _status = false;
         private Thread _connectionWatcherThread;
-        private Thread _outoboundMessageSendingThread;
-        private ConcurrentQueue _messageQue = new ConcurrentQueue();
+        private Thread _outboundMessageSendingThread;
+        private readonly ConcurrentQueue _messageQue = new ConcurrentQueue();
         
         public event MqttConnectedEventHandler OnMqttClientConnected;
         public event MqttDisconnectedEventHandler OnMqttClientDisconnected;
@@ -29,7 +28,7 @@ namespace EspIot.Drivers.Mqtt
         {
             _brokerAddress = brokerAddress;
             _deviceId = deviceId;
-            _sendTopic = string.Format("devices/{0}/messages/events/", _deviceId);
+            _sendTopic = $"devices/{_deviceId}/messages/events/";
             _client = new MqttClient(_brokerAddress);
             _client.MqttMsgPublishReceived += OnMessagReceived;
             _client.MqttMsgSubscribed += OnSubscribed;
@@ -44,7 +43,7 @@ namespace EspIot.Drivers.Mqtt
 
         public void Publish(MqttOutboundMessage message)
         {
-            if(_messageQue.Count >= MESSAGE_QUEUE_SIZE_LIMIT)
+            if(_messageQue.Count >= MessageQueueSizeLimit)
             {
                 return; //ignore message if queue is full
             }
@@ -74,7 +73,7 @@ namespace EspIot.Drivers.Mqtt
         private void StartOutboundMessageWorker()
         {
 
-            _outoboundMessageSendingThread = new Thread(new ThreadStart(() =>
+            _outboundMessageSendingThread = new Thread(() =>
             {
                 while (true)
                 {
@@ -109,9 +108,9 @@ namespace EspIot.Drivers.Mqtt
                     }
 
                 }
-            }));
+            });
 
-            _outoboundMessageSendingThread.Start();
+            _outboundMessageSendingThread.Start();
         }
 
         private void TryConnect()
@@ -150,7 +149,7 @@ namespace EspIot.Drivers.Mqtt
                 return;
             }
 
-            _connectionWatcherThread = new Thread(new ThreadStart(() =>
+            _connectionWatcherThread = new Thread(() =>
             {
                 while (true)
                 {
@@ -160,7 +159,7 @@ namespace EspIot.Drivers.Mqtt
                     }
                     Thread.Sleep(15000);
                 }
-            }));
+            });
             _connectionWatcherThread.Start();
         }
 

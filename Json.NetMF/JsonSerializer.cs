@@ -100,7 +100,7 @@ namespace Json.NetMF
                             case DateTimeFormat.Ajax:
                                 // This MSDN page describes the problem with JSON dates:
                                 // http://msdn.microsoft.com/en-us/library/bb299886.aspx
-                                return "\"" + DateTimeExtensions.ToASPNetAjax((DateTime)o) + "\"";
+                                return "\"" + DateTimeExtensions.ToAspNetAjax((DateTime)o) + "\"";
                             case DateTimeFormat.ISO8601:
                             case DateTimeFormat.Default:
                             default:

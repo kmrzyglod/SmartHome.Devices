@@ -25,7 +25,7 @@ namespace EspIot.Drivers.Bh1750
     {
         private readonly string _i2CControllerName;
         private readonly PinConnection _pinConnection;
-        private I2cDevice device = null;
+        private readonly I2cDevice _device = null;
 
         public Bh1750(string i2CControllerName, 
             PinConnection pinConnection = PinConnection.PIN_LOW, 
@@ -39,8 +39,8 @@ namespace EspIot.Drivers.Bh1750
                 settings.BusSpeed = I2cBusSpeed.StandardMode;
                 settings.SharingMode = I2cSharingMode.Shared;
                 string aqs = I2cDevice.GetDeviceSelector(_i2CControllerName);
-                device = I2cDevice.FromId(_i2CControllerName, settings);
-                if (device == null)
+                _device = I2cDevice.FromId(_i2CControllerName, settings);
+                if (_device == null)
                 {
                     Console.WriteLine("Device not found");
                 }
@@ -58,13 +58,13 @@ namespace EspIot.Drivers.Bh1750
 
         public void SetMode(MeasurementMode measurementMode)
         {
-            device.Write(new byte[] { (byte)measurementMode });
+            _device.Write(new byte[] { (byte)measurementMode });
             Thread.Sleep(10);
         }
 
         public int GetLightLevelInLux()
         {
-            byte[] result = device.ReadBytes((byte)_pinConnection, 2);
+            byte[] result = _device.ReadBytes((byte)_pinConnection, 2);
             int lightLevel = result[0] << 8 | result[1];
 
             return (int)(lightLevel / 1.2f);
@@ -72,17 +72,17 @@ namespace EspIot.Drivers.Bh1750
 
         public void PowerOff()
         {
-            device.Write(new byte[] { 0x00 });
+            _device.Write(new byte[] { 0x00 });
         }
 
         public void PowerOn()
         {
-            device.Write(new byte[] { 0x01 });
+            _device.Write(new byte[] { 0x01 });
         }
 
         public void Reset()
         {
-            device.Write(new byte[] { 0x07 });
+            _device.Write(new byte[] { 0x07 });
         }
     }
 }

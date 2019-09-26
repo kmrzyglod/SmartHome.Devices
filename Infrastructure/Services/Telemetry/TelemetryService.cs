@@ -64,16 +64,14 @@ namespace Infrastructure.Services.Telemetry
 
                 _isServiceActive = true;
                 
-                new Thread(new ThreadStart(() =>
+                new Thread(() =>
                 {
                     while (_isServiceActive)
                     {
                         _outboundEventBus.Send(GetTelemetryData());
                         Thread.Sleep(_sentInterval);
                     }
-                }
-                
-                )).Start();
+                }).Start();
             }
         }
 

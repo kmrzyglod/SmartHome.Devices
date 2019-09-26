@@ -7,38 +7,38 @@ using Windows.Devices.I2c;
 
 namespace EspIot.Drivers.Bme280
 {
-    public class BME280_CalibrationData
+    public class Bme280CalibrationData
     {
         //BME280 Registers
-        public ushort dig_T1 { get; set; }
-        public short dig_T2 { get; set; }
-        public short dig_T3 { get; set; }
+        public ushort DigT1 { get; set; }
+        public short DigT2 { get; set; }
+        public short DigT3 { get; set; }
 
-        public ushort dig_P1 { get; set; }
-        public short dig_P2 { get; set; }
-        public short dig_P3 { get; set; }
-        public short dig_P4 { get; set; }
-        public short dig_P5 { get; set; }
-        public short dig_P6 { get; set; }
-        public short dig_P7 { get; set; }
-        public short dig_P8 { get; set; }
-        public short dig_P9 { get; set; }
+        public ushort DigP1 { get; set; }
+        public short DigP2 { get; set; }
+        public short DigP3 { get; set; }
+        public short DigP4 { get; set; }
+        public short DigP5 { get; set; }
+        public short DigP6 { get; set; }
+        public short DigP7 { get; set; }
+        public short DigP8 { get; set; }
+        public short DigP9 { get; set; }
 
-        public byte dig_H1 { get; set; }
-        public short dig_H2 { get; set; }
-        public byte dig_H3 { get; set; }
-        public short dig_H4 { get; set; }
-        public short dig_H5 { get; set; }
-        public sbyte dig_H6 { get; set; }
+        public byte DigH1 { get; set; }
+        public short DigH2 { get; set; }
+        public byte DigH3 { get; set; }
+        public short DigH4 { get; set; }
+        public short DigH5 { get; set; }
+        public sbyte DigH6 { get; set; }
     }
 
 
     public class Bme280
     {
-        const byte BME280_Address = 0x76;
-        const byte BME280_Signature = 0x60;
+        const byte Bme280Address = 0x76;
+        const byte Bme280Signature = 0x60;
 
-        enum eRegisters : byte
+        enum ERegisters : byte
         {
             BME280_REGISTER_DIG_T1 = 0x88,
             BME280_REGISTER_DIG_T2 = 0x8A,
@@ -84,91 +84,91 @@ namespace EspIot.Drivers.Bme280
         };
 
         // Enables 2-wire I2C interface when set to ‘0’
-        public enum interface_mode_e : byte
+        public enum InterfaceModeE : byte
         {
-            i2c = 0,
-            spi = 1
+            I2_C = 0,
+            SPI = 1
         };
 
         // t_sb standby options - effectively the gap between automatic measurements 
         // when in "normal" mode
-        public enum standbySettings_e : byte
+        public enum StandbySettingsE : byte
         {
-            tsb_0p5ms = 0,
-            tsb_62p5ms = 1,
-            tsb_125ms = 2,
-            tsb_250ms = 3,
-            tsb_500ms = 4,
-            tsb_1000ms = 5,
-            tsb_10ms = 6,
-            tsb_20ms = 7
+            TSB_0_P5_MS = 0,
+            TSB_62_P5_MS = 1,
+            TSB_125_MS = 2,
+            TSB_250_MS = 3,
+            TSB_500_MS = 4,
+            TSB_1000_MS = 5,
+            TSB_10_MS = 6,
+            TSB_20_MS = 7
         };
 
 
         // sensor modes, it starts off in sleep mode on power on
         // forced is to take a single measurement now
         // normal takes measurements reqularly automatically
-        public enum mode_e : byte
+        public enum ModeE : byte
         {
-            smSleep = 0,
-            smForced = 1,
-            smNormal = 3
+            SM_SLEEP = 0,
+            SM_FORCED = 1,
+            SM_NORMAL = 3
         };
 
 
         // Filter coefficients
         // higher numbers slow down changes, such as slamming doors
-        public enum filterCoefficient_e : byte
+        public enum FilterCoefficientE : byte
         {
-            fc_off = 0,
-            fc_2 = 1,
-            fc_4 = 2,
-            fc_8 = 3,
-            fc_16 = 4
+            FC_OFF = 0,
+            FC_2 = 1,
+            FC_4 = 2,
+            FC_8 = 3,
+            FC_16 = 4
         };
 
 
         // Oversampling options for humidity
         // Oversampling reduces the noise from the sensor
-        public enum oversampling_e : byte
+        public enum OversamplingE : byte
         {
-            osSkipped = 0,
-            os1x = 1,
-            os2x = 2,
-            os4x = 3,
-            os8x = 4,
-            os16x = 5
+            OS_SKIPPED = 0,
+            OS1_X = 1,
+            OS2_X = 2,
+            OS4_X = 3,
+            OS8_X = 4,
+            OS16_X = 5
         };
 
 
-        private readonly string _i2cControllerName;
+        private readonly string _i2CControllerName;
         private I2cDevice _bme280 = null;
-        private BME280_CalibrationData _calibrationData;
+        private Bme280CalibrationData _calibrationData;
 
         // Value hold sensor operation parameters
-        private byte _intMode = (byte)interface_mode_e.i2c;
-        private byte _tSb;
-        private byte _mode;
-        private byte _filter;
-        private byte _osrsP;
-        private byte _osrsT;
-        private byte _osrsH;
+        private readonly byte _intMode = (byte)InterfaceModeE.I2_C;
+        private readonly byte _tSb;
+        private readonly byte _mode;
+        private readonly byte _filter;
+        private readonly byte _osrsP;
+        private readonly byte _osrsT;
+        private readonly byte _osrsH;
 
-        public Bme280(string i2CControllerName, standbySettings_e t_sb = standbySettings_e.tsb_1000ms,
-                      mode_e mode = mode_e.smNormal,
-                      filterCoefficient_e filter = filterCoefficient_e.fc_16,
-                      oversampling_e osrs_p = oversampling_e.os4x,
-                      oversampling_e osrs_t = oversampling_e.os2x,
-                      oversampling_e osrs_h = oversampling_e.os8x)
+        public Bme280(string i2CControllerName, StandbySettingsE tSb = StandbySettingsE.TSB_1000_MS,
+                      ModeE mode = ModeE.SM_NORMAL,
+                      FilterCoefficientE filter = FilterCoefficientE.FC_16,
+                      OversamplingE osrsP = OversamplingE.OS4_X,
+                      OversamplingE osrsT = OversamplingE.OS2_X,
+                      OversamplingE osrsH = OversamplingE.OS8_X)
         {
             
-            _i2cControllerName = i2CControllerName;
-            _tSb = (byte)t_sb;
+            _i2CControllerName = i2CControllerName;
+            _tSb = (byte)tSb;
             _mode = (byte)mode;
             _filter = (byte)filter;
-            _osrsP = (byte)osrs_p;
-            _osrsT = (byte)osrs_t;
-            _osrsH = (byte)osrs_h;
+            _osrsP = (byte)osrsP;
+            _osrsT = (byte)osrsT;
+            _osrsH = (byte)osrsH;
         }
 
         public Bme280 Initialize()
@@ -177,11 +177,11 @@ namespace EspIot.Drivers.Bme280
             try
             {
                
-                var settings = new I2cConnectionSettings(BME280_Address);
+                var settings = new I2cConnectionSettings(Bme280Address);
                 settings.BusSpeed = I2cBusSpeed.StandardMode;
                 settings.SharingMode = I2cSharingMode.Shared;
-                string aqs = I2cDevice.GetDeviceSelector(_i2cControllerName);
-                _bme280 = I2cDevice.FromId(_i2cControllerName, settings);
+                string aqs = I2cDevice.GetDeviceSelector(_i2CControllerName);
+                _bme280 = I2cDevice.FromId(_i2CControllerName, settings);
                 
                 if (_bme280 == null)
                 {
@@ -194,15 +194,15 @@ namespace EspIot.Drivers.Bme280
                 throw;
             }
 
-            byte[] readChipID = new byte[] { (byte)eRegisters.BME280_REGISTER_CHIPID };
-            byte[] ReadBuffer = new byte[] { 0xFF };
+            byte[] readChipId = new byte[] { (byte)ERegisters.BME280_REGISTER_CHIPID };
+            byte[] readBuffer = new byte[] { 0xFF };
 
             //Read the device signature
-            _bme280.WriteReadPartial(readChipID, ReadBuffer);
-            Console.WriteLine("BME280 Signature: " + ReadBuffer[0].ToString());
+            _bme280.WriteReadPartial(readChipId, readBuffer);
+            Console.WriteLine("BME280 Signature: " + readBuffer[0].ToString());
 
             //Verify the device signature
-            if (ReadBuffer[0] != BME280_Signature)
+            if (readBuffer[0] != Bme280Signature)
             {
                 Console.WriteLine("BME280::Begin Signature Mismatch.");
                 return this;
@@ -236,8 +236,8 @@ namespace EspIot.Drivers.Bme280
         private void WriteConfigRegister()
         {
             byte value = (byte)(_intMode + (_filter << 2) + (_tSb << 5));
-            byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONFIG, value };
-            _bme280.Write(WriteBuffer);
+            byte[] writeBuffer = new byte[] { (byte)ERegisters.BME280_REGISTER_CONFIG, value };
+            _bme280.Write(writeBuffer);
             return;
         }
 
@@ -249,8 +249,8 @@ namespace EspIot.Drivers.Bme280
         private void WriteControlMeasurementRegister()
         {
             byte value = (byte)(_mode + (_osrsP << 2) + (_osrsT << 5));
-            byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONTROL, value };
-            _bme280.Write(WriteBuffer);
+            byte[] writeBuffer = new byte[] { (byte)ERegisters.BME280_REGISTER_CONTROL, value };
+            _bme280.Write(writeBuffer);
             return;
         }
 
@@ -258,128 +258,128 @@ namespace EspIot.Drivers.Bme280
         private void WriteControlRegisterHumidity()
         {
             byte value = _osrsH;
-            byte[] WriteBuffer = new byte[] { (byte)eRegisters.BME280_REGISTER_CONTROLHUMID, value };
-            _bme280.Write(WriteBuffer);
+            byte[] writeBuffer = new byte[] { (byte)ERegisters.BME280_REGISTER_CONTROLHUMID, value };
+            _bme280.Write(writeBuffer);
             return;
         }
 
         //Method to read the caliberation data from the registers
-        private BME280_CalibrationData ReadCoefficeints()
+        private Bme280CalibrationData ReadCoefficeints()
         {
             // 16 bit calibration data is stored as Little Endian, the helper method will do the byte swap.
-            _calibrationData = new BME280_CalibrationData();
+            _calibrationData = new Bme280CalibrationData();
 
 
             // Read temperature calibration data
-            _calibrationData.dig_T1 = (ushort)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T1, 2);
-            _calibrationData.dig_T2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T2, 2);
-            _calibrationData.dig_T3 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_T3, 2);
+            _calibrationData.DigT1 = (ushort)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_T1, 2);
+            _calibrationData.DigT2 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_T2, 2);
+            _calibrationData.DigT3 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_T3, 2);
 
             // Read presure calibration data
-            _calibrationData.dig_P9 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P9, 2);
-            _calibrationData.dig_P8 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P8, 2);
-            _calibrationData.dig_P7 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P7, 2);
-            _calibrationData.dig_P6 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P6, 2);
-            _calibrationData.dig_P5 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P5, 2);
-            _calibrationData.dig_P4 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P4, 2);
-            _calibrationData.dig_P3 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P3, 2);
-            _calibrationData.dig_P2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P2, 2);
-            _calibrationData.dig_P1 = (ushort)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_P1, 2);
+            _calibrationData.DigP9 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P9, 2);
+            _calibrationData.DigP8 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P8, 2);
+            _calibrationData.DigP7 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P7, 2);
+            _calibrationData.DigP6 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P6, 2);
+            _calibrationData.DigP5 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P5, 2);
+            _calibrationData.DigP4 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P4, 2);
+            _calibrationData.DigP3 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P3, 2);
+            _calibrationData.DigP2 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P2, 2);
+            _calibrationData.DigP1 = (ushort)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_P1, 2);
 
             // Read humidity calibration data
 
-            _calibrationData.dig_H1 = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H1);
-            _calibrationData.dig_H2 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H2, 2);
-            _calibrationData.dig_H3 = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H3);
-            short e4 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H4_L);    // Read 0xE4
-            short e5 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H4_H);    // Read 0xE5
-            short e6 = (short)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H5_H);    // Read 0xE6
-            _calibrationData.dig_H6 = (sbyte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_DIG_H6);
+            _calibrationData.DigH1 = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H1);
+            _calibrationData.DigH2 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H2, 2);
+            _calibrationData.DigH3 = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H3);
+            short e4 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H4_L);    // Read 0xE4
+            short e5 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H4_H);    // Read 0xE5
+            short e6 = (short)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H5_H);    // Read 0xE6
+            _calibrationData.DigH6 = (sbyte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_DIG_H6);
 
-            _calibrationData.dig_H4 = (short)((e4 << 4) + (e5 & 0x0F));
-            _calibrationData.dig_H5 = (short)((e5 >> 4) + (e6 << 4));
+            _calibrationData.DigH4 = (short)((e4 << 4) + (e5 & 0x0F));
+            _calibrationData.DigH5 = (short)((e5 >> 4) + (e6 << 4));
 
             return _calibrationData;
         }
 
 
         //t_fine carries fine temperature as global value
-        int t_fine;
+        int _tFine;
 
         //Method to return the temperature in DegC. Resolution is 0.01 DegC. Output value of “51.23” equals 51.23 DegC.
-        private double BME280_compensate_T_double(int adc_T)
+        private double BME280_compensate_T_double(int adcT)
         {
             int var1, var2;
             double T;
-            var1 = ((((adc_T >> 3) - (_calibrationData.dig_T1 << 1))) * (_calibrationData.dig_T2)) >> 11;
-            var2 = (((((adc_T >> 4) - (_calibrationData.dig_T1)) * ((adc_T >> 4) - (_calibrationData.dig_T1))) >> 12) * (_calibrationData.dig_T3)) >> 14;
+            var1 = ((((adcT >> 3) - (_calibrationData.DigT1 << 1))) * (_calibrationData.DigT2)) >> 11;
+            var2 = (((((adcT >> 4) - (_calibrationData.DigT1)) * ((adcT >> 4) - (_calibrationData.DigT1))) >> 12) * (_calibrationData.DigT3)) >> 14;
 
-            t_fine = var1 + var2;
-            T = (t_fine * 5 + 128) >> 8;
+            _tFine = var1 + var2;
+            T = (_tFine * 5 + 128) >> 8;
             return T / 100;
         }
 
 
         //Method to returns the pressure in Pa, in Q24.8 format (24 integer bits and 8 fractional bits).
         //Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-        private long BME280_compensate_P_Int64(int adc_P)
+        private long BME280_compensate_P_Int64(int adcP)
         {
             long var1, var2, p;
 
             //The pressure is calculated using the compensation formula in the BME280 datasheet
-            var1 = (long)t_fine - 128000;
-            var2 = var1 * var1 * _calibrationData.dig_P6;
-            var2 = var2 + ((var1 * _calibrationData.dig_P5) << 17);
-            var2 = var2 + ((long)_calibrationData.dig_P4 << 35);
-            var1 = ((var1 * var1 * _calibrationData.dig_P3) >> 8) + ((var1 * _calibrationData.dig_P2) << 12);
-            var1 = (((long)1 << 47) + var1) * _calibrationData.dig_P1 >> 33;
+            var1 = (long)_tFine - 128000;
+            var2 = var1 * var1 * _calibrationData.DigP6;
+            var2 = var2 + ((var1 * _calibrationData.DigP5) << 17);
+            var2 = var2 + ((long)_calibrationData.DigP4 << 35);
+            var1 = ((var1 * var1 * _calibrationData.DigP3) >> 8) + ((var1 * _calibrationData.DigP2) << 12);
+            var1 = (((long)1 << 47) + var1) * _calibrationData.DigP1 >> 33;
             if (var1 == 0)
             {
                 Console.WriteLine("BME280_compensate_P_Int64 Jump out to avoid / 0");
                 return 0; //Avoid exception caused by division by zero
             }
             //Perform calibration operations as per datasheet: 
-            p = 1048576 - adc_P;
+            p = 1048576 - adcP;
             p = (((p << 31) - var2) * 3125) / var1;
-            var1 = ((long)_calibrationData.dig_P9 * (p >> 13) * (p >> 13)) >> 25;
-            var2 = ((long)_calibrationData.dig_P8 * p) >> 19;
-            p = ((p + var1 + var2) >> 8) + ((long)_calibrationData.dig_P7 << 4);
+            var1 = ((long)_calibrationData.DigP9 * (p >> 13) * (p >> 13)) >> 25;
+            var2 = ((long)_calibrationData.DigP8 * p) >> 19;
+            p = ((p + var1 + var2) >> 8) + ((long)_calibrationData.DigP7 << 4);
             return p;
         }
 
 
         // Returns humidity in %rH as as double. Output value of “46.332” represents 46.332 %rH
-        private double BME280_compensate_H_double(int adc_H)
+        private double BME280_compensate_H_double(int adcH)
         {
-            double var_H;
+            double varH;
 
-            var_H = t_fine - 76800.0;
-            var_H = (adc_H - (_calibrationData.dig_H4 * 64.0 + _calibrationData.dig_H5 / 16384.0 * var_H)) *
-                _calibrationData.dig_H2 / 65536.0 * (1.0 + _calibrationData.dig_H6 / 67108864.0 * var_H *
-                (1.0 + _calibrationData.dig_H3 / 67108864.0 * var_H));
-            var_H = var_H * (1.0 - _calibrationData.dig_H1 * var_H / 524288.0);
+            varH = _tFine - 76800.0;
+            varH = (adcH - (_calibrationData.DigH4 * 64.0 + _calibrationData.DigH5 / 16384.0 * varH)) *
+                _calibrationData.DigH2 / 65536.0 * (1.0 + _calibrationData.DigH6 / 67108864.0 * varH *
+                (1.0 + _calibrationData.DigH3 / 67108864.0 * varH));
+            varH = varH * (1.0 - _calibrationData.DigH1 * varH / 524288.0);
 
-            if (var_H > 100.0)
+            if (varH > 100.0)
             {
                 Console.WriteLine("BME280_compensate_H_double Jump out to 100%");
-                var_H = 100.0;
+                varH = 100.0;
             }
-            else if (var_H < 0.0)
+            else if (varH < 0.0)
             {
                 Console.WriteLine("BME280_compensate_H_double Jump under 0%");
-                var_H = 0.0;
+                varH = 0.0;
             }
 
-            return var_H;
+            return varH;
         }
 
 
         public float ReadTemperature()
         {
             //Read the MSB, LSB and bits 7:4 (XLSB) of the temperature from the BME280 registers
-            byte tmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_MSB);
-            byte tlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_LSB);
-            byte txlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_TEMPDATA_XLSB); // bits 7:4
+            byte tmsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_TEMPDATA_MSB);
+            byte tlsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_TEMPDATA_LSB);
+            byte txlsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_TEMPDATA_XLSB); // bits 7:4
 
             //Combine the values into a 32-bit integer
             int t = ((tmsb << 12) | (tlsb << 4) | (txlsb >> 4));
@@ -394,9 +394,9 @@ namespace EspIot.Drivers.Bme280
         public float ReadPreasure()
         {
             //Read the MSB, LSB and bits 7:4 (XLSB) of the pressure from the BME280 registers
-            byte pmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_MSB);
-            byte plsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_LSB);
-            byte pxlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_PRESSUREDATA_XLSB); // bits 7:4
+            byte pmsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_PRESSUREDATA_MSB);
+            byte plsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_PRESSUREDATA_LSB);
+            byte pxlsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_PRESSUREDATA_XLSB); // bits 7:4
 
             //Combine the values into a 32-bit integer
             int p = (pmsb << 12) | (plsb << 4) | (pxlsb >> 4);
@@ -411,8 +411,8 @@ namespace EspIot.Drivers.Bme280
         public float ReadHumidity()
         {
             //Read the MSB and LSB of the humidity from the BME280 registers
-            byte hmsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_HUMIDDATA_MSB);
-            byte hlsb = (byte)_bme280.ReadValue((byte)eRegisters.BME280_REGISTER_HUMIDDATA_LSB);
+            byte hmsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_HUMIDDATA_MSB);
+            byte hlsb = (byte)_bme280.ReadValue((byte)ERegisters.BME280_REGISTER_HUMIDDATA_LSB);
 
             //Combine the values into a 32-bit integer
             int h = (hmsb << 8) + hlsb;

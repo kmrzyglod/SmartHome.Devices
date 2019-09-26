@@ -52,7 +52,7 @@ namespace EspIot.Drivers.Wifi
                 }
 
                 // wait for DHCP to complete
-                WaitIP();
+                WaitIp();
                 OnWifiConnected();
                 _connectionStatus = true;
                 StartWifiStatusWatcher();
@@ -63,7 +63,7 @@ namespace EspIot.Drivers.Wifi
             }
         }
 
-        private static void WaitIP()
+        private static void WaitIp()
         {
             Console.WriteLine("Waiting for IP...");
 
@@ -107,7 +107,7 @@ namespace EspIot.Drivers.Wifi
                 return;
             }
 
-            _wifiStatusWatcher = new Thread(new ThreadStart(() =>
+            _wifiStatusWatcher = new Thread(() =>
             {
                 while (true)
                 {
@@ -128,7 +128,7 @@ namespace EspIot.Drivers.Wifi
 
                     Thread.Sleep(1000);
                 }
-            }));
+            });
             _wifiStatusWatcher.Start();
         }
     }

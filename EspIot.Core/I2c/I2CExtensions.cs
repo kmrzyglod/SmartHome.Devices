@@ -2,7 +2,7 @@
 
 namespace EspIot.Core.I2c
 {
-    public static class I2cExtensions
+    public static class I2CExtensions
     {
         //Method to read bytes from registers
         public static int ReadValue(this I2cDevice device, byte register, short numOfBytes = 1, short retries = 3)
@@ -35,7 +35,7 @@ namespace EspIot.Core.I2c
 
             if (status != I2cTransferStatus.FullTransfer)
             {
-                throw new I2cTransferException("Error during read byte", status);
+                throw new I2CTransferException("Error during read byte", status);
             }
 
             return readBuffer;
