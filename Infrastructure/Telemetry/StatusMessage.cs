@@ -1,4 +1,5 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using System;
+using EspIot.Core.Messaging.Interfaces;
 
 namespace Infrastructure.Telemetry
 {
@@ -17,7 +18,7 @@ namespace Infrastructure.Telemetry
             IsWindow2Open = isWindow2Open;
         }
 
-        public string CorrelationId {get; } = new System.Guid().ToString();
+        public string CorrelationId { get; } = Guid.NewGuid().ToString();
         public double Temperature { get; }
         public double Pressure { get; }
         public double Humidity { get; }

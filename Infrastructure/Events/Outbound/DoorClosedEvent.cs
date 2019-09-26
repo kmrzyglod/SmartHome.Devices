@@ -1,4 +1,5 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using System;
+using EspIot.Core.Messaging.Interfaces;
 
 namespace Infrastructure.Events.Outbound
 {
@@ -6,7 +7,7 @@ namespace Infrastructure.Events.Outbound
     {
         public DoorClosedEvent()
         {
-            CorrelationId = new System.Guid().ToString();
+            CorrelationId = Guid.NewGuid().ToString();
         }
         
         public string CorrelationId { get; }
