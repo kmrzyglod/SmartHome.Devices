@@ -9,10 +9,10 @@ namespace EspIot.Drivers.SeedstudioWaterFlowSensor
         private readonly GpioPin _pin;
         private readonly GpioController _gpioController;
         private readonly int _measureTime;
-        private int _impulseCounter = 0;
-        private int _flowValue = 0;
-        private int _momentaryFlowValue = 0;
-        private bool _measurementInProgress = false;
+        private int _impulseCounter;
+        private int _flowValue;
+        private int _momentaryFlowValue;
+        private bool _measurementInProgress;
 
         public WaterFlowSensor(GpioController gpioController, GpioPins pin, int measurementTime)
         {
@@ -25,7 +25,7 @@ namespace EspIot.Drivers.SeedstudioWaterFlowSensor
                 _impulseCounter++;
             };
 
-            new Thread(new ThreadStart(() =>
+            new Thread(() =>
             {
                 while (true)
                 {
@@ -38,7 +38,7 @@ namespace EspIot.Drivers.SeedstudioWaterFlowSensor
                     }
                 }
 
-            })).Start();
+            }).Start();
         }
 
         //Get momentary flow value in liters/minute
