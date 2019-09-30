@@ -34,6 +34,7 @@
     <Compile Include="Messaging\Interfaces\IMessage.cs" />
     <Compile Include="Messaging\Interfaces\IQuery.cs" />
     <Compile Include="Messaging\Interfaces\IQueryResult.cs" />
+    <Compile Include="Messaging\Validation\ValidationError.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
