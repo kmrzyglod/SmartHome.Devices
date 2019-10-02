@@ -99,7 +99,7 @@ namespace Json.NetMF
                 {
 
                     // name
-                    string name = ParseString(json, ref index, ref success);
+                    string name = ParseString(json, ref index, ref success).ToLower();
                     if (!success)
                     {
                         success = false;

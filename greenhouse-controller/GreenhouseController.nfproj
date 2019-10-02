@@ -80,9 +80,8 @@
   <ItemGroup>
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
     <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.nfproj" />
     <ProjectReference Include="..\Json.NetMF\Json.NetMF.nfproj" />
-	<ProjectReference Include="..\Infrastructure\Infrastructure.nfproj" />
-
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

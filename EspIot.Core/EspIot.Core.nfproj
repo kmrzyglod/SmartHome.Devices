@@ -21,10 +21,13 @@
     <Compile Include="Collections\ConcurrentQueue.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
+    <Compile Include="Extensions\HashtableExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Gpio\GpioPins.cs" />
     <Compile Include="I2c\I2cControllerName.cs" />
     <Compile Include="I2c\I2cException.cs" />
     <Compile Include="I2c\I2cExtensions.cs" />
+    <Compile Include="Messaging\Concrete\CommandBase.cs" />
     <Compile Include="Messaging\Enum\ErrorLevel.cs" />
     <Compile Include="Messaging\Enum\StatusCode.cs" />
     <Compile Include="Messaging\Events\CommandResultEventHandler.cs" />

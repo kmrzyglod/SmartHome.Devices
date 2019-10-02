@@ -1,5 +1,4 @@
 ﻿using GreenhouseController.Drivers;
-using GreenhouseController.Services;
 
 namespace GreenhouseController
 {
@@ -9,11 +8,11 @@ namespace GreenhouseController
         {
             var defaultConfig = new Config.GreenhouseControllerConfiguration();
             var driversFactory = new DriversFactory(defaultConfig);
-            var servicesFactory = new ServiceFactory(driversFactory, defaultConfig)
-                .InitWifi()
-                .InitMqttClient()
-                .InitTelemetry();
-                //.InitWindowsManager();
+            //var servicesFactory = new ServiceFactory(driversFactory, defaultConfig)
+             //   .InitWifi()
+              //  .InitMqttClient();
+            //.InitTelemetry();
+            //.InitWindowsManager();
         }
     }
 }

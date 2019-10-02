@@ -1,22 +1,33 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using System.Collections;
+using EspIot.Core.Extensions;
+using EspIot.Core.Messaging.Concrete;
 
 namespace Infrastructure.Commands.Command
 {
-    public class ScheduleIrrigationCommand : ICommand
+    public class ScheduleIrrigationCommand : CommandBase
     {
-        public ScheduleIrrigationCommand(string correlationId, int irrigationTime, int waterVolume, string irrigationSchedule)
+        //Irigation time in secons (optional)
+        public int IrrigationTime { get; }
+
+        //Water volume in liters (optional)
+        public int WaterVolume { get; }
+        public string IrrigationSchedule { get; }
+
+        public ScheduleIrrigationCommand(string correlationId, int irrigationTime, int waterVolume,
+            string irrigationSchedule) : base(correlationId)
         {
-            CorrelationId = correlationId;
             IrrigationTime = irrigationTime;
             WaterVolume = waterVolume;
             IrrigationSchedule = irrigationSchedule;
         }
 
-        public string CorrelationId { get; }
-        //Irigation time in secons (optional)
-        public int IrrigationTime { get; }
-        //Water volume in liters (optional)
-        public int WaterVolume { get; }
-        public string IrrigationSchedule { get;} 
+        public static ScheduleIrrigationCommand FromHashtable(Hashtable obj)
+        {
+            return new ScheduleIrrigationCommand(
+                obj.GetString(nameof(CorrelationId)),
+                obj.GetInt(nameof(IrrigationTime)), 
+                obj.GetInt(nameof(WaterVolume)),
+                obj.GetString(nameof(IrrigationSchedule)));
+        }
     }
 }

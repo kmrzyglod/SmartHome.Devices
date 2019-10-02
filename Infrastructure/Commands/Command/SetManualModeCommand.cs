@@ -1,9 +1,10 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using EspIot.Core.Messaging.Concrete;
 
 namespace Infrastructure.Commands.Command
 {
-    class SetManualModeCommand: ICommand
+    internal class SetManualModeCommand : CommandBase
     {
-        public string CorrelationId { get; }
+        public SetManualModeCommand(string correlationId) : base(correlationId)
+        { }
     }
 }

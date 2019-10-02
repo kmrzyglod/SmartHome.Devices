@@ -98,7 +98,7 @@ namespace EspIot.Drivers.Mqtt
                             isMessageSent = true;
                             break;
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             // ignored
                         }
