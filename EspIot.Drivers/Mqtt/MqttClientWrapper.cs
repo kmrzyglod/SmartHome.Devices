@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using EspIot.Core.Collections;
+using EspIot.Drivers.Mqtt.Events;
 using EspIot.Drivers.Wifi.Events;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
@@ -29,12 +30,13 @@ namespace EspIot.Drivers.Mqtt
             _deviceId = deviceId;
             _sendTopic = $"devices/{_deviceId}/messages/events/";
             _client = new MqttClient(_brokerAddress);
-            _client.MqttMsgPublishReceived += OnMessagReceived;
+            _client.MqttMsgPublishReceived += OnMessageReceived;
             _client.MqttMsgSubscribed += OnSubscribed;
         }
 
         public event MqttConnectedEventHandler OnMqttClientConnected;
         public event MqttDisconnectedEventHandler OnMqttClientDisconnected;
+        public event MqttMessageReceivedEventHandler OnMqttMessageReceived;
 
         public void Connect()
         {
@@ -58,13 +60,12 @@ namespace EspIot.Drivers.Mqtt
             _client.Subscribe(topics, new byte[] {2});
         }
 
-        private void OnMessagReceived(object sender, MqttMsgPublishEventArgs e)
+        private void OnMessageReceived(object sender, MqttMsgPublishEventArgs e)
         {
             string topic = e.Topic;
-
             string message = Encoding.UTF8.GetString(e.Message, 0, e.Message.Length);
-
             Console.WriteLine("Publish Received Topic:" + topic + " Message:" + message);
+            OnMqttMessageReceived?.Invoke(sender, e);
         }
 
         private void OnSubscribed(object sender, MqttMsgSubscribedEventArgs e)
@@ -122,7 +123,7 @@ namespace EspIot.Drivers.Mqtt
                 if (_status)
                 {
                     _status = false;
-                    OnMqttClientDisconnected();
+                    OnMqttClientDisconnected?.Invoke();
                 }
 
                 try
@@ -133,7 +134,7 @@ namespace EspIot.Drivers.Mqtt
                     if (!_status)
                     {
                         _status = true;
-                        OnMqttClientConnected();
+                        OnMqttClientConnected?.Invoke();
                     }
                 }
                 catch (Exception e)

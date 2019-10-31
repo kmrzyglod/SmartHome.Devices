@@ -19,6 +19,8 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Bootloader.cs" />
+    <Compile Include="Commands\CommandHandlersMappings.cs" />
+    <Compile Include="Commands\CommandsFactory.cs" />
     <Compile Include="Config\ConfigurationManager.cs" />
     <Compile Include="Config\GreenhouseControllerConfiguration.cs" />
     <Compile Include="Drivers\DriversFactory.cs" />

@@ -24,6 +24,7 @@
     <Compile Include="LinearActuator\LinearActuatorDriver.cs" />
     <Compile Include="LinearActuator\Mode.cs" />
     <Compile Include="Mqtt\Events\MqttConnectedEventHandler.cs" />
+    <Compile Include="Mqtt\Events\MqttMessageReceivedEventHandler.cs" />
     <Compile Include="Mqtt\Events\MqttDisconnectedEventHandler.cs" />
     <Compile Include="Mqtt\MqttClientWrapper.cs" />
     <Compile Include="Mqtt\MqttOutboundMessage.cs" />

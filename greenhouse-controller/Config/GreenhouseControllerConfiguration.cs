@@ -10,8 +10,8 @@ namespace GreenhouseController.Config
     {
         //General config
         //WIFI config
-        public string NetworkSsid { get; } = "";
-        public string NetworkPassword { get; } = "";
+        public string NetworkSsid { get; } = "NIE_LUBIE_LEWAKOW";
+        public string NetworkPassword { get; } = "TUSK_TO_NIEMIEC_842";
         public Wireless80211Configuration.AuthenticationType NetworkAuthType { get; } = Wireless80211Configuration.AuthenticationType.WPA;
         public Wireless80211Configuration.EncryptionType NetworkEncryptionType { get; } = Wireless80211Configuration.EncryptionType.WPA_PSK;
 

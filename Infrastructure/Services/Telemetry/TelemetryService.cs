@@ -1,5 +1,4 @@
-﻿using EspIot.Drivers.Bh1750;
-using EspIot.Drivers.Bme280;
+﻿using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.ReedSwitch;
 using EspIot.Drivers.ReedSwitch.Enums;
@@ -7,6 +6,7 @@ using EspIot.Drivers.SeedstudioWaterFlowSensor;
 using Infrastructure.Events.Outbound;
 using Infrastructure.Telemetry;
 using System.Threading;
+using EspIot.Drivers.bh1750;
 
 namespace Infrastructure.Services.Telemetry
 {
@@ -89,9 +89,9 @@ namespace Infrastructure.Services.Telemetry
                 _lightSensorDriver.GetLightLevelInLux(),
                 _soilMoistureSensorDriver.GetUncalibratedMoisture(),
                 _waterFlowSensor.GetMomentaryFlowValue(),
-                _doorReedSwitch.GetState() == ReedShiftState.Opened ? true : false,
-                _window1ReedSwitch.GetState() == ReedShiftState.Opened ? true : false,
-                _window2ReedSwitch.GetState() == ReedShiftState.Opened ? true : false
+                _doorReedSwitch.GetState() == ReedShiftState.Opened,
+                _window1ReedSwitch.GetState() == ReedShiftState.Opened,
+                _window2ReedSwitch.GetState() == ReedShiftState.Opened
                 );
         }
     }

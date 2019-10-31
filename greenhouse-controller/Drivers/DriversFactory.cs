@@ -1,5 +1,4 @@
-﻿using EspIot.Drivers.Bh1750;
-using EspIot.Drivers.Bme280;
+﻿using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.Mqtt;
@@ -9,6 +8,7 @@ using EspIot.Drivers.StatusLed;
 using GreenhouseController.Config;
 using nanoFramework.Hardware.Esp32;
 using Windows.Devices.Gpio;
+using EspIot.Drivers.bh1750;
 
 namespace GreenhouseController.Drivers
 {

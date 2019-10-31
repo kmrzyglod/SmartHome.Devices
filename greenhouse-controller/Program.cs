@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace GreenhouseController
 {
@@ -8,10 +9,7 @@ namespace GreenhouseController
         {
             Bootloader.StartServices();
 
-            while (true)
-            {
-                Thread.Sleep(1000);
-            }
+            Thread.Sleep(Timeout.Infinite);
         }
     }
 }

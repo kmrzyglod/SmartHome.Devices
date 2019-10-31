@@ -1,9 +1,9 @@
-﻿using EspIot.Core.I2c;
-using System;
+﻿using System;
 using System.Threading;
 using Windows.Devices.I2c;
+using EspIot.Core.I2c;
 
-namespace EspIot.Drivers.Bh1750
+namespace EspIot.Drivers.bh1750
 {
     public enum MeasurementMode
     {
