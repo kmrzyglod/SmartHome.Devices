@@ -4,6 +4,7 @@ using EspIot.Core.Extensions;
 using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Interfaces;
 using EspIot.Core.Messaging.Validation;
+using Infrastructure.Services.Irrigation;
 
 namespace Infrastructure.Commands.Command
 {
@@ -28,5 +29,7 @@ namespace Infrastructure.Commands.Command
                 obj.GetInt(nameof(IrrigationTime)),
                 obj.GetInt(nameof(WaterVolume)));
         }
+
+        public override string PartitionKey { get; } = nameof(IrrigationService);
     }
 }

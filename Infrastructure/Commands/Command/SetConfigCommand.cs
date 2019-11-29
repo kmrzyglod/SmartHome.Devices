@@ -6,5 +6,7 @@ namespace Infrastructure.Commands.Command
     {
         public SetConfigCommand(string correlationId) : base(correlationId)
         { }
+
+        public override string PartitionKey { get; } = default;
     }
 }

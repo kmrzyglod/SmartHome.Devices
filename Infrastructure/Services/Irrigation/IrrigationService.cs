@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Services.Irigation
+﻿namespace Infrastructure.Services.Irrigation
 {
-    class IrrigationService
+    public class IrrigationService
     {
     }
 }

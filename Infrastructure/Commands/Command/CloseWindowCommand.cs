@@ -2,6 +2,7 @@
 using EspIot.Core.Extensions;
 using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Validation;
+using Infrastructure.Services.WindowsManager;
 
 namespace Infrastructure.Commands.Command
 {
@@ -13,6 +14,8 @@ namespace Infrastructure.Commands.Command
         {
             WindowIds = windowIds;
         }
+
+        public override string PartitionKey { get; } = nameof(WindowsManagerService);
 
         public override ValidationError[] Validate()
         {
@@ -29,6 +32,14 @@ namespace Infrastructure.Commands.Command
         public static CloseWindowCommand FromHashtable(Hashtable obj)
         {
             return new CloseWindowCommand(obj.GetString(nameof(CorrelationId)), obj.GetUShortList(nameof(WindowIds)));
+        }
+
+        public class Factory
+        {
+            public static CloseWindowCommand Create(Hashtable obj)
+            {
+                return FromHashtable(obj);
+            }
         }
     }
 }

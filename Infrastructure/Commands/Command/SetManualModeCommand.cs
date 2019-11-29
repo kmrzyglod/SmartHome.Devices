@@ -1,4 +1,5 @@
 ﻿using EspIot.Core.Messaging.Concrete;
+using Infrastructure.Services.AutomaticControl;
 
 namespace Infrastructure.Commands.Command
 {
@@ -6,5 +7,7 @@ namespace Infrastructure.Commands.Command
     {
         public SetManualModeCommand(string correlationId) : base(correlationId)
         { }
+
+        public override string PartitionKey { get; } = nameof(AutomaticControlService);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Validation;
+using Infrastructure.Services.Telemetry;
 
 namespace Infrastructure.Commands.Command
 {
@@ -24,5 +25,7 @@ namespace Infrastructure.Commands.Command
 
             return ConvertToArray(errors);
         }
+
+        public override string PartitionKey { get; } = nameof(TelemetryService);
     }
 }

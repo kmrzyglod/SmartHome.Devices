@@ -1,6 +1,7 @@
 ﻿using GreenhouseController.Commands;
 using GreenhouseController.Drivers;
 using GreenhouseController.Services;
+using Infrastructure.Commands;
 
 namespace GreenhouseController
 {
@@ -16,7 +17,7 @@ namespace GreenhouseController
             //.InitTelemetry();
             //.InitWindowsManager();
 
-            var commandsFactory = new CommandsFactory(driversFactory.IotHubClient);
+            var commandsFactory = new CommandsInput(driversFactory.IotHubClient, new CommandBus());
 
         }
     }

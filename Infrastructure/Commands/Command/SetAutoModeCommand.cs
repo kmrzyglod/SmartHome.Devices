@@ -1,4 +1,5 @@
 ﻿using EspIot.Core.Messaging.Concrete;
+using Infrastructure.Services.AutomaticControl;
 
 namespace Infrastructure.Commands.Command
 {
@@ -36,5 +37,7 @@ namespace Infrastructure.Commands.Command
             UpperCriticalHumidity = upperCriticalHumidity;
             LowerCriticalHumidity = lowerCriticalHumidity;
         }
+
+        public override string PartitionKey { get; } = nameof(AutomaticControlService);
     }
 }

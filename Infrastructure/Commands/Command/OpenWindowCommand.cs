@@ -2,10 +2,11 @@
 using EspIot.Core.Extensions;
 using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Validation;
+using Infrastructure.Services.WindowsManager;
 
 namespace Infrastructure.Commands.Command
 {
-    internal class OpenWindowCommand : CommandBase
+    public class OpenWindowCommand : CommandBase
     {
         public ushort[] WindowIds { get; }
 
@@ -30,5 +31,15 @@ namespace Infrastructure.Commands.Command
         {
             return new OpenWindowCommand(obj.GetString(nameof(CorrelationId)), obj.GetUShortList(nameof(WindowIds)));
         }
+
+        public class Factory
+        {
+            public static OpenWindowCommand Create(Hashtable obj)
+            {
+                return FromHashtable(obj);
+            }
+        }
+
+        public override string PartitionKey { get; } = nameof(WindowsManagerService);
     }
 }

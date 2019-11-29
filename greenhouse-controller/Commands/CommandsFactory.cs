@@ -1,48 +1,27 @@
 ﻿using System;
-using System.Text;
-using EspIot.Drivers.Mqtt;
-using uPLibrary.Networking.M2Mqtt.Messages;
+using System.Collections;
+using EspIot.Core.Messaging.Interfaces;
+using Infrastructure.Commands.Command;
 
 namespace GreenhouseController.Commands
 {
-    internal class CommandsFactory
+    static class CommandsFactory
     {
-        private readonly MqttClientWrapper _mqttClient;
-
-        public CommandsFactory(MqttClientWrapper mqttClient)
+        private static Hashtable _mappings { get; } = new Hashtable
         {
-            _mqttClient = mqttClient;
-            _mqttClient.OnMqttMessageReceived += (sender, args) =>
-            {
-                var decodedMessage = DecodeMqttMessage(args);
-                
-;            };
-        }
+            //Add here all command factories
+            { nameof(CloseWindowCommand), new CloseWindowCommand.Factory() },
+            { nameof(OpenWindowCommand), new OpenWindowCommand.Factory() }
+        };
 
-        private MqttMessage DecodeMqttMessage(MqttMsgPublishEventArgs e)
+        public static ICommand Create(string commandName, Hashtable payload)
         {
-            foreach (string param in e.Topic.Split('&'))
+            if (!_mappings.Contains(commandName))
             {
-                if (param.IndexOf("command-name") >= 0)
-                {
-                    return new MqttMessage(param.Split('=')[1],
-                        Encoding.UTF8.GetString(e.Message, 0, e.Message.Length));
-                }
+                throw new NotSupportedException($"Command {commandName} is not supported");
             }
 
-            return null;
-        }
-
-        private class MqttMessage
-        {
-            private string Name { get; }
-            private string Payload { get; }
-
-            public MqttMessage(string name, string payload)
-            {
-                Name = name;
-                Payload = payload;
-            }
+            return _mappings[commandName] as ICommand;
         }
     }
 }

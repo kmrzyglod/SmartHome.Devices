@@ -1,7 +1,6 @@
 ﻿namespace GreenhouseController.Commands
 {
-    static class CommandHandlersMapper
+    class CommandHandlersFactory
     {
-      
     }
 }

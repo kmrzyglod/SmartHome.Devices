@@ -9,6 +9,7 @@ namespace EspIot.Core.Messaging.Concrete
     public abstract class CommandBase: ICommand
     {
         public string CorrelationId { get; }
+        public abstract string PartitionKey { get; }
 
         protected CommandBase(string correlationId)
         {

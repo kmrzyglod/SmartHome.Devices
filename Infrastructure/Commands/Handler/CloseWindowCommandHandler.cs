@@ -1,11 +1,12 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Events;
+using EspIot.Core.Messaging.Interfaces;
 using Infrastructure.Commands.Command;
 using Infrastructure.Services.WindowsManager;
 
 namespace Infrastructure.Commands.Handler
 {
-    class CloseWindowCommandHandler
+    public class CloseWindowCommandHandler: ICommandHandler
     {
         private readonly WindowsManagerService _windowsManagerServices;
         private readonly CommandResultEventHandler _commandResultEventHandler;
@@ -16,7 +17,7 @@ namespace Infrastructure.Commands.Handler
             _commandResultEventHandler = commandResultEventHandler;
         }
 
-        public void Handle(CloseWindowCommand command)
+        private void Handle(CloseWindowCommand command)
         {
             _windowsManagerServices.CloseWindows(command.WindowIds,
                 (sender) =>
@@ -27,6 +28,11 @@ namespace Infrastructure.Commands.Handler
                 {
                     _commandResultEventHandler(this, new CommandResultEvent(command.CorrelationId, e.Status, e.ErrorMessage));
                 });
+        }
+
+        public void Handle(object command)
+        {
+            Handle(command as CloseWindowCommand);
         }
     }
 }

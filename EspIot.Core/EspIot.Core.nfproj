@@ -33,6 +33,8 @@
     <Compile Include="Messaging\Events\CommandResultEventHandler.cs" />
     <Compile Include="Messaging\Events\IOutboundEventBus.cs" />
     <Compile Include="Messaging\Interfaces\ICommand.cs" />
+    <Compile Include="Messaging\Interfaces\ICommandBus.cs" />
+    <Compile Include="Messaging\Interfaces\ICommandHandler.cs" />
     <Compile Include="Messaging\Interfaces\ICommandResultEvent.cs" />
     <Compile Include="Messaging\Interfaces\IMessage.cs" />
     <Compile Include="Messaging\Interfaces\IQuery.cs" />
