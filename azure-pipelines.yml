@@ -12,7 +12,7 @@ variables:
   buildPlatform: 'any cpu'
 
 pool:
-    vmImage: 'windows-latest'
+    vmImage: 'vs2017-win2016'
 
 steps:
 - task: NuGetCommand@2
@@ -20,7 +20,6 @@ steps:
     command: 'restore'
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
-- task: InstallnFBuildComponents@1
 - task: InstallnFBuildComponents@1
   displayName: Install nanoFramework MSBuild components
 
