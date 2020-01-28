@@ -21,6 +21,7 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
 - task: InstallnFBuildComponents@1
+- task: InstallnFBuildComponents@1
   displayName: Install nanoFramework MSBuild components
 
 - task: VSBuild@1
