@@ -7,22 +7,13 @@ namespace EspIot.Drivers.Wifi
 {
     public static class WifiDriver
     {
-        private static string _ssid;
-        private static string _password;
-        private static AuthenticationType _authenticationType;
-        private static EncryptionType _encryptionType;
         public static event WifiConnectedEventHandler OnWifiConnected;
         public static event WifiDisconnectedEventHandler OnWifiDisconnected;
         private static Thread _wifiStatusWatcher;
         private static bool _connectionStatus = false;
 
-        public static void ConnectToNetwork(string ssid, string password, AuthenticationType authenticationType, EncryptionType encryptionType)
+        public static void ConnectToNetwork()
         {
-            _ssid = ssid;
-            _password = password;
-            _authenticationType = authenticationType;
-            _encryptionType = encryptionType;
-
             NetworkInterface[] nis = NetworkInterface.GetAllNetworkInterfaces();
 
             if (nis.Length > 0)
@@ -34,17 +25,6 @@ namespace EspIot.Drivers.Wifi
                 {
                     // network interface is Wi-Fi
                     Console.WriteLine("Network connection is: Wi-Fi");
-                    var wc = Wireless80211Configuration.GetAllWireless80211Configurations()[ni.SpecificConfigId];
-
-                    if (wc.Ssid != _ssid && wc.Password != _password)
-                    {
-                        // have to update Wi-Fi configuration
-                        wc.Authentication = _authenticationType;
-                        wc.Encryption = _encryptionType;
-                        wc.Ssid = _ssid;
-                        wc.Password = _password;
-                        wc.SaveConfiguration();
-                    }
                 }
                 else
                 {

@@ -9,12 +9,7 @@ namespace GreenhouseController.Config
     class GreenhouseControllerConfiguration : IConfiguration
     {
         //General config
-        //WIFI config
-        public string NetworkSsid { get; } = "DOM";
-        public string NetworkPassword { get; } = "network_home_n_zdc";
-        public AuthenticationType NetworkAuthType { get; } = AuthenticationType.WPA2;
-        public EncryptionType NetworkEncryptionType { get; } = EncryptionType.WPA2_PSK;
-
+        //MQTT config
         public string MqttBrokerAddress { get; } = "192.168.2.108";
         public string DeviceId { get; } = "esp32-greenhouse";
 

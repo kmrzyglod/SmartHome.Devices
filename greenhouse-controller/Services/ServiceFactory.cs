@@ -26,7 +26,7 @@ namespace GreenhouseController.Services
         {
             WifiDriver.OnWifiConnected += () => { _driversFactory.StatusLed.SetWifiConnected(); };
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
-            WifiDriver.ConnectToNetwork(ssid: _configuration.NetworkSsid, password: _configuration.NetworkPassword, authenticationType: _configuration.NetworkAuthType, encryptionType: _configuration.NetworkEncryptionType);
+            WifiDriver.ConnectToNetwork();
 
             return this;
         }
