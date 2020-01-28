@@ -8,7 +8,6 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  msbuildExtraParams: ' '
   solution: '**\*.sln'
   buildPlatform: 'any cpu'
 
@@ -26,7 +25,7 @@ steps:
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
-    msbuildArgs: '/p:PublicRelease=true ${{ msbuildExtraParams }}'
+    msbuildArgs: '/p:PublicRelease=true'
     configuration: '$(buildConfiguration)'
 
 
