@@ -11,6 +11,9 @@ variables:
   solution: '**\*.sln'
   buildPlatform: 'any cpu'
 
+pool:
+    vmImage: 'windows-latest'
+
 steps:
 
 - task: NuGetCommand@2
