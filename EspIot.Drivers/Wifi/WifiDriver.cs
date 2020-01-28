@@ -9,14 +9,14 @@ namespace EspIot.Drivers.Wifi
     {
         private static string _ssid;
         private static string _password;
-        private static Wireless80211Configuration.AuthenticationType _authenticationType;
-        private static Wireless80211Configuration.EncryptionType _encryptionType;
+        private static AuthenticationType _authenticationType;
+        private static EncryptionType _encryptionType;
         public static event WifiConnectedEventHandler OnWifiConnected;
         public static event WifiDisconnectedEventHandler OnWifiDisconnected;
         private static Thread _wifiStatusWatcher;
         private static bool _connectionStatus = false;
 
-        public static void ConnectToNetwork(string ssid, string password, Wireless80211Configuration.AuthenticationType authenticationType, Wireless80211Configuration.EncryptionType encryptionType)
+        public static void ConnectToNetwork(string ssid, string password, AuthenticationType authenticationType, EncryptionType encryptionType)
         {
             _ssid = ssid;
             _password = password;

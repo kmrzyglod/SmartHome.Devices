@@ -10,12 +10,12 @@ namespace GreenhouseController.Config
     {
         //General config
         //WIFI config
-        public string NetworkSsid { get; } = "NIE_LUBIE_LEWAKOW";
-        public string NetworkPassword { get; } = "TUSK_TO_NIEMIEC_842";
-        public Wireless80211Configuration.AuthenticationType NetworkAuthType { get; } = Wireless80211Configuration.AuthenticationType.WPA;
-        public Wireless80211Configuration.EncryptionType NetworkEncryptionType { get; } = Wireless80211Configuration.EncryptionType.WPA_PSK;
+        public string NetworkSsid { get; } = "DOM";
+        public string NetworkPassword { get; } = "network_home_n_zdc";
+        public AuthenticationType NetworkAuthType { get; } = AuthenticationType.WPA2;
+        public EncryptionType NetworkEncryptionType { get; } = EncryptionType.WPA2_PSK;
 
-        public string MqttBrokerAddress { get; } = "192.168.1.103";
+        public string MqttBrokerAddress { get; } = "192.168.2.108";
         public string DeviceId { get; } = "esp32-greenhouse";
 
         //I2C bus config
