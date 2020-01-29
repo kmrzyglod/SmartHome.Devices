@@ -7,14 +7,25 @@ trigger:
 - master
 
 variables:
-  buildConfiguration: 'Release'
-  solution: '**\*.sln'
-  buildPlatform: 'any cpu'
+- name: buildConfiguration 
+  value: 'Release'
+- name: solution 
+  value: '**\*.sln'
+- name: buildPlatform
+  value: 'any cpu'
+- group: Pipelines Variables
+
 
 pool:
     vmImage: 'windows-latest'
 
 steps:
+- task: mirror-git-repository-vsts-task@1
+  inputs:
+    sourceGitRepositoryUri: 'https://dev.azure.com/kamilmrzyglod/Smart%20home/_git/SmartHome.Devices'
+    sourceGitRepositoryPersonalAccessToken: $(DevOpsReposAccessToken)
+    destinationGitRepositoryUri: 'https://github.com/kmrzyglod/SmartHome.Devices.git'
+    destinationGitRepositoryPersonalAccessToken: $(GitHubAccessToken)
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
