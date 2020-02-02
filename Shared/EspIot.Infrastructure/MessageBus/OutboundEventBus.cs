@@ -14,7 +14,7 @@ namespace EspIot.Infrastructure.MessageBus
             _mqttClient = mqttClient;
         }
         
-        public void Send(IMessage eventMessage)
+        public void Send(IEvent eventMessage)
         {
             _mqttClient.Publish(new MqttOutboundMessage($"MessageType={eventMessage.GetType().Name}", JsonSerializer.SerializeObject(eventMessage)));
         }

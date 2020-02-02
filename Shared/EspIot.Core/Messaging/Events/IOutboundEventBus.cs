@@ -4,6 +4,6 @@ namespace EspIot.Core.Messaging.Events
 {
     public interface IOutboundEventBus
     {
-        void Send(IMessage eventMessage);
+        void Send(IEvent eventMessage);
     }
 }

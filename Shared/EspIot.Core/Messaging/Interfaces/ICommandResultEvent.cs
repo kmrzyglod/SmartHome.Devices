@@ -2,7 +2,7 @@
 
 namespace EspIot.Core.Messaging.Interfaces
 {
-    public interface ICommandResultEvent
+    public interface ICommandResultEvent: IEvent
     {
         string CorrelationId { get; }
         StatusCode Status { get;}

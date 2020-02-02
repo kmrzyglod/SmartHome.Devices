@@ -18,10 +18,10 @@ namespace EspIot.Infrastructure.Mappers
             _mqttClient = mqttClient;
             _commandBus = commandBus;
             _commandsFactory = commandsFactory;
-            _mqttClient.OnMqttMessageReceived += (sender, args) =>
+            _mqttClient.OnMqttMessageReceived += (_, args) =>
             {
                 var decodedMessage = DecodeMqttMessage(args);
-                var command = _commandsFactory.Create(decodedMessage.Name, decodedMessage.Payload);
+                var command = _commandsFactory.CreateCommand(decodedMessage.Name, decodedMessage.Payload);
                 _commandBus.Send(command);
             };
         }

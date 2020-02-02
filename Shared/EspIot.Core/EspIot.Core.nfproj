@@ -30,7 +30,7 @@
     <Compile Include="Messaging\Concrete\CommandBase.cs" />
     <Compile Include="Messaging\Concrete\CommandResultEvent.cs" />
     <Compile Include="Messaging\Concrete\ErrorMessage.cs" />
-    <Compile Include="Messaging\Concrete\FailureEvent.cs" />
+    <Compile Include="Messaging\Concrete\ProcessingFailureEvent.cs" />
     <Compile Include="Messaging\Enum\ErrorLevel.cs" />
     <Compile Include="Messaging\Enum\StatusCode.cs" />
     <Compile Include="Messaging\Events\CommandResultEventHandler.cs" />
@@ -40,6 +40,7 @@
     <Compile Include="Messaging\Interfaces\ICommandHandler.cs" />
     <Compile Include="Messaging\Interfaces\ICommandResultEvent.cs" />
     <Compile Include="Messaging\Interfaces\ICommandsFactory.cs" />
+    <Compile Include="Messaging\Interfaces\IEvent.cs" />
     <Compile Include="Messaging\Interfaces\IMessage.cs" />
     <Compile Include="Messaging\Interfaces\IQuery.cs" />
     <Compile Include="Messaging\Interfaces\IQueryResult.cs" />

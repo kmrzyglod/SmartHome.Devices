@@ -6,33 +6,34 @@ using GreenhouseController.Application.Services.WindowsManager;
 
 namespace GreenhouseController.Application.Commands.CloseWindow
 {
-    public class CloseWindowCommandHandler: ICommandHandler
+    public class CloseWindowCommandHandler : ICommandHandler
     {
+        private readonly IOutboundEventBus _outboundEventBus;
         private readonly WindowsManagerService _windowsManagerServices;
-        private readonly CommandResultEventHandler _commandResultEventHandler;
 
-        public CloseWindowCommandHandler(WindowsManagerService windowsManagerService, CommandResultEventHandler commandResultEventHandler)
+        public CloseWindowCommandHandler(WindowsManagerService windowsManagerService,
+            IOutboundEventBus outboundEventBus)
         {
             _windowsManagerServices = windowsManagerService;
-            _commandResultEventHandler = commandResultEventHandler;
+            _outboundEventBus = outboundEventBus;
+        }
+
+        public void Handle(ICommand command)
+        {
+            Handle(command as CloseWindowCommand);
         }
 
         private void Handle(CloseWindowCommand command)
         {
             _windowsManagerServices.CloseWindows(command.WindowIds,
-                (sender) =>
+                sender =>
                 {
-                    _commandResultEventHandler(this, new CommandResultEvent(command.CorrelationId, StatusCode.Success));
+                    _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, StatusCode.Success));
                 },
                 (sender, e) =>
                 {
-                    _commandResultEventHandler(this, new CommandResultEvent(command.CorrelationId, e.Status, e.ErrorMessage));
+                    _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, e.Status, e.ErrorMessage));
                 });
-        }
-
-        public void Handle(object command)
-        {
-            Handle(command as CloseWindowCommand);
         }
     }
 }

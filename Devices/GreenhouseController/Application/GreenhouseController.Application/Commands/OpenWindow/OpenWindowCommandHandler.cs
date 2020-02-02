@@ -8,17 +8,17 @@ namespace GreenhouseController.Application.Commands.OpenWindow
 {
     public class OpenWindowCommandHandler : ICommandHandler
     {
-        private readonly CommandResultEventHandler _commandResultEventHandler;
+        private readonly IOutboundEventBus _outboundEventBus;
         private readonly WindowsManagerService _windowsManagerServices;
 
         public OpenWindowCommandHandler(WindowsManagerService windowsManagerServices,
-            CommandResultEventHandler commandResultEventHandler)
+            IOutboundEventBus outboundEventBus)
         {
             _windowsManagerServices = windowsManagerServices;
-            _commandResultEventHandler = commandResultEventHandler;
+            _outboundEventBus = outboundEventBus;
         }
 
-        public void Handle(object command)
+        public void Handle(ICommand command)
         {
             Handle(command as OpenWindowCommand);
         }
@@ -28,11 +28,11 @@ namespace GreenhouseController.Application.Commands.OpenWindow
             _windowsManagerServices.OpenWindows(command.WindowIds,
                 sender =>
                 {
-                    _commandResultEventHandler(this, new CommandResultEvent(command.CorrelationId, StatusCode.Success));
+                    _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, StatusCode.Success));
                 },
                 (sender, e) =>
                 {
-                    _commandResultEventHandler(this,
+                    _outboundEventBus.Send(
                         new CommandResultEvent(command.CorrelationId, e.Status, e.ErrorMessage));
                 });
         }

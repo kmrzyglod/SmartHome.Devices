@@ -2,5 +2,5 @@
 
 namespace GreenhouseController.Application.Events.Internal
 {
-    public delegate void OnFailureEventHandler(object sender, FailureEvent e);
+    public delegate void OnFailureEventHandler(object sender, ProcessingFailureEvent e);
 }

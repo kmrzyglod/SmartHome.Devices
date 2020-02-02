@@ -1,4 +1,5 @@
-﻿using EspIot.Infrastructure.MessageBus;
+﻿using EspIot.Infrastructure.Mappers;
+using EspIot.Infrastructure.MessageBus;
 using EspIot.Infrastructure.Wifi;
 using GreenhouseController.Application.Events.Outbound;
 using GreenhouseController.Application.Services.Telemetry;
@@ -12,6 +13,9 @@ namespace Infrastructure.Factory
         private readonly DriversFactory _driversFactory;
         private readonly GreenhouseControllerConfiguration _configuration;
         private readonly MqttOutboundEventBus _mqttOutboundEventBus;
+        private readonly CommandBus _commandBus;
+        private readonly CommandsFactory _commandsFactory;
+
         private TelemetryService _telemetryService;
         private WindowsManagerService _windowsManagerService;
 
@@ -20,6 +24,8 @@ namespace Infrastructure.Factory
             _driversFactory = driversFactory;
             _configuration = configuration;
             _mqttOutboundEventBus = new MqttOutboundEventBus(_driversFactory.IotHubClient);
+            _commandBus = new CommandBus(_mqttOutboundEventBus);
+            _commandsFactory = new CommandsFactory();
         }
 
         public ServiceFactory InitWifi()
@@ -41,6 +47,12 @@ namespace Infrastructure.Factory
             return this;
         }
 
+        public ServiceFactory InitInboundMessagesProcessing()
+        {
+            var commandsFactory = new InboundMessagesMapper(_driversFactory.IotHubClient, _commandBus, _commandsFactory);
+            return this;
+        }
+        
         public ServiceFactory InitTelemetry()
         {
             _telemetryService = new TelemetryService(

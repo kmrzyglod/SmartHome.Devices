@@ -44,13 +44,13 @@ namespace GreenhouseController.Application.Services.WindowsManager
                 {
                     if (_actionsOnWindows.Contains(windowId))
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
                         break;
                     }
                     
                     if (windowId >= _windowActuators.Length)
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
                         break;
                     }
 
@@ -72,7 +72,7 @@ namespace GreenhouseController.Application.Services.WindowsManager
                     _windowActuators[windowId].StopMoving();
                     if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still opened."));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still opened."));
                         _actionsOnWindows.Remove(windowId);
                     }
                 }
@@ -87,13 +87,13 @@ namespace GreenhouseController.Application.Services.WindowsManager
                 {
                     if (_actionsOnWindows.Contains(windowId))
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
                         break;
                     }
 
                     if (windowId >= _windowActuators.Length)
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
                         break;
                     }
 
@@ -116,7 +116,7 @@ namespace GreenhouseController.Application.Services.WindowsManager
                     _windowActuators[windowId].StopMoving();
                     if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
                     {
-                        onFailureEventHandler(this, new FailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still closed."));
+                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still closed."));
                         _actionsOnWindows.Remove(windowId);
                     }
                 }

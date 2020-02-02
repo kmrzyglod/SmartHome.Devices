@@ -18,7 +18,6 @@ namespace GreenhouseController
             //.InitTelemetry();
             //.InitWindowsManager();
 
-            var commandsFactory = new InboundMessagesMapper(driversFactory.IotHubClient, new CommandBus(), new CommandsFactory());
 
         }
     }
