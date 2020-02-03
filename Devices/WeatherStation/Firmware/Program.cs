@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 
 namespace WeatherStation.Firmware
 {
@@ -7,13 +6,9 @@ namespace WeatherStation.Firmware
     {
         public static void Main()
         {
-            Console.WriteLine("Hello world!");
+            Bootloader.StartServices();
 
             Thread.Sleep(Timeout.Infinite);
-
-            // Browse our samples repository: https://github.com/nanoframework/samples
-            // Check our documentation online: https://docs.nanoframework.net/
-            // Join our lively Discord community: https://discord.gg/gCyBu8T
         }
     }
 }
