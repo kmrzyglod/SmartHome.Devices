@@ -27,5 +27,8 @@ namespace WeatherStation.Infrastructure.Config
 
         //bh1750 
         public string Bh1750I2CController { get; } = I2CControllerName.I2C2;
+
+        //Rain gauge
+        public GpioPins RainGaugePin { get; } = GpioPins.GPIO_NUM_23;
     }
 }

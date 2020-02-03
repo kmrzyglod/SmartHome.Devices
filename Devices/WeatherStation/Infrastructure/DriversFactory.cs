@@ -5,6 +5,7 @@ using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.ReedSwitch;
 using EspIot.Drivers.SeedstudioWaterFlowSensor;
+using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt;
 using nanoFramework.Hardware.Esp32;
@@ -20,6 +21,7 @@ namespace WeatherStation.Infrastructure
         private Bme280 _bme280;
         private StatusLed _statusLed;
         private MqttClientWrapper _iotHubClient;
+        private SparkFunRainGaugeDriver _rainGaugeDriver;
         
         public DriversFactory(WeatherStationConfiguration configuration)
         {
@@ -38,5 +40,6 @@ namespace WeatherStation.Infrastructure
         public Bme280 Bme280 => _bme280 ?? (_bme280 = new Bme280(_configuration.Bme280I2CController).Initialize());
         public StatusLed StatusLed => _statusLed ?? (_statusLed = new StatusLed(GpioController.GetDefault(), _configuration.WifiStatusLed, _configuration.MqttStatusLed));
         public MqttClientWrapper IotHubClient => _iotHubClient ?? (_iotHubClient = new MqttClientWrapper(_configuration.MqttBrokerAddress, _configuration.DeviceId));
+        public SparkFunRainGaugeDriver RainGaugeDriver => _rainGaugeDriver ?? (_rainGaugeDriver = new SparkFunRainGaugeDriver(GpioController.GetDefault(), _configuration.RainGaugePin));
     }
 }
