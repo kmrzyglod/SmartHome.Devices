@@ -18,6 +18,13 @@ namespace EspIot.Infrastructure.MessageBus
             _outboundEventBus = outboundEventBus;
         }
 
+        public event NewCommandPartitionKeyCreatedEventHandler OnNewCommandPartitionKeyCreated;
+
+        public ConcurrentQueue GetCommandQueue(string partitionKey)
+        {
+            return _commandQueues[partitionKey] as ConcurrentQueue;
+        }
+
         public void Send(ICommand command)
         {
             if (AddCommandToQueue(command))
@@ -35,6 +42,7 @@ namespace EspIot.Infrastructure.MessageBus
                 var newQueue = new ConcurrentQueue();
                 newQueue.Enqueue(command);
                 _commandQueues.Add(command.PartitionKey, newQueue);
+                OnNewCommandPartitionKeyCreated?.Invoke(this, command.PartitionKey);
             }
         }
 

@@ -5,15 +5,15 @@ using EspIot.Infrastructure.Mqtt;
 using Json.NetMF;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
-namespace EspIot.Infrastructure.Mappers
+namespace EspIot.Infrastructure.Handlers
 {
-    public class InboundMessagesMapper
+    public class InboundMessagesHandler
     {
         private readonly MqttClientWrapper _mqttClient;
         private readonly ICommandBus _commandBus;
         private readonly ICommandsFactory _commandsFactory;
 
-        public InboundMessagesMapper(MqttClientWrapper mqttClient, ICommandBus commandBus, ICommandsFactory commandsFactory)
+        public InboundMessagesHandler(MqttClientWrapper mqttClient, ICommandBus commandBus, ICommandsFactory commandsFactory)
         {
             _mqttClient = mqttClient;
             _commandBus = commandBus;
@@ -21,7 +21,7 @@ namespace EspIot.Infrastructure.Mappers
             _mqttClient.OnMqttMessageReceived += (_, args) =>
             {
                 var decodedMessage = DecodeMqttMessage(args);
-                var command = _commandsFactory.CreateCommand(decodedMessage.Name, decodedMessage.Payload);
+                var command = _commandsFactory.Create(decodedMessage.Name, decodedMessage.Payload);
                 _commandBus.Send(command);
             };
         }

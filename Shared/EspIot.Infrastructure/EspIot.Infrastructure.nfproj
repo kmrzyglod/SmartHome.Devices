@@ -18,7 +18,7 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Mappers\InboundMessagesMapper.cs" />
+    <Compile Include="Handlers\InboundMessagesHandler.cs" />
     <Compile Include="MessageBus\CommandBus.cs" />
     <Compile Include="MessageBus\OutboundEventBus.cs" />
     <Compile Include="Mqtt\Events\MqttConnectedEventHandler.cs" />
@@ -27,9 +27,14 @@
     <Compile Include="Mqtt\MqttClientWrapper.cs" />
     <Compile Include="Mqtt\MqttOutboundMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CommandDispatcherService.cs" />
     <Compile Include="Wifi\Events\WifiConnectedEventHandler.cs" />
     <Compile Include="Wifi\Events\WifiDisconnectedEventHandler.cs" />
     <Compile Include="Wifi\WifiDriver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
@@ -67,10 +72,6 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
-    <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

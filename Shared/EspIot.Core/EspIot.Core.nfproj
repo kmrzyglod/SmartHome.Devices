@@ -33,11 +33,12 @@
     <Compile Include="Messaging\Concrete\ProcessingFailureEvent.cs" />
     <Compile Include="Messaging\Enum\ErrorLevel.cs" />
     <Compile Include="Messaging\Enum\StatusCode.cs" />
-    <Compile Include="Messaging\Events\CommandResultEventHandler.cs" />
     <Compile Include="Messaging\Events\IOutboundEventBus.cs" />
+    <Compile Include="Messaging\Events\NewCommandPartitionKeyCreatedEventHandler.cs" />
     <Compile Include="Messaging\Interfaces\ICommand.cs" />
     <Compile Include="Messaging\Interfaces\ICommandBus.cs" />
     <Compile Include="Messaging\Interfaces\ICommandHandler.cs" />
+    <Compile Include="Messaging\Interfaces\ICommandHandlersFactory.cs" />
     <Compile Include="Messaging\Interfaces\ICommandResultEvent.cs" />
     <Compile Include="Messaging\Interfaces\ICommandsFactory.cs" />
     <Compile Include="Messaging\Interfaces\IEvent.cs" />
@@ -48,20 +49,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="mscorlib">
+      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="nanoFramework.System.Collections, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.System.Collections.1.0.0-preview.7\lib\nanoFramework.System.Collections.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="nanoFramework.System.Collections">
+      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.System.Collections.1.0.0-preview.7\lib\nanoFramework.System.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Windows.Devices.I2c, Version=1.3.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.Windows.Devices.I2c.1.3.1-preview.3\lib\Windows.Devices.I2c.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
+    <Reference Include="Windows.Devices.I2c">
+      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.Windows.Devices.I2c.1.3.1-preview.3\lib\Windows.Devices.I2c.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

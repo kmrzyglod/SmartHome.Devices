@@ -4,6 +4,6 @@ namespace EspIot.Core.Messaging.Interfaces
 {
     public interface ICommandsFactory
     {
-        ICommand CreateCommand(string commandName, Hashtable payload);
+        ICommand Create(string commandName, Hashtable payload);
     }
 }

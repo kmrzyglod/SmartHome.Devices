@@ -6,7 +6,7 @@ using GreenhouseController.Application.Commands.OpenWindow;
 
 namespace Infrastructure.Factory
 {
-    public class CommandsFactory: ICommandsFactory
+    class CommandsFactory: ICommandsFactory
     {
         private static Hashtable _mappings { get; } = new Hashtable
         {
@@ -15,12 +15,7 @@ namespace Infrastructure.Factory
             { nameof(OpenWindowCommand), new OpenWindowCommand.Factory() }
         };
 
-        public CommandsFactory()
-        {
-
-        }
-
-        public ICommand CreateCommand(string commandName, Hashtable payload)
+        public ICommand Create(string commandName, Hashtable payload)
         {
             if (!_mappings.Contains(commandName))
             {
@@ -29,12 +24,5 @@ namespace Infrastructure.Factory
 
             return _mappings[commandName] as ICommand;
         }
-
-        public ICommandHandler GetCommandHandler(string commandName)
-        {
-
-        } 
-
-        private 
     }
 }

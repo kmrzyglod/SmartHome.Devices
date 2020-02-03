@@ -1,12 +1,9 @@
-﻿using EspIot.Infrastructure.Mappers;
-using EspIot.Infrastructure.MessageBus;
-using GreenhouseController.Application.Commands;
-using Infrastructure.Config;
+﻿using Infrastructure.Config;
 using Infrastructure.Factory;
 
 namespace GreenhouseController
 {
-    static class Bootloader
+    internal static class Bootloader
     {
         public static void StartServices()
         {
@@ -14,11 +11,10 @@ namespace GreenhouseController
             var driversFactory = new DriversFactory(defaultConfig);
             var servicesFactory = new ServiceFactory(driversFactory, defaultConfig)
                 .InitWifi()
-                .InitMqttClient();
-            //.InitTelemetry();
-            //.InitWindowsManager();
-
-
+                .InitMqttClient()
+                .InitTelemetry()
+                .InitWindowsManager()
+                .InitInboundMessagesProcessing();
         }
     }
 }

@@ -13,12 +13,12 @@ namespace GreenhouseController.Application.Services.WindowsManager
 {
     public class WindowsManagerService
     {
-        private readonly LinearActuatorDriver[] _windowActuators;
-        private readonly ReedSwitchDriver[] _windowReedSwitches;
+        private const int ACTUATOR_WORK_TIMEOUT = 120_000; //maximum working time of window actuator in ms  
+        private readonly Hashtable _actionsOnWindows = new Hashtable();
         private readonly ReedSwitchDriver _doorReedSwitch;
         private readonly IOutboundEventBus _outboundEventBus;
-        private readonly Hashtable _actionsOnWindows = new Hashtable();
-        private const int ACTUATOR_WORK_TIMEOUT = 120_000; //maximum working time of window actuator in ms  
+        private readonly LinearActuatorDriver[] _windowActuators;
+        private readonly ReedSwitchDriver[] _windowReedSwitches;
 
         public WindowsManagerService(
             LinearActuatorDriver window1Actuator,
@@ -27,118 +27,113 @@ namespace GreenhouseController.Application.Services.WindowsManager
             ReedSwitchDriver window2ReedSwitch,
             ReedSwitchDriver doorReedSwitch,
             IOutboundEventBus outboundEventBus
-            )
+        )
         {
-            _windowActuators = new[] { window1Actuator, window2Actuator };
-            _windowReedSwitches = new[] { window1ReedSwitch, window2ReedSwitch };
+            _windowActuators = new[] {window1Actuator, window2Actuator};
+            _windowReedSwitches = new[] {window1ReedSwitch, window2ReedSwitch};
             _doorReedSwitch = doorReedSwitch;
             _outboundEventBus = outboundEventBus;
             SubscribeToEventHandlers();
         }
- 
-        public void CloseWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler, OnFailureEventHandler onFailureEventHandler)
+
+        public void CloseWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler,
+            OnFailureEventHandler onFailureEventHandler)
         {
-            lock (this)
+            foreach (ushort windowId in windowIds)
             {
-                foreach (var windowId in windowIds)
+                if (_actionsOnWindows.Contains(windowId))
                 {
-                    if (_actionsOnWindows.Contains(windowId))
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
-                        break;
-                    }
-                    
-                    if (windowId >= _windowActuators.Length)
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
-                        break;
-                    }
-
-                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
-                    {
-                        continue;
-                    }
-
-                    _actionsOnWindows.Add(windowId, Operation.Closing);
-                    _windowActuators[windowId].StartMovingExtensionDirection();
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Refused,
+                            $"Pending operation on window with id {windowId}"));
+                    break;
                 }
+
+                if (windowId >= _windowActuators.Length)
+                {
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
+                    break;
+                }
+
+                if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
+                {
+                    continue;
+                }
+
+                _actionsOnWindows.Add(windowId, Operation.Closing);
+                _windowActuators[windowId].StartMovingExtensionDirection();
             }
 
-            new Thread(() =>
+            Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
+            foreach (ushort windowId in windowIds)
             {
-                Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
-                foreach (var windowId in windowIds)
+                _windowActuators[windowId].StopMoving();
+                if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
                 {
-                    _windowActuators[windowId].StopMoving();
-                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still opened."));
-                        _actionsOnWindows.Remove(windowId);
-                    }
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Refused,
+                            $"Window actuator mechanism critical failure. Window with id {windowId} is still opened."));
+                    _actionsOnWindows.Remove(windowId);
                 }
-            }).Start();
+            }
         }
 
-        public void OpenWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler, OnFailureEventHandler onFailureEventHandler)
+        public void OpenWindows(ushort[] windowIds, OnSuccessEventHandler onSuccessEventHandler,
+            OnFailureEventHandler onFailureEventHandler)
         {
-            lock (this)
+            foreach (ushort windowId in windowIds)
             {
-                foreach (var windowId in windowIds)
+                if (_actionsOnWindows.Contains(windowId))
                 {
-                    if (_actionsOnWindows.Contains(windowId))
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Pending operation on window with id {windowId}"));
-                        break;
-                    }
-
-                    if (windowId >= _windowActuators.Length)
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
-                        break;
-                    }
-
-                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
-                    {
-                        continue;
-                    }
-
-                    _actionsOnWindows.Add(windowId, Operation.Opening);
-                    _windowActuators[windowId].StartMovingReductionDirection();
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Refused,
+                            $"Pending operation on window with id {windowId}"));
+                    break;
                 }
+
+                if (windowId >= _windowActuators.Length)
+                {
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Error, $"Window with id  {windowId} not exists"));
+                    break;
+                }
+
+                if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Opened)
+                {
+                    continue;
+                }
+
+                _actionsOnWindows.Add(windowId, Operation.Opening);
+                _windowActuators[windowId].StartMovingReductionDirection();
             }
 
-            new Thread(() =>
-            {
-                Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
+            Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
 
-                foreach (var windowId in windowIds)
+            foreach (ushort windowId in windowIds)
+            {
+                _windowActuators[windowId].StopMoving();
+                if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
                 {
-                    _windowActuators[windowId].StopMoving();
-                    if (_windowReedSwitches[windowId].GetState() == ReedShiftState.Closed)
-                    {
-                        onFailureEventHandler(this, new ProcessingFailureEvent(StatusCode.Refused, $"Window actuator mechanism critical failure. Window with id {windowId} is still closed."));
-                        _actionsOnWindows.Remove(windowId);
-                    }
+                    onFailureEventHandler(this,
+                        new ProcessingFailureEvent(StatusCode.Refused,
+                            $"Window actuator mechanism critical failure. Window with id {windowId} is still closed."));
+                    _actionsOnWindows.Remove(windowId);
                 }
-            }).Start();
+            }
         }
 
         public WindowsState GetWindowsState()
         {
-            return new WindowsState(_windowReedSwitches[0].GetState().ToBool(), _windowReedSwitches[1].GetState().ToBool(), _doorReedSwitch.GetState().ToBool());
+            return new WindowsState(_windowReedSwitches[0].GetState().ToBool(),
+                _windowReedSwitches[1].GetState().ToBool(), _doorReedSwitch.GetState().ToBool());
         }
 
         private void SubscribeToEventHandlers()
         {
-            _doorReedSwitch.OnClosed += (sender, e) =>
-            {
-                _outboundEventBus.Send(new DoorClosedEvent());
-            };
+            _doorReedSwitch.OnClosed += (sender, e) => { _outboundEventBus.Send(new DoorClosedEvent()); };
 
-            _doorReedSwitch.OnOpened += (sender, e) =>
-            {
-                _outboundEventBus.Send(new DoorOpenedEvent());
-            };
+            _doorReedSwitch.OnOpened += (sender, e) => { _outboundEventBus.Send(new DoorOpenedEvent()); };
 
             _windowReedSwitches[0].OnClosed += (sender, e) =>
             {
@@ -149,10 +144,7 @@ namespace GreenhouseController.Application.Services.WindowsManager
                 }
             };
 
-            _windowReedSwitches[0].OnOpened += (sender, e) =>
-            {
-                _outboundEventBus.Send(new WindowOpenedEvent(0));
-            };
+            _windowReedSwitches[0].OnOpened += (sender, e) => { _outboundEventBus.Send(new WindowOpenedEvent(0)); };
 
             _windowReedSwitches[1].OnClosed += (sender, e) =>
             {
@@ -163,10 +155,7 @@ namespace GreenhouseController.Application.Services.WindowsManager
                 }
             };
 
-            _windowReedSwitches[1].OnOpened += (sender, e) =>
-            {
-                _outboundEventBus.Send(new WindowOpenedEvent(1));
-            };
+            _windowReedSwitches[1].OnOpened += (sender, e) => { _outboundEventBus.Send(new WindowOpenedEvent(1)); };
         }
     }
 }

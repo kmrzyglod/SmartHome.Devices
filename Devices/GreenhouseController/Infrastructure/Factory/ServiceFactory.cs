@@ -1,7 +1,7 @@
-﻿using EspIot.Infrastructure.Mappers;
+﻿using EspIot.Infrastructure.Handlers;
 using EspIot.Infrastructure.MessageBus;
+using EspIot.Infrastructure.Services;
 using EspIot.Infrastructure.Wifi;
-using GreenhouseController.Application.Events.Outbound;
 using GreenhouseController.Application.Services.Telemetry;
 using GreenhouseController.Application.Services.WindowsManager;
 using Infrastructure.Config;
@@ -13,8 +13,11 @@ namespace Infrastructure.Factory
         private readonly DriversFactory _driversFactory;
         private readonly GreenhouseControllerConfiguration _configuration;
         private readonly MqttOutboundEventBus _mqttOutboundEventBus;
-        private readonly CommandBus _commandBus;
-        private readonly CommandsFactory _commandsFactory;
+        private CommandBus _commandBus;
+        private CommandsFactory _commandsFactory;
+        private CommandHandlersFactory _commandHandlersFactory;
+        private InboundMessagesHandler _inboundMessagesHandler;
+        private CommandDispatcherService _commandDispatcherService;
 
         private TelemetryService _telemetryService;
         private WindowsManagerService _windowsManagerService;
@@ -24,8 +27,6 @@ namespace Infrastructure.Factory
             _driversFactory = driversFactory;
             _configuration = configuration;
             _mqttOutboundEventBus = new MqttOutboundEventBus(_driversFactory.IotHubClient);
-            _commandBus = new CommandBus(_mqttOutboundEventBus);
-            _commandsFactory = new CommandsFactory();
         }
 
         public ServiceFactory InitWifi()
@@ -49,7 +50,13 @@ namespace Infrastructure.Factory
 
         public ServiceFactory InitInboundMessagesProcessing()
         {
-            var commandsFactory = new InboundMessagesMapper(_driversFactory.IotHubClient, _commandBus, _commandsFactory);
+            _commandBus = new CommandBus(_mqttOutboundEventBus);
+            _commandsFactory = new CommandsFactory();
+            _commandHandlersFactory = new CommandHandlersFactory(_windowsManagerService, _mqttOutboundEventBus);
+            _inboundMessagesHandler = new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory);
+            _commandDispatcherService = new CommandDispatcherService(_commandHandlersFactory, _commandBus);
+            _commandDispatcherService.Start();
+
             return this;
         }
         

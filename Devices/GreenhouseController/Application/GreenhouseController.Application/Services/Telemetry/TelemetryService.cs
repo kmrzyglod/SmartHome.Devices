@@ -6,7 +6,7 @@ using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.ReedSwitch;
 using EspIot.Drivers.ReedSwitch.Enums;
 using EspIot.Drivers.SeedstudioWaterFlowSensor;
-using GreenhouseController.Application.Telemetry;
+using GreenhouseController.Application.Events.Outbound;
 
 namespace GreenhouseController.Application.Services.Telemetry
 {

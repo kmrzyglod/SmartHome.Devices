@@ -27,6 +27,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Infrastructure\EspIot.Infrastructure.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
+    <ProjectReference Include="..\Application\GreenhouseController.Application\GreenhouseController.Application.nfproj" />
+    <ProjectReference Include="..\Infrastructure\GreenhouseController.Infrastructure.nfproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="mscorlib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
@@ -82,14 +90,6 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
-    <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
-    <ProjectReference Include="..\..\..\Shared\EspIot.Infrastructure\EspIot.Infrastructure.nfproj" />
-    <ProjectReference Include="..\..\..\Shared\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
-    <ProjectReference Include="..\Application\GreenhouseController.Application\GreenhouseController.Application.nfproj" />
-    <ProjectReference Include="..\Infrastructure\GreenhouseController.Infrastructure.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

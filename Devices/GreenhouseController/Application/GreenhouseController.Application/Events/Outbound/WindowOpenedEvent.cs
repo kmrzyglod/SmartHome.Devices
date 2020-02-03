@@ -3,7 +3,7 @@ using EspIot.Core.Messaging.Interfaces;
 
 namespace GreenhouseController.Application.Events.Outbound
 {
-    public class WindowOpenedEvent : IMessage
+    public class WindowOpenedEvent : IEvent
     {
         public WindowOpenedEvent(ushort windowNum)
         {

@@ -45,7 +45,7 @@
     <Compile Include="Services\WindowsManager\Operation.cs" />
     <Compile Include="Services\WindowsManager\WindowsManagerService.cs" />
     <Compile Include="Services\WindowsManager\WindowsState.cs" />
-    <Compile Include="Telemetry\StatusMessage.cs" />
+    <Compile Include="Events\Outbound\StatusEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
@@ -66,6 +66,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Telemetry\" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

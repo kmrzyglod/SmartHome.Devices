@@ -1,9 +1,9 @@
 ﻿using System;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace GreenhouseController.Application.Telemetry
+namespace GreenhouseController.Application.Events.Outbound
 {
-    public class StatusMessage : IMessage
+    public class StatusMessage : IEvent
     {
         public StatusMessage(double temperature, double pressure, double humidity, int lightLevel, int soilMoisture, int waterFlow, bool isDoorOpen, bool isWindow1Open, bool isWindow2Open)
         {
