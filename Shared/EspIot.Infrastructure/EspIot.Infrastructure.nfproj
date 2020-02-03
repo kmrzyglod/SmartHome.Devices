@@ -28,6 +28,7 @@
     <Compile Include="Mqtt\MqttOutboundMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CommandDispatcherService.cs" />
+    <Compile Include="Wifi\Events\WifiDuringConnectionEventHandler.cs" />
     <Compile Include="Wifi\Events\WifiConnectedEventHandler.cs" />
     <Compile Include="Wifi\Events\WifiDisconnectedEventHandler.cs" />
     <Compile Include="Wifi\WifiDriver.cs" />

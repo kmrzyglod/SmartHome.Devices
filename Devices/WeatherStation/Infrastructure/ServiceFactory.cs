@@ -20,14 +20,24 @@ namespace WeatherStation.Infrastructure
         public ServiceFactory(DriversFactory driversFactory, WeatherStationConfiguration configuration)
         {
             _driversFactory = driversFactory;
+            SetInitialPinStates();
             _configuration = configuration;
             _mqttOutboundEventBus = new MqttOutboundEventBus(_driversFactory.IotHubClient);
         }
 
+        private ServiceFactory SetInitialPinStates()
+        {
+            _driversFactory.StatusLed.SetWifiDisconnected();
+            _driversFactory.StatusLed.SetMqttBrokerDisconnected();
+
+            return this;
+        }
+        
         public ServiceFactory InitWifi()
         {
             WifiDriver.OnWifiConnected += () => { _driversFactory.StatusLed.SetWifiConnected(); };
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
+            WifiDriver.OnWifiDuringConnection += () => { _driversFactory.StatusLed.SetWifiDuringConnection(); };
             WifiDriver.ConnectToNetwork();
 
             return this;

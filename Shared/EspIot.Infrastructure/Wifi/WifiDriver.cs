@@ -7,14 +7,15 @@ namespace EspIot.Infrastructure.Wifi
 {
     public static class WifiDriver
     {
-        public static event WifiConnectedEventHandler OnWifiConnected;
-        public static event WifiDisconnectedEventHandler OnWifiDisconnected;
         private static Thread _wifiStatusWatcher;
-        private static bool _connectionStatus = false;
+        private static bool _connectionStatus;
+        public static event WifiConnectedEventHandler OnWifiConnected;
+        public static event WifiDuringConnectionEventHandler OnWifiDuringConnection;
+        public static event WifiDisconnectedEventHandler OnWifiDisconnected;
 
         public static void ConnectToNetwork()
         {
-            NetworkInterface[] nis = NetworkInterface.GetAllNetworkInterfaces();
+            var nis = NetworkInterface.GetAllNetworkInterfaces();
 
             if (nis.Length > 0)
             {
@@ -25,6 +26,10 @@ namespace EspIot.Infrastructure.Wifi
                 {
                     // network interface is Wi-Fi
                     Console.WriteLine("Network connection is: Wi-Fi");
+                    var wc = Wireless80211Configuration.GetAllWireless80211Configurations()[ni.SpecificConfigId];
+                    wc.Options = (Wireless80211Configuration.ConfigurationOptions) 7; //Workaround for bug with wrong options enum values
+                    wc.SaveConfiguration();
+                    OnWifiDuringConnection();
                 }
                 else
                 {
@@ -103,7 +108,7 @@ namespace EspIot.Infrastructure.Wifi
                     else if (_connectionStatus)
                     {
                         _connectionStatus = false;
-                        OnWifiDisconnected();
+                        OnWifiDuringConnection();
                     }
 
                     Thread.Sleep(1000);
