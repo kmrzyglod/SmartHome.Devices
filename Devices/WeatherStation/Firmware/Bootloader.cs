@@ -16,11 +16,6 @@ namespace WeatherStation.Firmware
             //.InitInboundMessagesProcessing();
 
             var test = driversFactory.RainGaugeDriver;
-            while (true)
-            {
-                Thread.Sleep(100);
-
-            }
         }
     }
 }

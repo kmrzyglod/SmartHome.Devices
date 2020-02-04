@@ -48,7 +48,7 @@
       <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.M2Mqtt, Version=4.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.M2Mqtt.4.4.0-preview.10\lib\nanoFramework.M2Mqtt.dll</HintPath>
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.M2Mqtt.4.4.0-preview.11\lib\nanoFramework.M2Mqtt.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
