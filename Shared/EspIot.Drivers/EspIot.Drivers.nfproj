@@ -35,7 +35,11 @@
     <Compile Include="SeedstudioWaterFlowSensor\WaterFlowSensor.cs" />
     <Compile Include="SoildStateRelay\Mode.cs" />
     <Compile Include="SoildStateRelay\SolidStateRelays.cs" />
+    <Compile Include="SparkFunAnemometer\AnemometerData.cs" />
+    <Compile Include="SparkFunAnemometer\Enums\AnemometerMeasurementResolution.cs" />
     <Compile Include="SparkFunAnemometer\SparkFunAnemometerDriver.cs" />
+    <Compile Include="SparkFunRainGauge\Enums\RainGaugeMeasurementResolution.cs" />
+    <Compile Include="SparkFunRainGauge\RainGaugeData.cs" />
     <Compile Include="SparkFunRainGauge\SparkFunRainGaugeDriver.cs" />
     <Compile Include="SparkFunWindVane\SparkFunWindVaneDriver.cs" />
     <Compile Include="StatusLed\StatusLed.cs" />
@@ -44,11 +48,13 @@
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.CoreLibrary.1.7.0-alpha.3\lib\mscorlib.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.M2Mqtt, Version=4.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.M2Mqtt.4.4.0-preview.11\lib\nanoFramework.M2Mqtt.dll</HintPath>
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.M2Mqtt.4.4.0-preview.10\lib\nanoFramework.M2Mqtt.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
@@ -78,6 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />

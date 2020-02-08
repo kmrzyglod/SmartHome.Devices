@@ -12,8 +12,8 @@ namespace WeatherStation.Infrastructure.Config
         public string DeviceId { get; } = "esp32-greenhouse";
 
         //I2C bus config
-        public GpioPins I2C1DataPin { get; } = GpioPins.GPIO_NUM_5;
-        public GpioPins I2C1ClockPin { get; } = GpioPins.GPIO_NUM_18;
+        public GpioPins I2C1DataPin { get; } = GpioPins.GPIO_NUM_18;
+        public GpioPins I2C1ClockPin { get; } = GpioPins.GPIO_NUM_5;
 
         public GpioPins I2C2DataPin { get; } = GpioPins.GPIO_NUM_19;
         public GpioPins I2C2ClockPin { get; } = GpioPins.GPIO_NUM_21;
@@ -29,6 +29,12 @@ namespace WeatherStation.Infrastructure.Config
         public string Bh1750I2CController { get; } = I2CControllerName.I2C2;
 
         //Rain gauge
-        public GpioPins RainGaugePin { get; } = GpioPins.GPIO_NUM_13;
+        public GpioPins RainGaugePin { get; } = GpioPins.GPIO_NUM_23;
+        
+        //Anemometer
+        public GpioPins AnemometerPin { get; } = GpioPins.GPIO_NUM_4;
+
+        //Wind Vane
+        public GpioPins WindVanePin { get; } = GpioPins.GPIO_NUM_2;
     }
 }

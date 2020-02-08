@@ -1,82 +1,81 @@
 ﻿using System;
+using System.Collections;
 using System.Threading;
-using Windows.Devices.Adc;
 using Windows.Devices.Gpio;
+using EspIot.Core.Extensions;
 using EspIot.Core.Gpio;
-using EspIot.Drivers.ReedSwitch.Enums;
-using EspIot.Drivers.ReedSwitch.Events;
+using EspIot.Drivers.SparkFunRainGauge.Enums;
 
 namespace EspIot.Drivers.SparkFunRainGauge
 {
     public class SparkFunRainGaugeDriver
     {
+        //https://cdn.sparkfun.com/assets/8/4/c/d/6/Weather_Sensor_Assembly_Updated.pdf
+        private const uint ONE_PULSE_PRECIPITATION = 2794;
         private readonly GpioController _gpioController;
         private readonly GpioPin _pin;
+        private readonly GpioChangeCounter _pulseCounter;
+        private bool _isMeasuring;
+
+        private readonly RainGaugeMeasurementResolution _measurementResolution =
+            RainGaugeMeasurementResolution.FiveMinutes;
+
+        private Thread _measuringThread = new Thread(() => { });
+
+        private readonly ArrayList
+            _precipitation = new ArrayList(); //WindSpeeds during one measurement resolution unit in [mm * 10000]
 
         public SparkFunRainGaugeDriver(GpioController gpioController, GpioPins pin)
         {
-            //var adc1 = AdcController.GetDefault();
-            //var adcChannel = adc1.OpenChannel(0);
-
-            //while (true)
-            //{
-            //    Thread.Sleep(100);
-            //    Console.WriteLine(adcChannel.ReadValue().ToString());
-            //}
             _gpioController = gpioController;
-            _pin = _gpioController.OpenPin((int)pin);
-            //_pin.Write(GpioPinValue.Low);
-            _pin.SetDriveMode(GpioPinDriveMode.Input);
-            //while (true)
-            //{
-            //    var state = GetState();
-            //    Console.WriteLine(state == 1 ? "High" : "Low");
-            //    Thread.Sleep(500);
-            //}
-            _pin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
-            _pin.ValueChanged += PinStateChangedHandler;
-            // Create a Counter passing in the GPIO pin
-            //GpioChangeCounter gpcc = new GpioChangeCounter(_pin);
-
-            //while (true)
-            //{
-            //    // Counter both raising and falling edges
-            //    gpcc.Polarity = GpioChangePolarity.Rising;
-
-            //    Console.WriteLine($"Counter pin created");
-
-            //    // Start counter
-            //    gpcc.Start();
-
-            //    // Read count before we start PWM ( should be 0 )
-            //    // We want to save the start relative time 
-            //    GpioChangeCount count1 = gpcc.Read();
-
-            //    // Wait 1 Sec
-            //    Thread.Sleep(10000);
-
-            //    // Read current count 
-            //    GpioChangeCount count2 = gpcc.Read();
-
-            //    // Stop PWM signal & counter
-           
-            //    gpcc.Stop();
-            //    Console.WriteLine($"Counter start {count1} stop {count2}");
-            //    gpcc.Reset();
-            //} 
-
-
+            _pin = _gpioController.OpenPin((int) pin);
+            _pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            _pulseCounter = new GpioChangeCounter(_pin) {Polarity = GpioChangePolarity.Rising};
         }
 
-        private  void PinStateChangedHandler(object sender, GpioPinValueChangedEventArgs e)
+        public void StartMeasurement(RainGaugeMeasurementResolution measurementResolution)
         {
-            var state = GetState();
-            Console.WriteLine(state == 1 ? "High" : "Low");
+            if (_measuringThread.IsAlive)
+            {
+                return; //don't start new measuring when previous is pending
+            }
+
+            _isMeasuring = true;
+
+            _measuringThread = new Thread(() =>
+            {
+                _pulseCounter.Start();
+
+                while (_isMeasuring)
+                {
+                    Thread.Sleep((int) measurementResolution * 1000);
+                    var count = _pulseCounter.Read();
+                    _pulseCounter.Reset();
+                    _precipitation.Add((uint)(count.Count / 2 * ONE_PULSE_PRECIPITATION));
+                }
+
+                _pulseCounter.Stop();
+                _pulseCounter.Reset();
+                _precipitation.Clear();
+            });
+
+            _measuringThread.Start();
         }
 
-        public int GetState()
+        public RainGaugeData GetData()
         {
-            return (int) _pin.Read();
+            return new RainGaugeData(_measurementResolution, _precipitation.ToArray(typeof(uint)) as uint[]);
+        }
+
+        public void Reset()
+        {
+            _precipitation.Clear();
+        }
+
+        public void StopMeasurement()
+        {
+            _isMeasuring = false;
+            _measuringThread.Join();
         }
     }
 }

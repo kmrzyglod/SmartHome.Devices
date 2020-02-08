@@ -5,6 +5,7 @@ using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.ReedSwitch;
 using EspIot.Drivers.SeedstudioWaterFlowSensor;
+using EspIot.Drivers.SparkFunAnemometer;
 using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt;
@@ -22,6 +23,7 @@ namespace WeatherStation.Infrastructure
         private StatusLed _statusLed;
         private MqttClientWrapper _iotHubClient;
         private SparkFunRainGaugeDriver _rainGaugeDriver;
+        private SparkFunAnemometerDriver _anemometerDriver;
         
         public DriversFactory(WeatherStationConfiguration configuration)
         {
@@ -41,5 +43,6 @@ namespace WeatherStation.Infrastructure
         public StatusLed StatusLed => _statusLed ?? (_statusLed = new StatusLed(GpioController.GetDefault(), _configuration.WifiStatusLed, _configuration.MqttStatusLed));
         public MqttClientWrapper IotHubClient => _iotHubClient ?? (_iotHubClient = new MqttClientWrapper(_configuration.MqttBrokerAddress, _configuration.DeviceId));
         public SparkFunRainGaugeDriver RainGaugeDriver => _rainGaugeDriver ?? (_rainGaugeDriver = new SparkFunRainGaugeDriver(GpioController.GetDefault(), _configuration.RainGaugePin));
+        public SparkFunAnemometerDriver AnemometerDriver => _anemometerDriver ?? (_anemometerDriver = new SparkFunAnemometerDriver(GpioController.GetDefault(), _configuration.AnemometerPin));
     }
 }
