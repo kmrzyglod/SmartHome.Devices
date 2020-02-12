@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Windows.Devices.Adc;
 using EspIot.Drivers.SparkFunAnemometer.Enums;
 using EspIot.Drivers.SparkFunRainGauge.Enums;
 using WeatherStation.Infrastructure;
@@ -18,25 +19,26 @@ namespace WeatherStation.Firmware
                   .InitMqttClient()
             .InitInboundMessagesProcessing();
 
-            var test = driversFactory.RainGaugeDriver;
-            var tes2 = driversFactory.AnemometerDriver;
-            var bme280 = driversFactory.Bme280;
-            var lightSensor = driversFactory.LightSensor;
+           // var test = driversFactory.RainGaugeDriver;
+           // var tes2 = driversFactory.AnemometerDriver;
+           //var bme280 = driversFactory.Bme280;
+            //var lightSensor = driversFactory.LightSensor;
+            var windVane = driversFactory.WindVaneDriver;
 
-            test.StartMeasurement(RainGaugeMeasurementResolution.OneMinute);
-            tes2.StartMeasurement(AnemometerMeasurementResolution.FiveSeconds);
+            //test.StartMeasurement(RainGaugeMeasurementResolution.OneMinute);
+            //tes2.StartMeasurement(AnemometerMeasurementResolution.FiveSeconds);
             
             while (true)
             {
-                var temp = bme280.ReadTemperature();
-                var humidity = bme280.ReadHumidity();
-                var pressure = bme280.ReadPreasure();
+                //var temp = bme280.ReadTemperature();
+                //var humidity = bme280.ReadHumidity();
+                //var pressure = bme280.ReadPreasure();
 
-                var light = lightSensor.GetLightLevelInLux();
-                var data = test.GetData().Precipitation;
-                var data2 = tes2.GetData().WindSpeeds; 
-                Console.WriteLine($"Temp: {temp}, Humidity: {humidity } %, Pressure: {pressure} hPa");
-                Console.WriteLine($"Light: {light} lx");
+                //var light = lightSensor.GetLightLevelInLux();
+                //var data = test.GetData().Precipitation;
+                //var data2 = tes2.GetData().WindSpeeds; 
+                //Console.WriteLine($"Temp: {temp}, Humidity: {humidity } %, Pressure: {pressure} hPa");
+                //Console.WriteLine($"Light: {light} lx");
                 //if (data.Length == 0)
                 //{
                 //    Thread.Sleep(10000);
@@ -48,18 +50,18 @@ namespace WeatherStation.Firmware
 
                 //}
 
-                if (data2.Length == 0)
-                {
-                    Thread.Sleep(5000);
-                    continue;
-                }
-                else
-                {
-                    Console.WriteLine($"Wind speed {data2.Length - 1}: { data2[data2.Length - 1] / 100}");
-                }
-
-                Console.WriteLine("");
-                Thread.Sleep(10000);
+                //if (data2.Length == 0)
+                //{
+                //    Thread.Sleep(5000);
+                //    continue;
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"Wind speed {data2.Length - 1}: { data2[data2.Length - 1] / 100}");
+                //}
+                Console.WriteLine(windVane.GetRawData().ToString());
+                //Console.WriteLine("");
+                Thread.Sleep(1000);
             }
             //var test2 = driversFactory.AnemometerDriver;
 

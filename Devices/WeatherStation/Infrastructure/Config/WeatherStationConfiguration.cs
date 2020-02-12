@@ -9,7 +9,7 @@ namespace WeatherStation.Infrastructure.Config
         //General config
         //MQTT config
         public string MqttBrokerAddress { get; } = "192.168.1.103";
-        public string DeviceId { get; } = "esp32-greenhouse";
+        public string DeviceId { get; } = "esp32-weather-station";
 
         //I2C bus config
         public GpioPins I2C1DataPin { get; } = GpioPins.GPIO_NUM_18;
@@ -35,6 +35,6 @@ namespace WeatherStation.Infrastructure.Config
         public GpioPins AnemometerPin { get; } = GpioPins.GPIO_NUM_4;
 
         //Wind Vane
-        public GpioPins WindVanePin { get; } = GpioPins.GPIO_NUM_2;
+        public short WindVaneAdc { get; } = 0;
     }
 }

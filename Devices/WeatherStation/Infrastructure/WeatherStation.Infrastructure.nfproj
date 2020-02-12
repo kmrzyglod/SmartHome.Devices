@@ -21,7 +21,7 @@
     <Compile Include="CommandHandlersFactory.cs" />
     <Compile Include="CommandsFactory.cs" />
     <Compile Include="Config\ConfigurationManager.cs" />
-    <Compile Include="Config\GreenhouseControllerConfiguration.cs" />
+    <Compile Include="Config\WeatherStationConfiguration.cs" />
     <Compile Include="DriversFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceFactory.cs" />
@@ -32,8 +32,8 @@
     <ProjectReference Include="..\..\..\Shared\EspIot.Infrastructure\EspIot.Infrastructure.nfproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.7.0-alpha.3\lib\mscorlib.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.6.0-preview.1\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

@@ -5,10 +5,10 @@ namespace EspIot.Core.Collections
 {
     public class ConcurrentQueue
     {
-        public int Count => _messageQue.Count;
+        private readonly ManualResetEvent _manualReset = new ManualResetEvent(false);
 
         private readonly Queue _messageQue = new Queue();
-        private readonly ManualResetEvent _manualReset = new ManualResetEvent(false);
+        public int Count => _messageQue.Count;
 
         public void Enqueue(object value)
         {
@@ -31,8 +31,8 @@ namespace EspIot.Core.Collections
                         return _messageQue.Dequeue();
                     }
                 }
-                _manualReset.Reset();
 
+                _manualReset.Reset();
             }
         }
     }
