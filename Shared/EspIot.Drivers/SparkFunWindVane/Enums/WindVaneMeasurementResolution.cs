@@ -1,7 +1,6 @@
-﻿namespace EspIot.Drivers.SparkFunAnemometer.Enums
+﻿namespace EspIot.Drivers.SparkFunWindVane.Enums
 {
-    // measurement resolution [s]
-    public enum AnemometerMeasurementResolution
+    public enum WindVaneMeasurementResolution
     {
         OneSecond = 1,
         FiveSeconds = 5,

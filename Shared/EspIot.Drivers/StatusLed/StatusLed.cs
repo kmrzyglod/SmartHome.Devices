@@ -1,24 +1,26 @@
 ﻿using System.Threading;
-using EspIot.Core.Gpio;
 using Windows.Devices.Gpio;
+using EspIot.Core.Gpio;
 
 namespace EspIot.Drivers.StatusLed
 {
     public class StatusLed
     {
-        private readonly GpioController _gpioController;
         private readonly GpioPins _connectionStatus;
-        private readonly GpioPin _wifiStatusLed;
+        private readonly GpioController _gpioController;
         private readonly GpioPin _mqttStatusLed;
-        private bool _isWifiLedBlinking = false;
+        private readonly GpioPin _wifiStatusLed;
+
+
+        private bool _isWifiLedBlinking;
         private Thread _wifiLedBlinkingThread = new Thread(() => { });
 
         public StatusLed(GpioController gpioController, GpioPins wifiStatus, GpioPins mqttStatus)
         {
             _gpioController = gpioController;
             _connectionStatus = mqttStatus;
-            _wifiStatusLed = _gpioController.OpenPin((int)wifiStatus);
-            _mqttStatusLed = _gpioController.OpenPin((int)mqttStatus);
+            _wifiStatusLed = _gpioController.OpenPin((int) wifiStatus);
+            _mqttStatusLed = _gpioController.OpenPin((int) mqttStatus);
             _wifiStatusLed.SetDriveMode(GpioPinDriveMode.Output);
             _mqttStatusLed.SetDriveMode(GpioPinDriveMode.Output);
             _wifiStatusLed.Write(GpioPinValue.Low);
@@ -43,28 +45,38 @@ namespace EspIot.Drivers.StatusLed
                     Thread.Sleep(200);
                 }
             });
-            
+
             _wifiLedBlinkingThread.Start();
         }
 
         public void SetWifiConnected()
         {
-            _isWifiLedBlinking = false;
-            if (_wifiLedBlinkingThread.IsAlive)
-            {
-                _wifiLedBlinkingThread.Join();
-            }
-            _wifiStatusLed.Write(GpioPinValue.High);
+            new Thread(() =>
+                {
+                    _isWifiLedBlinking = false;
+                    if (_wifiLedBlinkingThread.IsAlive)
+                    {
+                        _wifiLedBlinkingThread.Join();
+                    }
+
+                    _wifiStatusLed.Write(GpioPinValue.High);
+                })
+                .Start();
         }
 
         public void SetWifiDisconnected()
         {
-            _isWifiLedBlinking = false;
-            if (_wifiLedBlinkingThread.IsAlive)
-            {
-                _wifiLedBlinkingThread.Join();
-            }
-            _wifiStatusLed.Write(GpioPinValue.Low);
+            new Thread(() =>
+                {
+                    _isWifiLedBlinking = false;
+                    if (_wifiLedBlinkingThread.IsAlive)
+                    {
+                        _wifiLedBlinkingThread.Join();
+                    }
+
+                    _wifiStatusLed.Write(GpioPinValue.Low);
+                })
+                .Start();
         }
 
         public void SetMqttBrokerDisconnected()
@@ -75,8 +87,6 @@ namespace EspIot.Drivers.StatusLed
         public void SetMqttBrokerConnected()
         {
             _mqttStatusLed.Write(GpioPinValue.High);
-
         }
-
     }
 }

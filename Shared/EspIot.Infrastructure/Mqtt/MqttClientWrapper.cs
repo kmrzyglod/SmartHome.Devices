@@ -2,13 +2,13 @@
 using System.Text;
 using System.Threading;
 using EspIot.Core.Collections;
+using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt.Events;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace EspIot.Infrastructure.Mqtt
 {
-
     public class MqttClientWrapper
     {
         private const ushort
@@ -17,6 +17,7 @@ namespace EspIot.Infrastructure.Mqtt
         private readonly string _brokerAddress;
         private readonly MqttClient _client;
         private readonly string _deviceId;
+        private readonly StatusLed _statusLed;
         private readonly ConcurrentQueue _messageQue = new ConcurrentQueue();
         private readonly string _readTopic;
         private readonly string _sendTopic;
@@ -24,14 +25,14 @@ namespace EspIot.Infrastructure.Mqtt
         private Thread _outboundMessageSendingThread;
         private bool _status;
 
-        public MqttClientWrapper(string brokerAddress, string deviceId)
+        public MqttClientWrapper(string brokerAddress, string deviceId, StatusLed statusLed)
         {
             _brokerAddress = brokerAddress;
             _deviceId = deviceId;
+            _statusLed = statusLed;
             _sendTopic = $"devices/{_deviceId}/messages/events/";
             _client = new MqttClient(_brokerAddress);
             _client.MqttMsgPublishReceived += OnMessageReceived;
-            _client.MqttMsgSubscribed += OnSubscribed;
         }
 
         public event MqttConnectedEventHandler OnMqttClientConnected;
@@ -64,13 +65,8 @@ namespace EspIot.Infrastructure.Mqtt
         {
             string topic = e.Topic;
             string message = Encoding.UTF8.GetString(e.Message, 0, e.Message.Length);
-            Console.WriteLine("Publish Received Topic:" + topic + " Message:" + message);
+            //Console.WriteLine("Publish Received Topic:" + topic + " Message:" + message);
             OnMqttMessageReceived?.Invoke(sender, e);
-        }
-
-        private void OnSubscribed(object sender, MqttMsgSubscribedEventArgs e)
-        {
-            Console.WriteLine("Client_MqttMsgSubscribed ");
         }
 
         private void StartOutboundMessageWorker()
@@ -93,7 +89,7 @@ namespace EspIot.Infrastructure.Mqtt
                             }
 
                             string topic = string.Format("{0}{1}", _sendTopic, message.Params);
-                            Console.WriteLine("Publish on Topic:" + topic + " Message:" + message.Payload);
+                            //Console.WriteLine("Publish on Topic:" + topic + " Message:" + message.Payload);
                             _client.Publish(topic, Encoding.UTF8.GetBytes(message.Payload),
                                 MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
                             isMessageSent = true;

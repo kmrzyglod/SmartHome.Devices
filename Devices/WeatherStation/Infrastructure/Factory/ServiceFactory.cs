@@ -1,10 +1,13 @@
-﻿using EspIot.Infrastructure.Handlers;
+﻿using EspIot.Core.Messaging.Concrete;
+using EspIot.Core.Messaging.Enum;
+using EspIot.Infrastructure.Handlers;
 using EspIot.Infrastructure.MessageBus;
 using EspIot.Infrastructure.Services;
 using EspIot.Infrastructure.Wifi;
+using WeatherStation.Application.Services;
 using WeatherStation.Infrastructure.Config;
 
-namespace WeatherStation.Infrastructure
+namespace WeatherStation.Infrastructure.Factory
 {
     public class ServiceFactory
     {
@@ -16,6 +19,7 @@ namespace WeatherStation.Infrastructure
         private CommandHandlersFactory _commandHandlersFactory;
         private CommandsFactory _commandsFactory;
         private InboundMessagesHandler _inboundMessagesHandler;
+        private TelemetryService _telemetryService;
 
         public ServiceFactory(DriversFactory driversFactory, WeatherStationConfiguration configuration)
         {
@@ -32,7 +36,7 @@ namespace WeatherStation.Infrastructure
 
             return this;
         }
-        
+
         public ServiceFactory InitWifi()
         {
             WifiDriver.OnWifiConnected += () => { _driversFactory.StatusLed.SetWifiConnected(); };
@@ -55,6 +59,7 @@ namespace WeatherStation.Infrastructure
             };
             _driversFactory.IotHubClient.Connect();
             _driversFactory.IotHubClient.Subscribe(new[] {"devices/esp32-greenhouse/messages/devicebound/#"});
+            _mqttOutboundEventBus.Send(new DeviceStatusUpdatedEvent("Device was turned on and connected to MQTT broker", DeviceStatusCode.DeviceWasTurnedOn));
 
             return this;
         }
@@ -63,11 +68,25 @@ namespace WeatherStation.Infrastructure
         {
             _commandBus = new CommandBus(_mqttOutboundEventBus);
             _commandsFactory = new CommandsFactory();
-            _commandHandlersFactory = new CommandHandlersFactory();
+            _commandHandlersFactory = new CommandHandlersFactory(_mqttOutboundEventBus, _telemetryService);
             _inboundMessagesHandler =
-                new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory);
-            _commandDispatcherService = new CommandDispatcherService(_commandHandlersFactory, _commandBus);
+                new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory, _mqttOutboundEventBus);
+            _commandDispatcherService = new CommandDispatcherService(_commandHandlersFactory, _commandBus, _mqttOutboundEventBus);
             _commandDispatcherService.Start();
+
+            return this;
+        }
+
+        public ServiceFactory InitTelemetryService()
+        {
+            _telemetryService = new TelemetryService(_mqttOutboundEventBus,
+                _driversFactory.AnemometerDriver,
+                _driversFactory.WindVaneDriver,
+                _driversFactory.RainGaugeDriver,
+                _driversFactory.Bme280,
+                _driversFactory.LightSensor);
+
+            _telemetryService.Start();
 
             return this;
         }

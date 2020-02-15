@@ -18,18 +18,19 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="CommandHandlersFactory.cs" />
-    <Compile Include="CommandsFactory.cs" />
     <Compile Include="Config\ConfigurationManager.cs" />
     <Compile Include="Config\WeatherStationConfiguration.cs" />
-    <Compile Include="DriversFactory.cs" />
+    <Compile Include="Factory\DriversFactory.cs" />
+    <Compile Include="Factory\CommandHandlersFactory.cs" />
+    <Compile Include="Factory\CommandsFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceFactory.cs" />
+    <Compile Include="Factory\ServiceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Infrastructure\EspIot.Infrastructure.nfproj" />
+    <ProjectReference Include="..\Application\WeatherStation.Application.nfproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">

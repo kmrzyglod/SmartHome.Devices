@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Collections;
 using System.Threading;
 using Windows.Devices.Gpio;
-using EspIot.Core.Extensions;
 using EspIot.Core.Gpio;
 using EspIot.Drivers.SparkFunAnemometer.Enums;
 
 namespace EspIot.Drivers.SparkFunAnemometer
 {
+    //https://cdn.sparkfun.com/assets/8/4/c/d/6/Weather_Sensor_Assembly_Updated.pdf
     public class SparkFunAnemometerDriver
     {
-        //https://cdn.sparkfun.com/assets/8/4/c/d/6/Weather_Sensor_Assembly_Updated.pdf
         private const uint ONE_HZ_PULSE_SPEED = 67; // 2,4 km/h -> 0,67 [m/s] -> 67 [m/s * 100];
         private readonly GpioController _gpioController;
-
-        private readonly AnemometerMeasurementResolution _measurementResolution =
-            AnemometerMeasurementResolution.FiveSeconds;
 
         private readonly GpioPin _pin;
         private readonly GpioChangeCounter _pulseCounter;
 
-        private readonly ArrayList
-            _windSpeeds = new ArrayList(); //WindSpeeds during one measurement resolution unit in [mm * 10000]
+        //[m/s * 100]
+        private uint _averageWindSpeed;
+        private uint _currentWindSpeed;
 
         private bool _isMeasuring;
+        private uint _maxWindSpeed;
+        private uint _measurementCounter;
 
         private Thread _measuringThread = new Thread(() => { });
+        private uint _minWindSpeed;
 
         public SparkFunAnemometerDriver(GpioController gpioController, GpioPins pin)
         {
@@ -39,7 +38,9 @@ namespace EspIot.Drivers.SparkFunAnemometer
         {
             if (_measuringThread.IsAlive)
             {
-                return; //don't start new measuring when previous is pending
+                //don't start new measuring when previous is pending
+                throw new InvalidOperationException(
+                    "Cannot start measurement because another measurement process is in progress.");
             }
 
             _isMeasuring = true;
@@ -53,31 +54,84 @@ namespace EspIot.Drivers.SparkFunAnemometer
                     Thread.Sleep((int) measurementResolution * 1000);
                     var pulseCount = _pulseCounter.Read();
                     _pulseCounter.Reset();
-                    _windSpeeds.Add((uint)(pulseCount.Count / (double) measurementResolution * ONE_HZ_PULSE_SPEED));
+
+                    _currentWindSpeed =
+                        (ushort) (pulseCount.Count / (double) measurementResolution * ONE_HZ_PULSE_SPEED);
+
+                    _averageWindSpeed = (_averageWindSpeed * _measurementCounter + _currentWindSpeed) /
+                                        ++_measurementCounter;
+
+                    if (_currentWindSpeed > _maxWindSpeed)
+                    {
+                        _maxWindSpeed = _currentWindSpeed;
+                    }
+
+                    else if (_currentWindSpeed < _minWindSpeed)
+                    {
+                        _minWindSpeed = _currentWindSpeed;
+                    }
                 }
 
                 _pulseCounter.Stop();
                 _pulseCounter.Reset();
-                _windSpeeds.Clear();
             });
 
             _measuringThread.Start();
         }
 
-        public AnemometerData GetData()
+        public uint GetCurrentWindSpeed()
         {
-            return new AnemometerData(_measurementResolution, _windSpeeds.ToArray(typeof(uint)) as uint[]);
+            if (!_isMeasuring)
+            {
+                throw new InvalidOperationException("Cannot get data because measurement wasn't started");
+            }
+
+            return _currentWindSpeed;
+        }
+
+        public uint GetAverageWindSpeed()
+        {
+            if (!_isMeasuring)
+            {
+                throw new InvalidOperationException("Cannot get data because measurement wasn't started");
+            }
+
+            return _averageWindSpeed;
+        }
+
+        public uint GetMaxWindSpeed()
+        {
+            if (!_isMeasuring)
+            {
+                throw new InvalidOperationException("Cannot get data because measurement wasn't started");
+            }
+
+            return _maxWindSpeed;
+        }
+
+        public uint GetMinWindSpeed()
+        {
+            if (!_isMeasuring)
+            {
+                throw new InvalidOperationException("Cannot get data because measurement wasn't started");
+            }
+
+            return _minWindSpeed;
         }
 
         public void Reset()
         {
-            _windSpeeds.Clear();
+            _measurementCounter = 0;
+            _maxWindSpeed = 0;
+            _averageWindSpeed = 0;
+            _minWindSpeed = 0;
         }
 
         public void StopMeasurement()
         {
             _isMeasuring = false;
             _measuringThread.Join();
+            Reset();
         }
     }
 }

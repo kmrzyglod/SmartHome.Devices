@@ -173,7 +173,7 @@ namespace EspIot.Drivers.Bme280
 
         public Bme280 Initialize()
         {
-            Console.WriteLine("BME280::Initialize");
+            //Console.WriteLine("BME280::Initialize");
             try
             {
                
@@ -185,12 +185,12 @@ namespace EspIot.Drivers.Bme280
                 
                 if (_bme280 == null)
                 {
-                    Console.WriteLine("Device not found");
+                    Console.WriteLine("BME280 device not found");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message + "\n" + e.StackTrace);
+                Console.WriteLine("BME 280 exception: " + e.Message + "\n" + e.StackTrace);
                 throw;
             }
 
@@ -199,12 +199,12 @@ namespace EspIot.Drivers.Bme280
 
             //Read the device signature
             _bme280.WriteReadPartial(readChipId, readBuffer);
-            Console.WriteLine("BME280 Signature: " + readBuffer[0].ToString());
+            //Console.WriteLine("BME280 Signature: " + readBuffer[0].ToString());
 
             //Verify the device signature
             if (readBuffer[0] != Bme280Signature)
             {
-                Console.WriteLine("BME280::Begin Signature Mismatch.");
+                //Console.WriteLine("BME280::Begin Signature Mismatch.");
                 return this;
             }
 

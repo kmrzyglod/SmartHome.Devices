@@ -35,6 +35,6 @@ namespace WeatherStation.Infrastructure.Config
         public GpioPins AnemometerPin { get; } = GpioPins.GPIO_NUM_4;
 
         //Wind Vane
-        public short WindVaneAdc { get; } = 0;
+        public ushort WindVaneAdcChannel { get; } = 0;
     }
 }

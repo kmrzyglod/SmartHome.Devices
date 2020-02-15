@@ -1,10 +1,6 @@
 ﻿using Windows.Devices.Gpio;
 using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
-using EspIot.Drivers.DfrobotSoilMoistureSensor;
-using EspIot.Drivers.LinearActuator;
-using EspIot.Drivers.ReedSwitch;
-using EspIot.Drivers.SeedstudioWaterFlowSensor;
 using EspIot.Drivers.SparkFunAnemometer;
 using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.SparkFunWindVane;
@@ -13,7 +9,7 @@ using EspIot.Infrastructure.Mqtt;
 using nanoFramework.Hardware.Esp32;
 using WeatherStation.Infrastructure.Config;
 
-namespace WeatherStation.Infrastructure
+namespace WeatherStation.Infrastructure.Factory
 {
     public class DriversFactory
     {
@@ -43,9 +39,9 @@ namespace WeatherStation.Infrastructure
         public Bh1750 LightSensor => _lightSensor ?? (_lightSensor = new Bh1750(_configuration.Bh1750I2CController));
         public Bme280 Bme280 => _bme280 ?? (_bme280 = new Bme280(_configuration.Bme280I2CController).Initialize());
         public StatusLed StatusLed => _statusLed ?? (_statusLed = new StatusLed(GpioController.GetDefault(), _configuration.WifiStatusLed, _configuration.MqttStatusLed));
-        public MqttClientWrapper IotHubClient => _iotHubClient ?? (_iotHubClient = new MqttClientWrapper(_configuration.MqttBrokerAddress, _configuration.DeviceId));
+        public MqttClientWrapper IotHubClient => _iotHubClient ?? (_iotHubClient = new MqttClientWrapper(_configuration.MqttBrokerAddress, _configuration.DeviceId, _statusLed));
         public SparkFunRainGaugeDriver RainGaugeDriver => _rainGaugeDriver ?? (_rainGaugeDriver = new SparkFunRainGaugeDriver(GpioController.GetDefault(), _configuration.RainGaugePin));
         public SparkFunAnemometerDriver AnemometerDriver => _anemometerDriver ?? (_anemometerDriver = new SparkFunAnemometerDriver(GpioController.GetDefault(), _configuration.AnemometerPin));
-        public SparkFunWindVaneDriver WindVaneDriver => _windVaneDriver ?? (_windVaneDriver = new SparkFunWindVaneDriver(_configuration.WindVaneAdc));
+        public SparkFunWindVaneDriver WindVaneDriver => _windVaneDriver ?? (_windVaneDriver = new SparkFunWindVaneDriver(_configuration.WindVaneAdcChannel));
     }
 }

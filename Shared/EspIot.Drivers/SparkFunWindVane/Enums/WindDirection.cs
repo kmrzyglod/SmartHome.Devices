@@ -1,14 +1,15 @@
 ﻿namespace EspIot.Drivers.SparkFunWindVane.Enums
 {
-    internal enum WindDirection
+    public enum WindDirection
     {
-        N = 3672,
-        NE = 2536,
-        E = 590,
-        SE = 1203,
-        S = 1779,
-        SW = 3142,
-        W = 4095,
-        NW = 4067
+        N = 0,
+        NE = 1,
+        E = 2,
+        SE = 3,
+        S = 4,
+        SW = 5,
+        W = 6,
+        NW = 7,
+        Undefined = 8
     }
 }

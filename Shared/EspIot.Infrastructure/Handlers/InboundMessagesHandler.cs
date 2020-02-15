@@ -1,5 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Text;
+using EspIot.Core.Messaging.Concrete;
+using EspIot.Core.Messaging.Enum;
+using EspIot.Core.Messaging.Events;
 using EspIot.Core.Messaging.Interfaces;
 using EspIot.Infrastructure.Mqtt;
 using Json.NetMF;
@@ -9,20 +13,31 @@ namespace EspIot.Infrastructure.Handlers
 {
     public class InboundMessagesHandler
     {
-        private readonly MqttClientWrapper _mqttClient;
         private readonly ICommandBus _commandBus;
         private readonly ICommandsFactory _commandsFactory;
+        private readonly MqttClientWrapper _mqttClient;
+        private readonly IOutboundEventBus _outboundEventBus;
 
-        public InboundMessagesHandler(MqttClientWrapper mqttClient, ICommandBus commandBus, ICommandsFactory commandsFactory)
+        public InboundMessagesHandler(MqttClientWrapper mqttClient, ICommandBus commandBus,
+            ICommandsFactory commandsFactory, IOutboundEventBus outboundEventBus)
         {
             _mqttClient = mqttClient;
             _commandBus = commandBus;
             _commandsFactory = commandsFactory;
+            _outboundEventBus = outboundEventBus;
             _mqttClient.OnMqttMessageReceived += (_, args) =>
             {
-                var decodedMessage = DecodeMqttMessage(args);
-                var command = _commandsFactory.Create(decodedMessage.Name, decodedMessage.Payload);
-                _commandBus.Send(command);
+                try
+                {
+                    var decodedMessage = DecodeMqttMessage(args);
+                    var command = _commandsFactory.Create(decodedMessage.Name, decodedMessage.Payload);
+                    _commandBus.Send(command);
+                }
+                catch (Exception e)
+                {
+                    outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
+                        $"Exception during handling inbound message: {e.Message}", ErrorLevel.Warning));
+                }
             };
         }
 

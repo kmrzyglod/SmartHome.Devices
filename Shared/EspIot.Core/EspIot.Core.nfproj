@@ -30,8 +30,10 @@
     <Compile Include="I2c\I2CExtensions.cs" />
     <Compile Include="Messaging\Concrete\CommandBase.cs" />
     <Compile Include="Messaging\Concrete\CommandResultEvent.cs" />
-    <Compile Include="Messaging\Concrete\ErrorMessage.cs" />
+    <Compile Include="Messaging\Concrete\DeviceStatusUpdatedEvent.cs" />
+    <Compile Include="Messaging\Concrete\ErrorEvent.cs" />
     <Compile Include="Messaging\Concrete\ProcessingFailureEvent.cs" />
+    <Compile Include="Messaging\Enum\DeviceStatusCode.cs" />
     <Compile Include="Messaging\Enum\ErrorLevel.cs" />
     <Compile Include="Messaging\Enum\StatusCode.cs" />
     <Compile Include="Messaging\Events\CommandSuccessEventHandler.cs" />
@@ -39,6 +41,7 @@
     <Compile Include="Messaging\Events\NewCommandPartitionKeyCreatedEventHandler.cs" />
     <Compile Include="Messaging\Interfaces\ICommand.cs" />
     <Compile Include="Messaging\Interfaces\ICommandBus.cs" />
+    <Compile Include="Messaging\Interfaces\ICommandFactory.cs" />
     <Compile Include="Messaging\Interfaces\ICommandHandler.cs" />
     <Compile Include="Messaging\Interfaces\ICommandHandlersFactory.cs" />
     <Compile Include="Messaging\Interfaces\ICommandResultEvent.cs" />
@@ -47,6 +50,7 @@
     <Compile Include="Messaging\Interfaces\IMessage.cs" />
     <Compile Include="Messaging\Interfaces\IQuery.cs" />
     <Compile Include="Messaging\Interfaces\IQueryResult.cs" />
+    <Compile Include="Messaging\Interfaces\IService.cs" />
     <Compile Include="Messaging\Validation\ValidationError.cs" />
     <Compile Include="ObjectWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

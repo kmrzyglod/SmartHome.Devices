@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
     <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <ItemGroup>

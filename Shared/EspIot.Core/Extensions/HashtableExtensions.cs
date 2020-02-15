@@ -8,7 +8,7 @@ namespace EspIot.Core.Extensions
         //Try get int value from hashtable or get default if value isn't int
         public static int GetInt(this Hashtable hashtable, string key)
         {
-            return hashtable[key.ToLower()] is int value ? value : default;
+            return (int)(hashtable[key.ToLower()] is Int64 value ? value : default);
         }
 
         //Try get uint value from hashtable or get default if value isn't uint
