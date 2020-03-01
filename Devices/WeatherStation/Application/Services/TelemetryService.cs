@@ -11,6 +11,7 @@ using EspIot.Drivers.SparkFunAnemometer.Enums;
 using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.SparkFunWindVane;
 using EspIot.Drivers.SparkFunWindVane.Enums;
+using nanoFramework.Runtime.Native;
 using WeatherStation.Application.Events.Outbound;
 
 namespace WeatherStation.Application.Services
@@ -70,6 +71,7 @@ namespace WeatherStation.Application.Services
                     DeviceStatusCode.ServiceStarted));
                 while (_runWorkingThread)
                 {
+                    Console.WriteLine(">> free memory: " + Debug.GC(false) + " bytes");
                     var measurementStartTime = DateTime.UtcNow;
                     Thread.Sleep(_sentInterval);
                     var measurementEndTime = DateTime.UtcNow;
@@ -116,48 +118,74 @@ namespace WeatherStation.Application.Services
 
         private TelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
         {
-            float temperature = float.NaN;
-            float humidity = float.NaN;
-            float pressure = float.NaN;
-            int lightLevel = int.MinValue;
-            var currentWindDirection = WindDirection.Undefined;
-            var mostFrequentWindDirection = WindDirection.Undefined;
-            float averageWindSpeed = float.NaN;
-            float maxWindSpeed = float.NaN;
-            float minWindSpeed = float.NaN;
-            float precipitation = float.NaN;
+            return new TelemetryEvent(measurementStartTime,
+                measurementEndTime,
+                GetTemperature(),
+                GetPressure(),
+                GetHumidity(),
+                GetLightLevel(),
+                _windVaneDriver.GetCurrentWindDirection(),
+                _windVaneDriver.GetMostFrequentWindDirection(),
+                _anemometerDriver.GetAverageWindSpeed() / 100f,
+                _anemometerDriver.GetMaxWindSpeed() / 100f,
+                _anemometerDriver.GetMinWindSpeed() / 100f,
+                _rainGaugeDriver.GetPrecipitation() / 10000f);
+        }
 
+        private float GetTemperature()
+        {
             try
             {
-                temperature = _bme280Driver.ReadTemperature();
-                humidity = _bme280Driver.ReadHumidity();
-                pressure = _bme280Driver.ReadPreasure() / 100;
-                lightLevel = _lightSensorDriver.GetLightLevelInLux();
-                currentWindDirection = _windVaneDriver.GetCurrentWindDirection();
-                mostFrequentWindDirection = _windVaneDriver.GetMostFrequentWindDirection();
-                averageWindSpeed = _anemometerDriver.GetAverageWindSpeed() / 100f;
-                maxWindSpeed = _anemometerDriver.GetMaxWindSpeed() / 100f;
-                minWindSpeed = _anemometerDriver.GetMinWindSpeed() / 100f;
-                precipitation = _rainGaugeDriver.GetPrecipitation() / 10000f;
+                return _bme280Driver.ReadTemperature();
             }
             catch (Exception e)
             {
                 _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
                     $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
             }
+        }
 
-            return new TelemetryEvent(measurementStartTime,
-                measurementEndTime,
-                temperature,
-                pressure,
-                humidity,
-                lightLevel,
-                currentWindDirection,
-                mostFrequentWindDirection,
-                averageWindSpeed,
-                maxWindSpeed,
-                minWindSpeed,
-                precipitation);
+        private float GetHumidity()
+        {
+            try
+            {
+                return _bme280Driver.ReadHumidity();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
+                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
+            }
+        }
+
+        private float GetPressure()
+        {
+            try
+            {
+                return _bme280Driver.ReadPreasure() / 100;
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
+                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
+            }
+        }
+
+        private int GetLightLevel()
+        {
+            try
+            {
+                return _lightSensorDriver.GetLightLevelInLux();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
+                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                return int.MinValue;
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ namespace EspIot.Drivers.SparkFunRainGauge
                     Thread.Sleep(10000);
                     var count = _pulseCounter.Read();
                     _pulseCounter.Reset();
+                    Console.WriteLine("Pulse count: " + count.Count);
                     if (count.Count > 2)
                     {
                         continue; //workaround for some strange, random pin state changes which must be ommited 
