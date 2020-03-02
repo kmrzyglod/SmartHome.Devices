@@ -10,6 +10,7 @@ namespace WeatherStation.Infrastructure.Config
         //MQTT config
         public string MqttBrokerAddress { get; } = "192.168.1.103";
         public string DeviceId { get; } = "esp32-weather-station";
+        public string InboundMessagesTopic { get; } = "devices/esp32-weather-station/messages/devicebound/#";
 
         //I2C bus config
         public GpioPins I2C1DataPin { get; } = GpioPins.GPIO_NUM_18;

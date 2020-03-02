@@ -20,11 +20,11 @@ namespace EspIot.Drivers.SparkFunAnemometer
         private uint _currentWindSpeed;
 
         private bool _isMeasuring;
-        private uint _maxWindSpeed;
+        private uint _maxWindSpeed = 0;
         private uint _measurementCounter;
 
         private Thread _measuringThread = new Thread(() => { });
-        private uint _minWindSpeed;
+        private uint _minWindSpeed = uint.MaxValue;
 
         public SparkFunAnemometerDriver(GpioController gpioController, GpioPins pin)
         {
@@ -66,7 +66,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
                         _maxWindSpeed = _currentWindSpeed;
                     }
 
-                    else if (_currentWindSpeed < _minWindSpeed)
+                    if (_currentWindSpeed < _minWindSpeed)
                     {
                         _minWindSpeed = _currentWindSpeed;
                     }
@@ -124,7 +124,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
             _measurementCounter = 0;
             _maxWindSpeed = 0;
             _averageWindSpeed = 0;
-            _minWindSpeed = 0;
+            _minWindSpeed = uint.MaxValue;
         }
 
         public void StopMeasurement()
