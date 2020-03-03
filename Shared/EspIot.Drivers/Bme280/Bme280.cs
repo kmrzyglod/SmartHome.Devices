@@ -4,6 +4,7 @@
 using EspIot.Core.I2c;
 using System;
 using Windows.Devices.I2c;
+using EspIot.Core.Helpers;
 
 namespace EspIot.Drivers.Bme280
 {
@@ -173,7 +174,7 @@ namespace EspIot.Drivers.Bme280
 
         public Bme280 Initialize()
         {
-            //Console.WriteLine("BME280::Initialize");
+            Logger.Log("BME280::Initialize");
             try
             {
                
@@ -185,12 +186,12 @@ namespace EspIot.Drivers.Bme280
                 
                 if (_bme280 == null)
                 {
-                    Console.WriteLine("BME280 device not found");
+                    Logger.Log("BME280 device not found", Logger.LogLevel.Warning);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("BME 280 exception: " + e.Message + "\n" + e.StackTrace);
+                Logger.Log("BME 280 exception: " + e.Message + "\n" + e.StackTrace, Logger.LogLevel.Error);
                 throw;
             }
 
@@ -199,12 +200,12 @@ namespace EspIot.Drivers.Bme280
 
             //Read the device signature
             _bme280.WriteReadPartial(readChipId, readBuffer);
-            //Console.WriteLine("BME280 Signature: " + readBuffer[0].ToString());
+            Logger.Log("BME280 Signature: " + readBuffer[0], Logger.LogLevel.Info);
 
             //Verify the device signature
             if (readBuffer[0] != Bme280Signature)
             {
-                //Console.WriteLine("BME280::Begin Signature Mismatch.");
+                Logger.Log("BME280::Begin Signature Mismatch.", Logger.LogLevel.Warning);
                 return this;
             }
 
@@ -335,7 +336,7 @@ namespace EspIot.Drivers.Bme280
             var1 = (((long)1 << 47) + var1) * _calibrationData.DigP1 >> 33;
             if (var1 == 0)
             {
-                Console.WriteLine("BME280_compensate_P_Int64 Jump out to avoid / 0");
+                Logger.Log("BME280_compensate_P_Int64 Jump out to avoid / 0");
                 return 0; //Avoid exception caused by division by zero
             }
             //Perform calibration operations as per datasheet: 
@@ -361,12 +362,12 @@ namespace EspIot.Drivers.Bme280
 
             if (varH > 100.0)
             {
-                Console.WriteLine("BME280_compensate_H_double Jump out to 100%");
+                Logger.Log("BME280_compensate_H_double Jump out to 100%");
                 varH = 100.0;
             }
             else if (varH < 0.0)
             {
-                Console.WriteLine("BME280_compensate_H_double Jump under 0%");
+                Logger.Log("BME280_compensate_H_double Jump under 0%");
                 varH = 0.0;
             }
 

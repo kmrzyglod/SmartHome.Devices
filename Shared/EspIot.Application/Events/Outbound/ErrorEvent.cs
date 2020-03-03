@@ -1,18 +1,16 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace EspIot.Core.Messaging.Concrete
+namespace EspIot.Application.Events.Outbound
 {
     public class ErrorEvent : IEvent
     {
-        public ErrorEvent(string correlationId, string message, ErrorLevel errorLevel)
+        public ErrorEvent(string message, ErrorLevel errorLevel)
         {
-            CorrelationId = correlationId;
             Message = message;
             ErrorLevel = errorLevel;
         }
 
-        public string CorrelationId { get;}
         public string Message { get;}
         public ErrorLevel ErrorLevel { get;}
     }

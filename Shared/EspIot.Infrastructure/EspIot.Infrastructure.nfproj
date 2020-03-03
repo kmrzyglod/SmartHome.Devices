@@ -29,12 +29,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\CurrentUtcDateProvider.cs" />
     <Compile Include="Services\CommandDispatcherService.cs" />
+    <Compile Include="Services\DiagnosticService.cs" />
     <Compile Include="Wifi\Events\WifiDuringConnectionEventHandler.cs" />
     <Compile Include="Wifi\Events\WifiConnectedEventHandler.cs" />
     <Compile Include="Wifi\Events\WifiDisconnectedEventHandler.cs" />
+    <Compile Include="Wifi\NetworkConfig.cs" />
     <Compile Include="Wifi\WifiDriver.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EspIot.Application\EspIot.Application.nfproj" />
     <ProjectReference Include="..\EspIot.Core\EspIot.Core.nfproj" />
     <ProjectReference Include="..\EspIot.Drivers\EspIot.Drivers.nfproj" />
     <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
@@ -64,6 +67,11 @@
     </Reference>
     <Reference Include="System.Net">
       <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Net.1.4.1-preview.3\lib\System.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Windows.Devices.Wifi, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Windows.Devices.Wifi.1.2.0-preview.9\lib\Windows.Devices.Wifi.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />

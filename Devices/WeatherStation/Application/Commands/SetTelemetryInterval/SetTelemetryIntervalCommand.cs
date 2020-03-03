@@ -9,7 +9,8 @@ namespace WeatherStation.Application.Commands.SetTelemetryInterval
 {
     public class SetTelemetryIntervalCommand : CommandBase
     {
-        private const int MAX_INTERVAL = 3_600_000;
+        public  const int MAX_INTERVAL = 3_600_000;
+        public const int MIN_INTERVAL = 30_000;
 
         public SetTelemetryIntervalCommand(string correlationId, int interval) : base(correlationId)
         {
@@ -27,6 +28,12 @@ namespace WeatherStation.Application.Commands.SetTelemetryInterval
             {
                 errors.Add(new ValidationError(nameof(Interval),
                     $"{nameof(Interval)} field cannot has value higher than {MAX_INTERVAL}"));
+            }
+
+            else if (Interval < MIN_INTERVAL)
+            {
+                errors.Add(new ValidationError(nameof(Interval),
+                    $"{nameof(Interval)} field cannot has value less than {MIN_INTERVAL}"));
             }
 
             return ConvertToArray(errors);

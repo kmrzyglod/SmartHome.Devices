@@ -3,9 +3,9 @@ using EspIot.Core.Messaging.Interfaces;
 
 namespace WeatherStation.Application.Events.Outbound
 {
-    public class TelemetryIntervalChangedEvent: IEvent
+    public class WeatherTelemetryIntervalChangedEvent: IEvent
     {
-        public TelemetryIntervalChangedEvent(int newInterval)
+        public WeatherTelemetryIntervalChangedEvent(int newInterval)
         {
             NewInterval = newInterval;
         }

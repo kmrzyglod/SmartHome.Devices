@@ -1,7 +1,7 @@
 ﻿using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace EspIot.Core.Messaging.Concrete
+namespace EspIot.Application.Events.Outbound
 {
     public class CommandResultEvent : ICommandResultEvent
     {

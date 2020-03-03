@@ -4,9 +4,9 @@ using EspIot.Drivers.SparkFunWindVane.Enums;
 
 namespace WeatherStation.Application.Events.Outbound
 {
-    public class TelemetryEvent : IEvent
+    public class WeatherTelemetryEvent : IEvent
     {
-        public TelemetryEvent(DateTime measurementStartTime,
+        public WeatherTelemetryEvent(DateTime measurementStartTime,
             DateTime measurementEndTime,
             float temperature,
             float pressure,
@@ -45,6 +45,5 @@ namespace WeatherStation.Application.Events.Outbound
         public float MaxWindSpeed { get; } // [m/s]
         public float MinWindSpeed { get; } // [m/s]
         public float Precipitation { get; } // [mm]
-        public string CorrelationId { get; } = Guid.NewGuid().ToString();
     }
 }

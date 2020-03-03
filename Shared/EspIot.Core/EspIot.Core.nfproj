@@ -25,14 +25,11 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Gpio\GpioPins.cs" />
     <Compile Include="Helpers\ICurrentUtcDateProvider.cs" />
+    <Compile Include="Helpers\Logger.cs" />
     <Compile Include="I2c\I2cControllerName.cs" />
     <Compile Include="I2c\I2cException.cs" />
     <Compile Include="I2c\I2CExtensions.cs" />
     <Compile Include="Messaging\Concrete\CommandBase.cs" />
-    <Compile Include="Messaging\Concrete\CommandResultEvent.cs" />
-    <Compile Include="Messaging\Concrete\DeviceStatusUpdatedEvent.cs" />
-    <Compile Include="Messaging\Concrete\ErrorEvent.cs" />
-    <Compile Include="Messaging\Concrete\ProcessingFailureEvent.cs" />
     <Compile Include="Messaging\Enum\DeviceStatusCode.cs" />
     <Compile Include="Messaging\Enum\ErrorLevel.cs" />
     <Compile Include="Messaging\Enum\StatusCode.cs" />
@@ -52,6 +49,7 @@
     <Compile Include="Messaging\Interfaces\IQueryResult.cs" />
     <Compile Include="Messaging\Interfaces\IService.cs" />
     <Compile Include="Messaging\Validation\ValidationError.cs" />
+    <Compile Include="Messaging\Validation\ValidationErrorExtensions.cs" />
     <Compile Include="ObjectWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -74,6 +72,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

@@ -2,7 +2,7 @@
 using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace EspIot.Core.Messaging.Concrete
+namespace EspIot.Application.Events.Outbound
 {
     public class DeviceStatusUpdatedEvent: IEvent
     {
@@ -12,7 +12,6 @@ namespace EspIot.Core.Messaging.Concrete
             DeviceStatusCode = deviceStatusCode;
         }
 
-        public string CorrelationId { get; } = Guid.NewGuid().ToString();
         public string Message { get; }
         public DeviceStatusCode DeviceStatusCode { get; }
     }

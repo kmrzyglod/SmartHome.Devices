@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using EspIot.Core.Messaging.Concrete;
+using EspIot.Application.Events.Outbound;
 using EspIot.Core.Messaging.Enum;
 using EspIot.Core.Messaging.Events;
 using EspIot.Core.Messaging.Interfaces;
@@ -12,6 +12,7 @@ using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.SparkFunWindVane;
 using EspIot.Drivers.SparkFunWindVane.Enums;
 using nanoFramework.Runtime.Native;
+using WeatherStation.Application.Commands.SetTelemetryInterval;
 using WeatherStation.Application.Events.Outbound;
 
 namespace WeatherStation.Application.Services
@@ -71,7 +72,7 @@ namespace WeatherStation.Application.Services
                     DeviceStatusCode.ServiceStarted));
                 while (_runWorkingThread)
                 {
-                    Console.WriteLine(">> free memory: " + Debug.GC(false) + " bytes");
+                    Debug.GC(false);
                     var measurementStartTime = DateTime.UtcNow;
                     Thread.Sleep(_sentInterval);
                     var measurementEndTime = DateTime.UtcNow;
@@ -91,8 +92,20 @@ namespace WeatherStation.Application.Services
 
         public void SetInterval(int interval)
         {
+            if (interval < SetTelemetryIntervalCommand.MIN_INTERVAL)
+            {
+                throw new ArgumentOutOfRangeException(nameof(interval),
+                    $"Interval must be greater or equal to {SetTelemetryIntervalCommand.MIN_INTERVAL} ms");
+            }
+
+            if (interval > SetTelemetryIntervalCommand.MAX_INTERVAL)
+            {
+                throw new ArgumentOutOfRangeException(nameof(interval),
+                    $"Interval must be lower or equal to {SetTelemetryIntervalCommand.MAX_INTERVAL} ms");
+            }
+
             _sentInterval = interval;
-            _outboundEventBus.Send(new TelemetryIntervalChangedEvent(interval));
+            _outboundEventBus.Send(new WeatherTelemetryIntervalChangedEvent(interval));
         }
 
         private void StartMeasurements()
@@ -116,9 +129,9 @@ namespace WeatherStation.Application.Services
             _windVaneDriver.Reset();
         }
 
-        private TelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
+        private WeatherTelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
         {
-            return new TelemetryEvent(measurementStartTime,
+            return new WeatherTelemetryEvent(measurementStartTime,
                 measurementEndTime,
                 GetTemperature(),
                 GetPressure(),
@@ -140,8 +153,8 @@ namespace WeatherStation.Application.Services
             }
             catch (Exception e)
             {
-                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
-                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during temperature measurement: {e.Message}", ErrorLevel.Critical));
                 return float.NaN;
             }
         }
@@ -154,8 +167,8 @@ namespace WeatherStation.Application.Services
             }
             catch (Exception e)
             {
-                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
-                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during humidity measurement: {e.Message}", ErrorLevel.Critical));
                 return float.NaN;
             }
         }
@@ -168,8 +181,8 @@ namespace WeatherStation.Application.Services
             }
             catch (Exception e)
             {
-                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
-                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during pressure measurement: {e.Message}", ErrorLevel.Critical));
                 return float.NaN;
             }
         }
@@ -182,8 +195,8 @@ namespace WeatherStation.Application.Services
             }
             catch (Exception e)
             {
-                _outboundEventBus.Send(new ErrorEvent(Guid.NewGuid().ToString(),
-                    $"Error during measurement: {e.Message}", ErrorLevel.Critical));
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during light level measurement: {e.Message}", ErrorLevel.Critical));
                 return int.MinValue;
             }
         }

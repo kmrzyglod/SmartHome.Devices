@@ -3,11 +3,11 @@ using EspIot.Core.Extensions;
 using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Interfaces;
 
-namespace WeatherStation.Application.Commands.Ping
+namespace EspIot.Application.Commands.Ping
 {
     public class PingCommand: CommandBase
     {
-        public PingCommand(string correlationId) : base(correlationId)
+        public PingCommand(string correlationId) : base((string) correlationId)
         {
         }
 

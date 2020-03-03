@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using EspIot.Core.Collections;
+using EspIot.Core.Helpers;
 using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt.Events;
 using uPLibrary.Networking.M2Mqtt;
@@ -12,24 +13,22 @@ namespace EspIot.Infrastructure.Mqtt
     public class MqttClientWrapper
     {
         private const ushort
-            MessageQueueSizeLimit = 50; //Limit maximum queued messages to avoid potential OutOfMemory Exception
+            MessageQueueSizeLimit = 2; //Limit maximum queued messages to avoid potential OutOfMemory Exception
 
         private readonly string _brokerAddress;
         private readonly MqttClient _client;
         private readonly string _deviceId;
-        private readonly StatusLed _statusLed;
         private readonly ConcurrentQueue _messageQue = new ConcurrentQueue();
-        private readonly string _readTopic;
         private readonly string _sendTopic;
         private Thread _connectionWatcherThread;
         private Thread _outboundMessageSendingThread;
         private bool _status;
+        private string[] _topics;
 
         public MqttClientWrapper(string brokerAddress, string deviceId, StatusLed statusLed)
         {
             _brokerAddress = brokerAddress;
             _deviceId = deviceId;
-            _statusLed = statusLed;
             _sendTopic = $"devices/{_deviceId}/messages/events/";
             _client = new MqttClient(_brokerAddress);
             _client.MqttMsgPublishReceived += OnMessageReceived;
@@ -39,8 +38,9 @@ namespace EspIot.Infrastructure.Mqtt
         public event MqttDisconnectedEventHandler OnMqttClientDisconnected;
         public event MqttMessageReceivedEventHandler OnMqttMessageReceived;
 
-        public void Connect()
+        public void Connect(string[] topics)
         {
+            _topics = topics;
             TryConnect();
             StartConnectionWatcher();
             StartOutboundMessageWorker();
@@ -56,7 +56,7 @@ namespace EspIot.Infrastructure.Mqtt
             _messageQue.Enqueue(message);
         }
 
-        public void Subscribe(string[] topics)
+        private void Subscribe(string[] topics)
         {
             _client.Subscribe(topics, new byte[] {2});
         }
@@ -64,8 +64,13 @@ namespace EspIot.Infrastructure.Mqtt
         private void OnMessageReceived(object sender, MqttMsgPublishEventArgs e)
         {
             string topic = e.Topic;
-            string message = Encoding.UTF8.GetString(e.Message, 0, e.Message.Length);
-            //Console.WriteLine("Publish Received Topic:" + topic + " Message:" + message);
+
+            Logger.Log(() =>
+            {
+                string message = Encoding.UTF8.GetString(e.Message, 0, e.Message.Length);
+                return $"Publish Received Topic: {topic} Message: {message}";
+            });
+            
             OnMqttMessageReceived?.Invoke(sender, e);
         }
 
@@ -88,8 +93,8 @@ namespace EspIot.Infrastructure.Mqtt
                                 TryConnect();
                             }
 
-                            string topic = string.Format("{0}{1}", _sendTopic, message.Params);
-                            //Console.WriteLine("Publish on Topic:" + topic + " Message:" + message.Payload);
+                            string topic = $"{_sendTopic}{message.Params}";
+                            Logger.Log(() => $"Publish on Topic: {topic} Message: {message.Payload}");
                             _client.Publish(topic, Encoding.UTF8.GetBytes(message.Payload),
                                 MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
                             isMessageSent = true;
@@ -124,18 +129,19 @@ namespace EspIot.Infrastructure.Mqtt
 
                 try
                 {
-                    Console.WriteLine("Attempt connect to MQTT broker...");
+                    Logger.Log("Attempt connect to MQTT broker...");
                     _client.Connect("");
-                    Console.WriteLine("Connected successfully to MQTT broker");
+                    Logger.Log("Connected successfully to MQTT broker");
                     if (!_status)
                     {
                         _status = true;
+                        Subscribe(_topics);
                         OnMqttClientConnected?.Invoke();
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error during connection to MQTT broker");
+                    Logger.Log("Error during connection to MQTT broker");
                 }
 
                 Thread.Sleep(15000);

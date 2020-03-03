@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using EspIot.Application.Events.Outbound;
 using EspIot.Core.Collections;
 using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Enum;
@@ -9,7 +10,7 @@ namespace EspIot.Infrastructure.MessageBus
 {
     public class CommandBus : ICommandBus
     {
-        private const short MAXIMUM_QUEUE_COUNT = 5;
+        private const short MAXIMUM_QUEUE_COUNT = 2;
         private static readonly Hashtable _commandQueues = new Hashtable();
         private readonly IOutboundEventBus _outboundEventBus;
 
@@ -54,14 +55,19 @@ namespace EspIot.Infrastructure.MessageBus
             }
 
             var commandQueue = _commandQueues[command.PartitionKey] as ConcurrentQueue;
-            if (commandQueue.Count > MAXIMUM_QUEUE_COUNT)
+            lock (_commandQueues)
             {
-                _outboundEventBus.Send(new ProcessingFailureEvent(StatusCode.Refused,
-                    $"Command queue overflow for command {nameof(ICommand)}"));
-                return true;
+                if (commandQueue.Count > MAXIMUM_QUEUE_COUNT)
+                {
+                    var commandName = command.GetType().Name;
+                    _outboundEventBus.Send(new CommandResultEvent(commandName, StatusCode.Refused,
+                        $"Command queue overflow for command {commandName}."));
+                    return true;
+                }
+
+                commandQueue?.Enqueue(command);
             }
 
-            commandQueue?.Enqueue(command);
             return true;
         }
     }

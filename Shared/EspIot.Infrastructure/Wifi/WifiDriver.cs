@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 using System.Threading;
+using Windows.Devices.WiFi;
+using EspIot.Core.Helpers;
 using EspIot.Infrastructure.Wifi.Events;
 
 namespace EspIot.Infrastructure.Wifi
@@ -9,12 +11,63 @@ namespace EspIot.Infrastructure.Wifi
     {
         private static Thread _wifiStatusWatcher;
         private static bool _connectionStatus;
+        private static readonly AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
         public static event WifiConnectedEventHandler OnWifiConnected;
         public static event WifiDuringConnectionEventHandler OnWifiDuringConnection;
         public static event WifiDisconnectedEventHandler OnWifiDisconnected;
+        private static WiFiAdapter _wifiAdapter;
+
+        public static NetworkConfig GetNetworkConfig()
+        {
+            var nis = NetworkInterface.GetAllNetworkInterfaces();
+
+            if (nis.Length <= 0)
+            {
+                return new NetworkConfig(NetworkInterfaceType.Unknown, string.Empty, double.NaN, string.Empty,
+                    string.Empty);
+            }
+
+            // get the first interface
+            var ni = nis[0];
+            if (ni.NetworkInterfaceType != NetworkInterfaceType.Wireless80211)
+            {
+                return new NetworkConfig(ni.NetworkInterfaceType, string.Empty, double.NaN, ni.IPv4Address,
+                    ni.IPv4GatewayAddress);
+            }
+
+            var wc = Wireless80211Configuration.GetAllWireless80211Configurations()[ni.SpecificConfigId];
+            _wifiAdapter.ScanAsync();
+            _autoResetEvent.WaitOne();
+            double rssi = double.NaN;
+            foreach (var networkReportAvailableNetwork in _wifiAdapter.NetworkReport.AvailableNetworks)
+            {
+                if (networkReportAvailableNetwork.Ssid == wc.Ssid)
+                {
+                    rssi = networkReportAvailableNetwork.NetworkRssiInDecibelMilliwatts;
+                }
+            }
+
+            return new NetworkConfig(ni.NetworkInterfaceType, wc.Ssid, rssi, ni.IPv4Address, ni.IPv4GatewayAddress);
+        }
+
+        private static void InitWifiAdpater()
+        {
+            if (_wifiAdapter != null)
+            {
+                return;
+            }
+
+            _wifiAdapter = WiFiAdapter.FindAllAdapters()[0];
+            _wifiAdapter.AvailableNetworksChanged += (_, __) => _autoResetEvent.Set();
+        }
 
         public static void ConnectToNetwork()
         {
+            if (_connectionStatus)
+            {
+                return;
+            }
+
             var nis = NetworkInterface.GetAllNetworkInterfaces();
 
             if (nis.Length > 0)
@@ -25,9 +78,11 @@ namespace EspIot.Infrastructure.Wifi
                 if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                 {
                     // network interface is Wi-Fi
-                    Console.WriteLine("Network connection is: Wi-Fi");
+                    Logger.Log("Network connection is: Wi-Fi");
                     var wc = Wireless80211Configuration.GetAllWireless80211Configurations()[ni.SpecificConfigId];
-                    wc.Options = (Wireless80211Configuration.ConfigurationOptions) 7; //Workaround for bug with wrong options enum values
+                    wc.Options =
+                        (Wireless80211Configuration.ConfigurationOptions)
+                        7; //Workaround for bug with wrong options enum values
                     wc.SaveConfiguration();
                     OnWifiDuringConnection();
                 }
@@ -40,6 +95,7 @@ namespace EspIot.Infrastructure.Wifi
                 WaitIp();
                 OnWifiConnected();
                 _connectionStatus = true;
+                InitWifiAdpater();
                 StartWifiStatusWatcher();
             }
             else
@@ -50,7 +106,7 @@ namespace EspIot.Infrastructure.Wifi
 
         private static void WaitIp()
         {
-            Console.WriteLine("Waiting for IP...");
+            Logger.Log("Waiting for IP...");
 
             while (true)
             {
@@ -59,7 +115,7 @@ namespace EspIot.Infrastructure.Wifi
                 {
                     if (ni.IPv4Address[0] != '0')
                     {
-                        Console.WriteLine($"We have an IP: {ni.IPv4Address}");
+                        Logger.Log($"We have an IP: {ni.IPv4Address}");
                         break;
                     }
                 }
@@ -72,17 +128,17 @@ namespace EspIot.Infrastructure.Wifi
 
         private static void SetDateTime()
         {
-            Console.WriteLine("Setting up system clock...");
+            Logger.Log("Setting up system clock...");
 
             // if SNTP is available and enabled on target device this can be skipped because we should have a valid date & time
             while (DateTime.UtcNow.Year < 2018)
             {
-                Console.WriteLine("Waiting for valid date time...");
+                Logger.Log("Waiting for valid date time...");
                 // wait for valid date & time
                 Thread.Sleep(1000);
             }
 
-            Console.WriteLine($"System time is: {DateTime.UtcNow.ToString()}");
+            Logger.Log($"System time is: {DateTime.UtcNow.ToString()}");
         }
 
         private static void StartWifiStatusWatcher()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Windows.Devices.I2c;
+using EspIot.Core.Helpers;
 using EspIot.Core.I2c;
 
 namespace EspIot.Drivers.Bh1750
@@ -42,7 +43,7 @@ namespace EspIot.Drivers.Bh1750
                 _device = I2cDevice.FromId(_i2CControllerName, settings);
                 if (_device == null)
                 {
-                    Console.WriteLine("Device not found");
+                    Logger.Log("Device not found", Logger.LogLevel.Warning);
                 }
 
                 SetMode(measurementMode);
@@ -50,7 +51,7 @@ namespace EspIot.Drivers.Bh1750
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message + "\n" + e.StackTrace);
+                Logger.Log("Exception: " + e.Message + "\n" + e.StackTrace, Logger.LogLevel.Error);
                 throw;
             }
 

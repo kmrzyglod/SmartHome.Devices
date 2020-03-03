@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Threading;
 using Windows.Devices.Gpio;
 using EspIot.Core.Gpio;
+using EspIot.Core.Helpers;
 
 namespace EspIot.Drivers.SparkFunRainGauge
 {
@@ -11,53 +10,30 @@ namespace EspIot.Drivers.SparkFunRainGauge
     {
         private const uint ONE_PULSE_PRECIPITATION = 2794;
         private readonly GpioController _gpioController;
-        private GpioPin _pin;
         private bool _isMeasuring;
-        private readonly GpioChangeCounter _pulseCounter;
-        private Thread _measuringThread = new Thread(() => { });
-
+        private readonly GpioPin _pin;
         private uint _precipitation; //unit:  [mm * 10000]
 
         public SparkFunRainGaugeDriver(GpioController gpioController, GpioPins gpioPin)
         {
             _gpioController = gpioController;
             _pin = _gpioController.OpenPin((int) gpioPin);
-            _pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
-            _pulseCounter = new GpioChangeCounter(_pin) {Polarity = GpioChangePolarity.Rising};
+            _pin.SetDriveMode(GpioPinDriveMode.Input);
+            _pin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
+            _pin.ValueChanged += (_, eventArgs) =>
+            {
+                if (!_isMeasuring || eventArgs.Edge == GpioPinEdge.RisingEdge)
+                {
+                    return;
+                }
+
+                _precipitation += ONE_PULSE_PRECIPITATION;
+            };
         }
 
         public void StartMeasurement()
         {
-            if (_measuringThread.IsAlive)
-            {
-                return; //don't start new measuring when previous is pending
-            }
-
             _isMeasuring = true;
-
-            _measuringThread = new Thread(() =>
-            {
-                _pulseCounter.Start();
-
-                while (_isMeasuring)
-                {
-                    Thread.Sleep(10000);
-                    var count = _pulseCounter.Read();
-                    _pulseCounter.Reset();
-                    Console.WriteLine("Pulse count: " + count.Count);
-                    if (count.Count > 2)
-                    {
-                        continue; //workaround for some strange, random pin state changes which must be ommited 
-                    }
-                    _precipitation += ((uint)(count.Count / 2 * ONE_PULSE_PRECIPITATION));
-                }
-
-                _pulseCounter.Stop();
-                _pulseCounter.Reset();
-                Reset();
-            });
-
-            _measuringThread.Start();
         }
 
 
@@ -74,7 +50,6 @@ namespace EspIot.Drivers.SparkFunRainGauge
         public void StopMeasurement()
         {
             _isMeasuring = false;
-            _measuringThread.Join();
             Reset();
         }
     }
