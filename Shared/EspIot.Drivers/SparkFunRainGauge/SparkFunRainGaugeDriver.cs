@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using Windows.Devices.Gpio;
 using EspIot.Core.Gpio;
 using EspIot.Core.Helpers;
+using nanoFramework.Runtime.Native;
 
 namespace EspIot.Drivers.SparkFunRainGauge
 {
@@ -10,22 +12,49 @@ namespace EspIot.Drivers.SparkFunRainGauge
     {
         private const uint ONE_PULSE_PRECIPITATION = 2794;
         private readonly GpioController _gpioController;
+        private readonly GpioPins _gpioPin;
         private bool _isMeasuring;
-        private readonly GpioPin _pin;
+        private GpioPin _pin;
+        private Thread _pinResettingThread;
         private uint _precipitation; //unit:  [mm * 10000]
 
-        public SparkFunRainGaugeDriver(GpioController gpioController, GpioPins gpioPin)
+        public SparkFunRainGaugeDriver(GpioController gpioController, GpioPins gpioGpioPin)
         {
+            _gpioPin = gpioGpioPin;
             _gpioController = gpioController;
-            _pin = _gpioController.OpenPin((int) gpioPin);
+            InitPin();
+            ReinitializePinPeriodically();
+        }
+
+
+        //Workaround - because of some bug in nanoframework ValueChanged stops triggering after some period of time 
+        private void ReinitializePinPeriodically()
+        {
+            _pinResettingThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(30000);
+                    _pin.Dispose();
+                    InitPin();
+                }
+            });
+            _pinResettingThread.Start();
+        }
+
+        private void InitPin()
+        {
+            _pin = _gpioController.OpenPin((int) _gpioPin);
             _pin.SetDriveMode(GpioPinDriveMode.Input);
-            _pin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
+            _pin.DebounceTimeout = TimeSpan.FromMilliseconds(30);
             _pin.ValueChanged += (_, eventArgs) =>
             {
                 if (!_isMeasuring || eventArgs.Edge == GpioPinEdge.RisingEdge)
                 {
                     return;
                 }
+
+                Logger.Log("Pulse count");
 
                 _precipitation += ONE_PULSE_PRECIPITATION;
             };

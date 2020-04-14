@@ -10,6 +10,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
     public class SparkFunAnemometerDriver
     {
         private const uint ONE_HZ_PULSE_SPEED = 67; // 2,4 km/h -> 0,67 [m/s] -> 67 [m/s * 100];
+        private const uint MAX_REAL_WIND_SPEED = 4000; //40 [m/s] -> 144 km/h
         private readonly GpioController _gpioController;
 
         private readonly GpioPin _pin;
@@ -58,6 +59,11 @@ namespace EspIot.Drivers.SparkFunAnemometer
                     _currentWindSpeed =
                         (ushort) (pulseCount.Count / (double) measurementResolution * ONE_HZ_PULSE_SPEED);
 
+                    if (_currentWindSpeed > MAX_REAL_WIND_SPEED)
+                    {
+                        continue;
+                    }
+                    
                     _averageWindSpeed = (_averageWindSpeed * _measurementCounter + _currentWindSpeed) /
                                         ++_measurementCounter;
 
