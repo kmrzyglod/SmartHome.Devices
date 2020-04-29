@@ -28,7 +28,9 @@ namespace WeatherStation.Infrastructure.Factory
                 throw new NotSupportedException($"Command {commandName} is not supported");
             }
 
-            return (_mappings[commandName] as ICommandFactory)?.Create(payload);
+            var commandFactory = _mappings[commandName] as ICommandFactory;
+            var command = commandFactory.Create(payload);
+            return command;
         }
     }
 }

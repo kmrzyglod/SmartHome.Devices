@@ -20,7 +20,7 @@ namespace EspIot.Application.Commands.Ping
         
         public class Factory: ICommandFactory
         {
-            ICommand ICommandFactory.Create(Hashtable obj)
+            public ICommand Create(Hashtable obj)
             {
                 return FromHashtable(obj);
             }
