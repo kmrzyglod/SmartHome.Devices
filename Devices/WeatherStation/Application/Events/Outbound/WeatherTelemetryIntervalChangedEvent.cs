@@ -1,5 +1,5 @@
 ﻿using System;
-using EspIot.Core.Messaging.Interfaces;
+using EspIot.Application.Interfaces;
 
 namespace WeatherStation.Application.Events.Outbound
 {

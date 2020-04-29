@@ -1,4 +1,4 @@
-﻿namespace EspIot.Core.Messaging.Events
+﻿namespace EspIot.Application.Events
 {
     public delegate void NewCommandPartitionKeyCreatedEventHandler(object sender, string partitionKey);
 }

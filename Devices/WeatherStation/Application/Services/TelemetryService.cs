@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using EspIot.Application.Events.Outbound;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Messaging.Enum;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
 using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
 using EspIot.Drivers.SparkFunAnemometer;
@@ -72,7 +71,6 @@ namespace WeatherStation.Application.Services
                     DeviceStatusCode.ServiceStarted));
                 while (_runWorkingThread)
                 {
-                    Debug.GC(false);
                     var measurementStartTime = DateTime.UtcNow;
                     Thread.Sleep(_sentInterval);
                     var measurementEndTime = DateTime.UtcNow;
@@ -92,18 +90,6 @@ namespace WeatherStation.Application.Services
 
         public void SetInterval(int interval)
         {
-            if (interval < SetTelemetryIntervalCommand.MIN_INTERVAL)
-            {
-                throw new ArgumentOutOfRangeException(nameof(interval),
-                    $"Interval must be greater or equal to {SetTelemetryIntervalCommand.MIN_INTERVAL} ms");
-            }
-
-            if (interval > SetTelemetryIntervalCommand.MAX_INTERVAL)
-            {
-                throw new ArgumentOutOfRangeException(nameof(interval),
-                    $"Interval must be lower or equal to {SetTelemetryIntervalCommand.MAX_INTERVAL} ms");
-            }
-
             _sentInterval = interval;
             _outboundEventBus.Send(new WeatherTelemetryIntervalChangedEvent(interval));
         }

@@ -1,6 +1,6 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using EspIot.Application.Interfaces;
 
-namespace EspIot.Core.Messaging.Events
+namespace EspIot.Application.Events
 {
     public delegate void CommandSuccessEventHandler(object sender, ICommandResultEvent e);
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using EspIot.Application.Events.Outbound;
+using EspIot.Application.Interfaces;
 using EspIot.Application.Services;
-using EspIot.Core.Messaging.Events;
 using EspIot.Infrastructure.Wifi;
 using nanoFramework.Runtime.Native;
 

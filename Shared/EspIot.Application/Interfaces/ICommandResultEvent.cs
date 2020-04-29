@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Enum;
 
-namespace EspIot.Core.Messaging.Interfaces
+namespace EspIot.Application.Interfaces
 {
     public interface ICommandResultEvent: IEvent, IMessage
     {

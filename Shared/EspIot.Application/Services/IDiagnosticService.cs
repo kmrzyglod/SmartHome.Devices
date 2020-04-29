@@ -1,5 +1,5 @@
 ﻿using EspIot.Application.Events.Outbound;
-using EspIot.Core.Messaging.Interfaces;
+using EspIot.Application.Interfaces;
 
 namespace EspIot.Application.Services
 {

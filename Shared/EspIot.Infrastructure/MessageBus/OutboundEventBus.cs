@@ -1,5 +1,4 @@
-﻿using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
+﻿using EspIot.Application.Interfaces;
 using EspIot.Infrastructure.Mqtt;
 using Json.NetMF;
 

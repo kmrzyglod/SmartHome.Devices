@@ -1,8 +1,6 @@
 ﻿using EspIot.Application.Events.Outbound;
-using EspIot.Core.Messaging.Concrete;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Messaging.Enum;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
 using WeatherStation.Application.Services;
 
 namespace WeatherStation.Application.Commands.StartTelemetryService

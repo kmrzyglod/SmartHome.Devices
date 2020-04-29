@@ -1,7 +1,7 @@
-﻿using EspIot.Core.Collections;
-using EspIot.Core.Messaging.Events;
+﻿using EspIot.Application.Events;
+using EspIot.Core.Collections;
 
-namespace EspIot.Core.Messaging.Interfaces
+namespace EspIot.Application.Interfaces
 {
     public interface ICommandBus
     {

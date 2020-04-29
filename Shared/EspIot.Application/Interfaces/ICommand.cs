@@ -1,6 +1,6 @@
 ﻿using EspIot.Core.Messaging.Validation;
 
-namespace EspIot.Core.Messaging.Interfaces
+namespace EspIot.Application.Interfaces
 {
     public interface ICommand
     {

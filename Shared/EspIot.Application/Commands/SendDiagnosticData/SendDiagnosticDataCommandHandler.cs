@@ -1,9 +1,7 @@
 ﻿using EspIot.Application.Events.Outbound;
+using EspIot.Application.Interfaces;
 using EspIot.Application.Services;
-using EspIot.Core.Messaging.Concrete;
 using EspIot.Core.Messaging.Enum;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
 
 namespace EspIot.Application.Commands.SendDiagnosticData
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Extensions;
-using EspIot.Core.Messaging.Concrete;
-using EspIot.Core.Messaging.Interfaces;
 
 namespace EspIot.Application.Commands.Ping
 {

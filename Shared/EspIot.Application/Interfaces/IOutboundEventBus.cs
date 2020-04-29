@@ -1,6 +1,4 @@
-﻿using EspIot.Core.Messaging.Interfaces;
-
-namespace EspIot.Core.Messaging.Events
+﻿namespace EspIot.Application.Interfaces
 {
     public interface IOutboundEventBus
     {

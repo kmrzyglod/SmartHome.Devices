@@ -1,4 +1,4 @@
-﻿using EspIot.Core.Messaging.Interfaces;
+﻿using EspIot.Application.Interfaces;
 
 namespace EspIot.Application.Events.Outbound
 {

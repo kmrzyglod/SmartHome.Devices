@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Extensions;
-using EspIot.Core.Messaging.Interfaces;
 using EspIot.Core.Messaging.Validation;
 
-namespace EspIot.Core.Messaging.Concrete
+namespace EspIot.Application.Commands
 {
     public abstract class CommandBase: ICommand
     {

@@ -1,6 +1,6 @@
 ﻿using System;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Messaging.Enum;
-using EspIot.Core.Messaging.Interfaces;
 
 namespace EspIot.Application.Events.Outbound
 {

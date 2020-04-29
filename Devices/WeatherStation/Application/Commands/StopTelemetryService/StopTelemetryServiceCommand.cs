@@ -1,7 +1,7 @@
 ﻿using System.Collections;
+using EspIot.Application.Commands;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Extensions;
-using EspIot.Core.Messaging.Concrete;
-using EspIot.Core.Messaging.Interfaces;
 using WeatherStation.Application.Services;
 
 namespace WeatherStation.Application.Commands.StopTelemetryService

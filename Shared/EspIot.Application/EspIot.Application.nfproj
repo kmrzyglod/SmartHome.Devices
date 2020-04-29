@@ -18,14 +18,30 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\Ping\PingCommand.cs" />
     <Compile Include="Commands\Ping\PingCommandHandler.cs" />
     <Compile Include="Commands\SendDiagnosticData\SendDiagnosticDataCommand.cs" />
     <Compile Include="Commands\SendDiagnosticData\SendDiagnosticDataCommandHandler.cs" />
+    <Compile Include="Events\CommandSuccessEventHandler.cs" />
+    <Compile Include="Events\NewCommandPartitionKeyCreatedEventHandler.cs" />
     <Compile Include="Events\Outbound\CommandResultEvent.cs" />
     <Compile Include="Events\Outbound\DeviceStatusUpdatedEvent.cs" />
     <Compile Include="Events\Outbound\DiagnosticEvent.cs" />
     <Compile Include="Events\Outbound\ErrorEvent.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Interfaces\ICommandBus.cs" />
+    <Compile Include="Interfaces\ICommandFactory.cs" />
+    <Compile Include="Interfaces\ICommandHandler.cs" />
+    <Compile Include="Interfaces\ICommandHandlersFactory.cs" />
+    <Compile Include="Interfaces\ICommandResultEvent.cs" />
+    <Compile Include="Interfaces\ICommandsFactory.cs" />
+    <Compile Include="Interfaces\IEvent.cs" />
+    <Compile Include="Interfaces\IMessage.cs" />
+    <Compile Include="Interfaces\IOutboundEventBus.cs" />
+    <Compile Include="Interfaces\IQuery.cs" />
+    <Compile Include="Interfaces\IQueryResult.cs" />
+    <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IDiagnosticService.cs" />
   </ItemGroup>

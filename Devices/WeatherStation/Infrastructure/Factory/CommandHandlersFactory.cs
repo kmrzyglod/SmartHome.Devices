@@ -2,9 +2,8 @@
 using System.Collections;
 using EspIot.Application.Commands.Ping;
 using EspIot.Application.Commands.SendDiagnosticData;
+using EspIot.Application.Interfaces;
 using EspIot.Application.Services;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
 using WeatherStation.Application.Commands.SetTelemetryInterval;
 using WeatherStation.Application.Commands.StartTelemetryService;
 using WeatherStation.Application.Commands.StopTelemetryService;

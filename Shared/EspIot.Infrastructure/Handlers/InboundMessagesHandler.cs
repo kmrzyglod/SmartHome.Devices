@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Text;
 using EspIot.Application.Events.Outbound;
-using EspIot.Core.Messaging.Concrete;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Messaging.Enum;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
 using EspIot.Core.Messaging.Validation;
 using EspIot.Infrastructure.Mqtt;
 using Json.NetMF;

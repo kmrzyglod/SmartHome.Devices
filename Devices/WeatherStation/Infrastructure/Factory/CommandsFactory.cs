@@ -2,7 +2,8 @@
 using System.Collections;
 using EspIot.Application.Commands.Ping;
 using EspIot.Application.Commands.SendDiagnosticData;
-using EspIot.Core.Messaging.Interfaces;
+using EspIot.Application.Interfaces;
+using EspIot.Core.Extensions;
 using WeatherStation.Application.Commands.SetTelemetryInterval;
 using WeatherStation.Application.Commands.StartTelemetryService;
 using WeatherStation.Application.Commands.StopTelemetryService;
@@ -28,9 +29,7 @@ namespace WeatherStation.Infrastructure.Factory
                 throw new NotSupportedException($"Command {commandName} is not supported");
             }
 
-            var commandFactory = _mappings[commandName] as ICommandFactory;
-            var command = commandFactory.Create(payload);
-            return command;
+            return (_mappings[commandName] as ICommandFactory)?.Create(payload);
         }
     }
 }

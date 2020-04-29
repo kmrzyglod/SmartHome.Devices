@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace EspIot.Core.Messaging.Interfaces
+namespace EspIot.Application.Interfaces
 {
     public interface ICommandsFactory
     {
