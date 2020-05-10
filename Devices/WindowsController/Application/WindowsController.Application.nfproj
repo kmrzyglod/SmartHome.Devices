@@ -22,6 +22,8 @@
     <Compile Include="Commands\CloseWindow\CloseWindowCommandHandler.cs" />
     <Compile Include="Commands\OpenWindow\OpenWindowCommand.cs" />
     <Compile Include="Commands\OpenWindow\OpenWindowCommandHandler.cs" />
+    <Compile Include="Events\Outbound\WindowClosedEvent.cs" />
+    <Compile Include="Events\Outbound\WindowOpenedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\WindowsManagingService.cs" />
   </ItemGroup>
@@ -41,6 +43,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\EspIot.Application\EspIot.Application.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

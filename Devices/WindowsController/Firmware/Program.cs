@@ -7,13 +7,9 @@ namespace WindowsController.Firmware
     {
         public static void Main()
         {
-            Console.WriteLine("Hello world!");
+            Bootloader.StartServices();
 
             Thread.Sleep(Timeout.Infinite);
-
-            // Browse our samples repository: https://github.com/nanoframework/samples
-            // Check our documentation online: https://docs.nanoframework.net/
-            // Join our lively Discord community: https://discord.gg/gCyBu8T
         }
     }
 }

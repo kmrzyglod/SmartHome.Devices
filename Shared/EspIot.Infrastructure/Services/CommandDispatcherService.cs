@@ -11,7 +11,7 @@ namespace EspIot.Infrastructure.Services
         private readonly ICommandBus _commandBus;
         private readonly ICommandHandlersFactory _commandHandlersFactory;
         private readonly IOutboundEventBus _outboundEventBus;
-
+        private static readonly TimeSpan COMMAND_EXECUTION_TIMEOUT = TimeSpan.FromMinutes(5);
         public CommandDispatcherService(ICommandHandlersFactory commandHandlersFactory, ICommandBus commandBus,
             IOutboundEventBus outboundEventBus)
         {
@@ -30,15 +30,32 @@ namespace EspIot.Infrastructure.Services
                     {
                         var command = _commandBus.GetCommandQueue(commandPartitionKey).Dequeue() as ICommand;
                         string commandName = command.GetType().Name;
-                        try
+                        
+                        var commandExecutionThread = new Thread(() =>
                         {
-                            _commandHandlersFactory.Get(commandName).Handle(command);
-                        }
-                        catch (Exception e)
+                            try
+                            {
+                                _commandHandlersFactory.Get(commandName).Handle(command);
+                            }
+                            catch (Exception e)
+                            {
+                                _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, StatusCode.Error,
+                                    commandName, e.Message));
+                            }
+                        });
+
+                        commandExecutionThread.Start();
+                        commandExecutionThread.Join(COMMAND_EXECUTION_TIMEOUT); 
+                        
+                        if (!commandExecutionThread.IsAlive)
                         {
-                            _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, StatusCode.Error,
-                                commandName, e.Message));
+                            continue;
                         }
+
+                        commandExecutionThread.Abort(); //Try to force kill thread
+                        _outboundEventBus.Send(new CommandResultEvent(command.CorrelationId, StatusCode.Error,
+                            commandName, $"Command {commandName} execution aborted due to timeout exceed"));
+
                     }
                 }).Start();
             };

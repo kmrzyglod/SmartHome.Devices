@@ -9,15 +9,11 @@ namespace WindowsController.Application.Commands.CloseWindow
 {
     public class CloseWindowCommand : CommandBase
     {
-        public const ushort MAX_WINDOW_ID = 2;
+        public const ushort MAX_WINDOW_ID = 1;
 
         public CloseWindowCommand(string correlationId, ushort windowId) : base(correlationId)
         {
             WindowId = windowId;
-        }
-
-        public CloseWindowCommand(string correlationId) : base(correlationId)
-        {
         }
 
         public ushort WindowId { get; }
@@ -44,7 +40,7 @@ namespace WindowsController.Application.Commands.CloseWindow
 
         public class Factory : ICommandFactory
         {
-            ICommand ICommandFactory.Create(Hashtable obj)
+            public ICommand Create(Hashtable obj)
             {
                 return FromHashtable(obj);
             }

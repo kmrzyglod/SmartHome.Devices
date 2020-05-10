@@ -31,8 +31,14 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
+    <Reference Include="nanoFramework.Runtime.Native">
+      <HintPath>..\..\WeatherStation\packages\nanoFramework.Runtime.Native.1.2.0-preview.15\lib\nanoFramework.Runtime.Native.dll</HintPath>
+    </Reference>
     <Reference Include="nanoFramework.System.Collections">
       <HintPath>..\..\WeatherStation\packages\nanoFramework.System.Collections.1.0.1-preview.4\lib\nanoFramework.System.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Windows.Devices.Gpio">
+      <HintPath>..\..\WeatherStation\packages\nanoFramework.Windows.Devices.Gpio.1.4.2-preview.1\lib\Windows.Devices.Gpio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +47,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\EspIot.Application\EspIot.Application.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
+    <ProjectReference Include="..\..\..\Shared\EspIot.Infrastructure\EspIot.Infrastructure.nfproj" />
+    <ProjectReference Include="..\Application\WindowsController.Application.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

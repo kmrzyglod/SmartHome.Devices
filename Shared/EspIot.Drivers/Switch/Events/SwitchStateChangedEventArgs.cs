@@ -1,8 +1,8 @@
 ﻿using Windows.Devices.Gpio;
 
-namespace EspIot.Drivers.ReedSwitch.Events
+namespace EspIot.Drivers.Switch.Events
 {
-    public class ReedSwitchStateChangedEventArgs
+    public class SwitchStateChangedEventArgs
     {
         public GpioPinValueChangedEventArgs GpioPinValueChangedEventArgs { get; set; }
     }

@@ -28,12 +28,19 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
+    <Reference Include="nanoFramework.Runtime.Native">
+      <HintPath>..\..\WeatherStation\packages\nanoFramework.Runtime.Native.1.2.0-preview.15\lib\nanoFramework.Runtime.Native.dll</HintPath>
+    </Reference>
+    <Reference Include="Windows.Devices.Gpio">
+      <HintPath>..\..\WeatherStation\packages\nanoFramework.Windows.Devices.Gpio.1.4.2-preview.1\lib\Windows.Devices.Gpio.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
+    <ProjectReference Include="..\Infrastructure\WindowsController.Infrastructure.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
