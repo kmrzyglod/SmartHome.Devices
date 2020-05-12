@@ -50,17 +50,27 @@ namespace WindowsController.Application.Services
             _windowStates = new[] {window1ReedSwitch.GetState(), window2ReedSwitch.GetState()};
             _outboundEventBus = outboundEventBus;
 
-            OnWindow1Opened = (sender, e) => { _outboundEventBus.Send(new WindowOpenedEvent(0)); };
+            OnWindow1Opened = (sender, e) =>
+            {
+                _windowStates[0] = SwitchState.Opened;
+                _outboundEventBus.Send(new WindowOpenedEvent(0));
+            };
             OnWindow1Closed = (sender, e) =>
             {
+                _windowStates[0] = SwitchState.Closed;
                 _autoResets[0].Set();
                 _outboundEventBus.Send(new WindowClosedEvent(0));
             };
 
-            OnWindow2Opened = (sender, e) => { _outboundEventBus.Send(new WindowOpenedEvent(1)); };
+            OnWindow2Opened = (sender, e) =>
+            {
+                _windowStates[1] = SwitchState.Opened;
+                _outboundEventBus.Send(new WindowOpenedEvent(1));
+            };
 
             OnWindow2Closed = (sender, e) =>
             {
+                _windowStates[1] = SwitchState.Closed;
                 _autoResets[1].Set();
                 _outboundEventBus.Send(new WindowClosedEvent(1));
             };
@@ -68,11 +78,6 @@ namespace WindowsController.Application.Services
             //Control switches
             OnWindow1ControlSwitchOpened = (sender, e) =>
             {
-                if (_windowStates[0] == SwitchState.Opened)
-                {
-                    return;
-                }
-
                 if (_workerThreads[0].IsAlive)
                 {
                     _workerThreads[0].Abort();
@@ -99,11 +104,6 @@ namespace WindowsController.Application.Services
 
             OnWindow2ControlSwitchOpened = (sender, e) =>
             {
-                if (_windowStates[1] == SwitchState.Opened)
-                {
-                    return;
-                }
-
                 if (_workerThreads[1].IsAlive)
                 {
                     _workerThreads[1].Abort();
@@ -159,11 +159,6 @@ namespace WindowsController.Application.Services
 
         private void OpenWindowAsync(ushort windowId)
         {
-            if (_windowStates[windowId] == SwitchState.Opened)
-            {
-                return;
-            }
-
             _workerThreads[windowId] = new Thread(() =>
             {
                 _windowActuators[windowId].StartMovingExtensionDirection();
