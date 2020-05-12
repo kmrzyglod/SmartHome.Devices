@@ -79,7 +79,7 @@ namespace WindowsController.Application.Services
                     _windowActuators[0].StopMoving();
                 }
 
-                OpenWindow(0);
+                OpenWindowAsync(0);
             };
             OnWindow1ControlSwitchClosed = (sender, e) =>
             {
@@ -94,7 +94,7 @@ namespace WindowsController.Application.Services
                     _windowActuators[0].StopMoving();
                 }
 
-                CloseWindow(0);
+                CloseWindowAsync(0);
             };
 
             OnWindow2ControlSwitchOpened = (sender, e) =>
@@ -110,7 +110,7 @@ namespace WindowsController.Application.Services
                     _windowActuators[1].StopMoving();
                 }
 
-                OpenWindow(1);
+                OpenWindowAsync(1);
             };
 
             OnWindow2ControlSwitchClosed = (sender, e) =>
@@ -126,7 +126,7 @@ namespace WindowsController.Application.Services
                     _windowActuators[1].StopMoving();
                 }
 
-                CloseWindow(1);
+                CloseWindowAsync(1);
             };
         }
 

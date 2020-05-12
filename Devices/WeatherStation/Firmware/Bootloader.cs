@@ -12,7 +12,7 @@ namespace WeatherStation.Firmware
         public static void StartServices()
         {
             Logger.Log(() => $"Free memory after started CLR {Debug.GC(false)}");
-            var defaultConfig = new WeatherStationConfiguration();
+            var defaultConfig = new Configuration();
             var driversFactory = new DriversFactory(defaultConfig);
 
             new ServiceFactory(driversFactory, defaultConfig)

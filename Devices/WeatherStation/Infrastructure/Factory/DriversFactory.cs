@@ -8,12 +8,13 @@ using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt;
 using nanoFramework.Hardware.Esp32;
 using WeatherStation.Infrastructure.Config;
+using Configuration = WeatherStation.Infrastructure.Config.Configuration;
 
 namespace WeatherStation.Infrastructure.Factory
 {
     public class DriversFactory
     {
-        private readonly WeatherStationConfiguration _configuration;
+        private readonly Configuration _configuration;
         
         private Bh1750 _lightSensor;
         private Bme280 _bme280;
@@ -23,17 +24,17 @@ namespace WeatherStation.Infrastructure.Factory
         private SparkFunAnemometerDriver _anemometerDriver;
         private SparkFunWindVaneDriver _windVaneDriver;
         
-        public DriversFactory(WeatherStationConfiguration configuration)
+        public DriversFactory(Configuration configuration)
         {
             _configuration = configuration;
 
             //Configure I2C1 bus
-            Configuration.SetPinFunction((int)_configuration.I2C1DataPin, DeviceFunction.I2C1_DATA);
-            Configuration.SetPinFunction((int)_configuration.I2C1ClockPin, DeviceFunction.I2C1_CLOCK);
+            nanoFramework.Hardware.Esp32.Configuration.SetPinFunction((int)_configuration.I2C1DataPin, DeviceFunction.I2C1_DATA);
+            nanoFramework.Hardware.Esp32.Configuration.SetPinFunction((int)_configuration.I2C1ClockPin, DeviceFunction.I2C1_CLOCK);
 
             //Configure I2C2 bus
-            Configuration.SetPinFunction((int)_configuration.I2C2DataPin, DeviceFunction.I2C2_DATA);
-            Configuration.SetPinFunction((int)_configuration.I2C2ClockPin, DeviceFunction.I2C2_CLOCK);
+            nanoFramework.Hardware.Esp32.Configuration.SetPinFunction((int)_configuration.I2C2DataPin, DeviceFunction.I2C2_DATA);
+            nanoFramework.Hardware.Esp32.Configuration.SetPinFunction((int)_configuration.I2C2ClockPin, DeviceFunction.I2C2_CLOCK);
         }
 
         public Bh1750 LightSensor => _lightSensor ?? (_lightSensor = new Bh1750(_configuration.Bh1750I2CController));

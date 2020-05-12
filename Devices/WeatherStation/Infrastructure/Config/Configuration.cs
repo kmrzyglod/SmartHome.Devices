@@ -4,7 +4,7 @@ using EspIot.Core.I2c;
 
 namespace WeatherStation.Infrastructure.Config
 {
-    public class WeatherStationConfiguration : IConfiguration
+    public class Configuration : IConfiguration
     {
         //General config
         //MQTT config

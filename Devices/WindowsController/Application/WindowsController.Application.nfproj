@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.7.2.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.CoreLibrary.1.7.2-preview.5\lib\mscorlib.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.CoreLibrary.1.7.2-preview.7\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
@@ -38,12 +38,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\EspIot.Application\EspIot.Application.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Core\EspIot.Core.nfproj" />
     <ProjectReference Include="..\..\..\Shared\EspIot.Drivers\EspIot.Drivers.nfproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>

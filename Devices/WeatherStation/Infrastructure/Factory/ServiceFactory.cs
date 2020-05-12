@@ -14,7 +14,7 @@ namespace WeatherStation.Infrastructure.Factory
 {
     public class ServiceFactory
     {
-        private readonly WeatherStationConfiguration _configuration;
+        private readonly Configuration _configuration;
         private readonly DriversFactory _driversFactory;
         private readonly MqttOutboundEventBus _mqttOutboundEventBus;
         private CommandBus _commandBus;
@@ -25,7 +25,7 @@ namespace WeatherStation.Infrastructure.Factory
         private InboundMessagesHandler _inboundMessagesHandler;
         private TelemetryService _telemetryService;
 
-        public ServiceFactory(DriversFactory driversFactory, WeatherStationConfiguration configuration)
+        public ServiceFactory(DriversFactory driversFactory, Configuration configuration)
         {
             _driversFactory = driversFactory;
             SetInitialPinStates();
