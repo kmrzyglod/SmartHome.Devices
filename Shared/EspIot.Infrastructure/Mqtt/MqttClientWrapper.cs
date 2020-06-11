@@ -139,7 +139,7 @@ namespace EspIot.Infrastructure.Mqtt
                         OnMqttClientConnected?.Invoke();
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Logger.Log("Error during connection to MQTT broker");
                 }

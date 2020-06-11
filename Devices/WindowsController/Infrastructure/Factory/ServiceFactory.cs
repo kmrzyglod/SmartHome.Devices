@@ -39,9 +39,11 @@ namespace WindowsController.Infrastructure.Factory
 
         private ServiceFactory SetInitialPinStates()
         {
+            _driversFactory.Window1Actuator.StopMoving();
+            _driversFactory.Window2Actuator.StopMoving();
+            
             _driversFactory.StatusLed.SetWifiDisconnected();
             _driversFactory.StatusLed.SetMqttBrokerDisconnected();
-
             return this;
         }
 
@@ -51,7 +53,7 @@ namespace WindowsController.Infrastructure.Factory
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
             WifiDriver.OnWifiDuringConnection += () => { _driversFactory.StatusLed.SetWifiDuringConnection(); };
             WifiDriver.ConnectToNetwork();
-            Logger.Log(() => $"Free memory after connected to wifi {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after connected to wifi {GC.Run(false)}");
 
             return this;
         }
@@ -73,7 +75,7 @@ namespace WindowsController.Infrastructure.Factory
                     "Device was turned on and connected to MQTT broker",
                     DeviceStatusCode.DeviceWasTurnedOn));
 
-                Logger.Log(() => $"Free memory after connected to MQTT broker {Debug.GC(false)}");
+                Logger.Log(() => $"Free memory after connected to MQTT broker {GC.Run(false)}");
             }).Start();
 
 
@@ -93,7 +95,7 @@ namespace WindowsController.Infrastructure.Factory
                 new CommandDispatcherService(_commandHandlersFactory, _commandBus, _mqttOutboundEventBus);
             _commandDispatcherService.Start();
 
-            Logger.Log(() => $"Free memory after init inbound message processing {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init inbound message processing {GC.Run(false)}");
 
             return this;
         }
@@ -102,12 +104,14 @@ namespace WindowsController.Infrastructure.Factory
         {
             _diagnosticService = new DiagnosticService(_mqttOutboundEventBus);
             _diagnosticService.Start();
-            Logger.Log(() => $"Free memory after init diagnostic service {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init diagnostic service {GC.Run(false)}");
             return this;
         }
 
         public ServiceFactory InitWindowsManagingService()
         {
+            //Reset actuator state
+           
             _windowsManagingService = new WindowsManagingService(_driversFactory.Window1Actuator,
                 _driversFactory.Window2Actuator, _driversFactory.Window1ReedSwitch, _driversFactory.Window2ReedSwitch,
                 _driversFactory.Window1ControlSwitch, _driversFactory.Window2ControlSwitch,
@@ -115,7 +119,7 @@ namespace WindowsController.Infrastructure.Factory
 
             _windowsManagingService.Start();
 
-            Logger.Log(() => $"Free memory after init windows managing service {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init windows managing service {GC.Run(false)}");
 
             return this;
         }

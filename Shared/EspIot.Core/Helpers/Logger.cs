@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace EspIot.Core.Helpers
 {
@@ -16,7 +17,7 @@ namespace EspIot.Core.Helpers
         public static void Log(string message, LogLevel logLevel = LogLevel.Info)
         {
 #if DEBUG
-            Console.WriteLine($"{LogLevelToString(logLevel)}: {message}");
+            Debug.WriteLine($"{LogLevelToString(logLevel)}: {message}");
 #endif
             //TODO save all logs on micro SD card if available in device
         }
@@ -25,7 +26,7 @@ namespace EspIot.Core.Helpers
         public static void Log(LogFunction logFunction, LogLevel logLevel = LogLevel.Info)
         {
 #if DEBUG
-            Console.WriteLine($"{LogLevelToString(logLevel)}: {logFunction.Invoke()}");
+            Debug.WriteLine($"{LogLevelToString(logLevel)}: {logFunction.Invoke()}");
 #endif
             //TODO save all logs on micro SD card if available in device
         }

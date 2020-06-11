@@ -10,7 +10,8 @@ namespace WindowsController.Firmware
     {
         public static void StartServices()
         {
-            Logger.Log(() => $"Free memory after started CLR {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after started CLR {GC.Run(false)}");
+
             var defaultConfig = new Configuration();
             var driversFactory = new DriversFactory(defaultConfig);
 
@@ -22,8 +23,9 @@ namespace WindowsController.Firmware
                 .InitInboundMessagesProcessing();
 
             //var gpioController = GpioController.GetDefault();
-            //var pin  = gpioController.OpenPin((int)22);
-            //pin.SetDriveMode(GpioPinDriveMode.Input);
+            //var pin = gpioController.OpenPin((int)21);
+            //pin.DebounceTimeout = TimeSpan.FromMilliseconds(20);
+            //pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
             //pin.ValueChanged += PinValueChangedHandler;
         }
 

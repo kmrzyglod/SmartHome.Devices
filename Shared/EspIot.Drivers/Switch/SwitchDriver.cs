@@ -15,12 +15,16 @@ namespace EspIot.Drivers.Switch
         private readonly GpioPin _pin;
         private readonly GpioController _gpioController;
 
-        public SwitchDriver(GpioController gpioController, GpioPins pin, GpioPinDriveMode pinMode)
+        public SwitchDriver(GpioController gpioController, GpioPins pin, GpioPinDriveMode pinMode, TimeSpan debounceTimeout = default)
         {
+            if (debounceTimeout == default)
+            {
+                debounceTimeout = TimeSpan.FromMilliseconds(20);
+            }
             _gpioController = gpioController;
             _pin = _gpioController.OpenPin((int)pin);
             _pin.SetDriveMode(pinMode);
-            _pin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
+            _pin.DebounceTimeout = debounceTimeout;
             _pin.ValueChanged += PinValueChangedHandler;
         }
 

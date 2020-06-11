@@ -2,6 +2,7 @@
 using System.Threading;
 using WindowsController.Application.Events.Outbound;
 using EspIot.Application.Interfaces;
+using EspIot.Core.Helpers;
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.Switch;
 using EspIot.Drivers.Switch.Enums;
@@ -12,13 +13,18 @@ namespace WindowsController.Application.Services
     public class WindowsManagingService : IService
     {
         private const int ACTUATOR_WORK_TIMEOUT = 120_000;
+        private readonly AutoResetEvent[] _autoResets = {new AutoResetEvent(false), new AutoResetEvent(false)};
         private readonly IOutboundEventBus _outboundEventBus;
         private readonly LinearActuatorDriver[] _windowActuators;
         private readonly SwitchDriver[] _windowControlSwitches;
         private readonly SwitchDriver[] _windowReedSwitches;
+
+        private readonly SwitchState[] _windowStates;
+
+        //Tasks
+        private readonly Thread[] _workerThreads = {new Thread(() => { }), new Thread(() => { })};
         private readonly SwitchClosedEventHandler OnWindow1Closed;
         private readonly SwitchClosedEventHandler OnWindow1ControlSwitchClosed;
-
         private readonly SwitchOpenedEventHandler OnWindow1ControlSwitchOpened;
 
         //Event handlers 
@@ -27,14 +33,11 @@ namespace WindowsController.Application.Services
         private readonly SwitchClosedEventHandler OnWindow2ControlSwitchClosed;
         private readonly SwitchOpenedEventHandler OnWindow2ControlSwitchOpened;
         private readonly SwitchOpenedEventHandler OnWindow2Opened;
-        private readonly AutoResetEvent[] _autoResets = {new AutoResetEvent(false), new AutoResetEvent(false)};
 
         private bool _isRunning;
+        private Thread _watchdogThread;
 
-        private readonly SwitchState[] _windowStates;
-
-        //Tasks
-        private readonly Thread[] _workerThreads = {new Thread(() => { }), new Thread(() => { })};
+        private Operation _currentOperation { get; set; }
 
         public WindowsManagingService(LinearActuatorDriver window1Actuator,
             LinearActuatorDriver window2Actuator,
@@ -76,16 +79,7 @@ namespace WindowsController.Application.Services
             };
 
             //Control switches
-            OnWindow1ControlSwitchOpened = (sender, e) =>
-            {
-                if (_workerThreads[0].IsAlive)
-                {
-                    _workerThreads[0].Abort();
-                    _windowActuators[0].StopMoving();
-                }
-
-                OpenWindowAsync(0);
-            };
+            OnWindow1ControlSwitchOpened = (sender, e) => { OpenWindowAsync(0); };
             OnWindow1ControlSwitchClosed = (sender, e) =>
             {
                 if (_windowStates[0] == SwitchState.Closed)
@@ -93,37 +87,16 @@ namespace WindowsController.Application.Services
                     return;
                 }
 
-                if (_workerThreads[0].IsAlive)
-                {
-                    _workerThreads[0].Abort();
-                    _windowActuators[0].StopMoving();
-                }
-
                 CloseWindowAsync(0);
             };
 
-            OnWindow2ControlSwitchOpened = (sender, e) =>
-            {
-                if (_workerThreads[1].IsAlive)
-                {
-                    _workerThreads[1].Abort();
-                    _windowActuators[1].StopMoving();
-                }
-
-                OpenWindowAsync(1);
-            };
+            OnWindow2ControlSwitchOpened = (sender, e) => { OpenWindowAsync(1); };
 
             OnWindow2ControlSwitchClosed = (sender, e) =>
             {
                 if (_windowStates[1] == SwitchState.Closed)
                 {
                     return;
-                }
-
-                if (_workerThreads[1].IsAlive)
-                {
-                    _workerThreads[1].Abort();
-                    _windowActuators[1].StopMoving();
                 }
 
                 CloseWindowAsync(1);
@@ -159,14 +132,31 @@ namespace WindowsController.Application.Services
 
         private void OpenWindowAsync(ushort windowId)
         {
-            _workerThreads[windowId] = new Thread(() =>
+            lock (this)
             {
-                _windowActuators[windowId].StartMovingExtensionDirection();
-                Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
-                _windowActuators[windowId].StopMoving();
-            });
+                _workerThreads[windowId] = new Thread(() =>
+                {
+                    //Force end window closing thread if running
+                    _autoResets[windowId].Set();
+                    _windowActuators[windowId].StartMovingExtensionDirection();
+                    Logger.Log($"Start openning window {windowId}");
 
-            _workerThreads[windowId].Start();
+                    for (int i = 0; i <= ACTUATOR_WORK_TIMEOUT; i += 1000)
+                    {
+                        Thread.Sleep(1000);
+                        if (_workerThreads[windowId] != Thread.CurrentThread)
+                        {
+                            Logger.Log($"Openning window {windowId} aborted.");
+                            return;
+                        }
+                    }
+
+                    _windowActuators[windowId].StopMoving();
+                    Logger.Log($"Openning window {windowId} finished.");
+                });
+
+                _workerThreads[windowId].Start();
+            }
         }
 
         public void OpenWindow(ushort windowId)
@@ -184,29 +174,42 @@ namespace WindowsController.Application.Services
 
         private void CloseWindowAsync(ushort windowId)
         {
-            if (_windowStates[windowId] == SwitchState.Closed)
+            lock (this)
             {
-                return;
-            }
-
-            _workerThreads[windowId] = new Thread(() =>
-            {
-                _windowActuators[windowId].StartMovingReductionDirection();
-                _autoResets[windowId].WaitOne();
-                _windowActuators[windowId].StopMoving();
-            });
-
-            _workerThreads[windowId].Start();
-
-            //Start watchdog
-            new Thread(() =>
-            {
-                Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
-                if (_workerThreads[windowId].IsAlive)
+                if (_windowStates[windowId] == SwitchState.Closed)
                 {
-                    _autoResets[windowId].Set();
+                    return;
                 }
-            }).Start();
+
+                _workerThreads[windowId] = new Thread(() =>
+                {
+                    _windowActuators[windowId].StartMovingReductionDirection();
+                    Logger.Log($"Start closing window {windowId}");
+                    _autoResets[windowId].WaitOne();
+                    if (_workerThreads[windowId] != Thread.CurrentThread)
+                    {
+                        Logger.Log($"Closing window {windowId} aborted.");
+                        return;
+                    }
+
+                    _windowActuators[windowId].StopMoving();
+                    Logger.Log($"Closing window {windowId} finished.");
+                });
+
+                _workerThreads[windowId].Start();
+
+                //Start watchdog
+                _watchdogThread = new Thread(() =>
+                {
+                    Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
+                    if (_workerThreads[windowId].IsAlive)
+                    {
+                        _autoResets[windowId].Set();
+                    }
+                });
+
+                _watchdogThread.Start();
+            }
         }
 
         public void CloseWindow(ushort windowId)
@@ -262,6 +265,12 @@ namespace WindowsController.Application.Services
 
             _windowControlSwitches[1].OnOpened -= OnWindow2ControlSwitchOpened;
             _windowControlSwitches[1].OnClosed -= OnWindow2ControlSwitchClosed;
+        }
+
+        private enum Operation
+        {
+            Opening,
+            Closing
         }
     }
 }

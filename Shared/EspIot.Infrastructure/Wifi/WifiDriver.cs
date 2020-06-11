@@ -80,10 +80,8 @@ namespace EspIot.Infrastructure.Wifi
                     // network interface is Wi-Fi
                     Logger.Log("Network connection is: Wi-Fi");
                     var wc = Wireless80211Configuration.GetAllWireless80211Configurations()[ni.SpecificConfigId];
-                    wc.Options =
-                        (Wireless80211Configuration.ConfigurationOptions)
-                        7; //Workaround for bug with wrong options enum values
-                    wc.SaveConfiguration();
+                    wc.Options = Wireless80211Configuration.ConfigurationOptions.AutoConnect;
+                        wc.SaveConfiguration();
                     OnWifiDuringConnection();
                 }
                 else

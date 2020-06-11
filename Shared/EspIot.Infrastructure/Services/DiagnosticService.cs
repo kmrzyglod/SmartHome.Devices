@@ -4,7 +4,6 @@ using EspIot.Application.Events.Outbound;
 using EspIot.Application.Interfaces;
 using EspIot.Application.Services;
 using EspIot.Infrastructure.Wifi;
-using nanoFramework.Runtime.Native;
 
 namespace EspIot.Infrastructure.Services
 {
@@ -69,7 +68,7 @@ namespace EspIot.Infrastructure.Services
         {
             var networkConfig = WifiDriver.GetNetworkConfig();
             return new DiagnosticEvent(networkConfig.Ssid, networkConfig.Rssi, networkConfig.Ip,
-                networkConfig.GatewayIp, Debug.GC(false));
+                networkConfig.GatewayIp, nanoFramework.Runtime.Native.GC.Run(false));
         }
     }
 }
