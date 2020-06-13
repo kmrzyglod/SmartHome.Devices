@@ -15,10 +15,14 @@ namespace EspIot.Infrastructure.Services
         private bool _isRunning;
         private bool _runWorkingThread;
         private Thread _workingThread = new Thread(() => { });
+        private bool _isConnectedToNetwork;
 
         public DiagnosticService(IOutboundEventBus outboundEventBus)
         {
             _outboundEventBus = outboundEventBus;
+            WifiDriver.OnWifiConnected += () => { _isConnectedToNetwork = true;};
+            WifiDriver.OnWifiDisconnected += () => { _isConnectedToNetwork = false;};
+            WifiDriver.OnWifiDuringConnection += () => { _isConnectedToNetwork = false;};
         }
 
         public void Start()
@@ -34,6 +38,11 @@ namespace EspIot.Infrastructure.Services
 
                 while (_runWorkingThread)
                 {
+                    if (!_isConnectedToNetwork)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
                     _outboundEventBus.Send(GetDiagnosticDataEvent());
                     Thread.Sleep(_interval);
                 }

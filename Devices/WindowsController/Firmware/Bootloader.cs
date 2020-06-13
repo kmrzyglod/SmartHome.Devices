@@ -1,8 +1,11 @@
-﻿using Windows.Devices.Gpio;
+﻿using System;
+using System.Diagnostics;
+using Windows.Devices.Gpio;
 using WindowsController.Infrastructure.Config;
 using WindowsController.Infrastructure.Factory;
+using EspIot.Core.Gpio;
 using EspIot.Core.Helpers;
-using nanoFramework.Runtime.Native;
+using GC = nanoFramework.Runtime.Native.GC;
 
 namespace WindowsController.Firmware
 {
@@ -22,17 +25,6 @@ namespace WindowsController.Firmware
                 .InitWindowsManagingService()
                 .InitInboundMessagesProcessing();
 
-            //var gpioController = GpioController.GetDefault();
-            //var pin = gpioController.OpenPin((int)21);
-            //pin.DebounceTimeout = TimeSpan.FromMilliseconds(20);
-            //pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
-            //pin.ValueChanged += PinValueChangedHandler;
         }
-
-        private static void PinValueChangedHandler(object sender, GpioPinValueChangedEventArgs e)
-        {
-           Logger.Log(e.Edge.ToString);
-        }
-
     }
 }

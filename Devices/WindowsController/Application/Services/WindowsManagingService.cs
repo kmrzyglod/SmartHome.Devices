@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using WindowsController.Application.Events.Outbound;
+using EspIot.Application.Events.Outbound;
 using EspIot.Application.Interfaces;
 using EspIot.Core.Helpers;
+using EspIot.Core.Messaging.Enum;
 using EspIot.Drivers.LinearActuator;
 using EspIot.Drivers.Switch;
 using EspIot.Drivers.Switch.Enums;
@@ -13,7 +15,6 @@ namespace WindowsController.Application.Services
     public class WindowsManagingService : IService
     {
         private const int ACTUATOR_WORK_TIMEOUT = 120_000;
-        private readonly AutoResetEvent[] _autoResets = {new AutoResetEvent(false), new AutoResetEvent(false)};
         private readonly IOutboundEventBus _outboundEventBus;
         private readonly LinearActuatorDriver[] _windowActuators;
         private readonly SwitchDriver[] _windowControlSwitches;
@@ -35,9 +36,7 @@ namespace WindowsController.Application.Services
         private readonly SwitchOpenedEventHandler OnWindow2Opened;
 
         private bool _isRunning;
-        private Thread _watchdogThread;
-
-        private Operation _currentOperation { get; set; }
+        private bool _criticalFailure = false;
 
         public WindowsManagingService(LinearActuatorDriver window1Actuator,
             LinearActuatorDriver window2Actuator,
@@ -61,7 +60,7 @@ namespace WindowsController.Application.Services
             OnWindow1Closed = (sender, e) =>
             {
                 _windowStates[0] = SwitchState.Closed;
-                _autoResets[0].Set();
+                _windowActuators[0].StopMoving();
                 _outboundEventBus.Send(new WindowClosedEvent(0));
             };
 
@@ -74,7 +73,7 @@ namespace WindowsController.Application.Services
             OnWindow2Closed = (sender, e) =>
             {
                 _windowStates[1] = SwitchState.Closed;
-                _autoResets[1].Set();
+                _windowActuators[1].StopMoving();
                 _outboundEventBus.Send(new WindowClosedEvent(1));
             };
 
@@ -134,16 +133,19 @@ namespace WindowsController.Application.Services
         {
             lock (this)
             {
+                if (_criticalFailure)
+                {
+                    return;
+                }
+
                 _workerThreads[windowId] = new Thread(() =>
                 {
-                    //Force end window closing thread if running
-                    _autoResets[windowId].Set();
                     _windowActuators[windowId].StartMovingExtensionDirection();
                     Logger.Log($"Start openning window {windowId}");
 
-                    for (int i = 0; i <= ACTUATOR_WORK_TIMEOUT; i += 1000)
+                    for (int i = 0; i <= ACTUATOR_WORK_TIMEOUT; i += 500)
                     {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(500);
                         if (_workerThreads[windowId] != Thread.CurrentThread)
                         {
                             Logger.Log($"Openning window {windowId} aborted.");
@@ -152,6 +154,11 @@ namespace WindowsController.Application.Services
                     }
 
                     _windowActuators[windowId].StopMoving();
+                    if (_windowStates[windowId] == SwitchState.Closed)
+                    {
+                        _criticalFailure = true;
+                        _outboundEventBus.Send(new ErrorEvent($"Window actuator mechanism critical failure. Window with id {windowId} is still closed.", ErrorLevel.Critical));
+                    }
                     Logger.Log($"Openning window {windowId} finished.");
                 });
 
@@ -176,7 +183,7 @@ namespace WindowsController.Application.Services
         {
             lock (this)
             {
-                if (_windowStates[windowId] == SwitchState.Closed)
+                if (_windowStates[windowId] == SwitchState.Closed || _criticalFailure)
                 {
                     return;
                 }
@@ -185,30 +192,32 @@ namespace WindowsController.Application.Services
                 {
                     _windowActuators[windowId].StartMovingReductionDirection();
                     Logger.Log($"Start closing window {windowId}");
-                    _autoResets[windowId].WaitOne();
-                    if (_workerThreads[windowId] != Thread.CurrentThread)
+    
+                    for (int i = 0; i <= ACTUATOR_WORK_TIMEOUT; i += 500)
                     {
-                        Logger.Log($"Closing window {windowId} aborted.");
-                        return;
+                        Thread.Sleep(500);
+                        if (_workerThreads[windowId] != Thread.CurrentThread)
+                        {
+                            Logger.Log($"Closing window {windowId} aborted.");
+                            return;
+                        }
+
+                        if (_windowStates[windowId] == SwitchState.Closed)
+                        {
+                            break;
+                        }
                     }
 
                     _windowActuators[windowId].StopMoving();
+                    if (_windowStates[windowId] == SwitchState.Opened)
+                    {
+                        _criticalFailure = true;
+                        _outboundEventBus.Send(new ErrorEvent($"Window actuator mechanism critical failure. Window with id {windowId} is still opened.", ErrorLevel.Critical));
+                    }
                     Logger.Log($"Closing window {windowId} finished.");
                 });
 
                 _workerThreads[windowId].Start();
-
-                //Start watchdog
-                _watchdogThread = new Thread(() =>
-                {
-                    Thread.Sleep(ACTUATOR_WORK_TIMEOUT);
-                    if (_workerThreads[windowId].IsAlive)
-                    {
-                        _autoResets[windowId].Set();
-                    }
-                });
-
-                _watchdogThread.Start();
             }
         }
 
@@ -226,6 +235,11 @@ namespace WindowsController.Application.Services
 
         private void CanBeExecuted(ushort windowId)
         {
+            if (_criticalFailure)
+            {
+                throw new InvalidOperationException("Critical error was detected and mechanism was blocked. Check windows mechanism and restart device.");
+            }
+            
             if (!_isRunning)
             {
                 throw new InvalidOperationException("Windows managing service is not started");
@@ -265,12 +279,6 @@ namespace WindowsController.Application.Services
 
             _windowControlSwitches[1].OnOpened -= OnWindow2ControlSwitchOpened;
             _windowControlSwitches[1].OnClosed -= OnWindow2ControlSwitchClosed;
-        }
-
-        private enum Operation
-        {
-            Opening,
-            Closing
         }
     }
 }

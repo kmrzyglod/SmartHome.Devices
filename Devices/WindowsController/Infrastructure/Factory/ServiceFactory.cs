@@ -41,7 +41,7 @@ namespace WindowsController.Infrastructure.Factory
         {
             _driversFactory.Window1Actuator.StopMoving();
             _driversFactory.Window2Actuator.StopMoving();
-            
+
             _driversFactory.StatusLed.SetWifiDisconnected();
             _driversFactory.StatusLed.SetMqttBrokerDisconnected();
             return this;
@@ -52,8 +52,12 @@ namespace WindowsController.Infrastructure.Factory
             WifiDriver.OnWifiConnected += () => { _driversFactory.StatusLed.SetWifiConnected(); };
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
             WifiDriver.OnWifiDuringConnection += () => { _driversFactory.StatusLed.SetWifiDuringConnection(); };
-            WifiDriver.ConnectToNetwork();
-            Logger.Log(() => $"Free memory after connected to wifi {GC.Run(false)}");
+            new Thread(() =>
+                {
+                    WifiDriver.ConnectToNetwork();
+                    Logger.Log(() => $"Free memory after connected to wifi {GC.Run(false)}");
+                })
+                .Start();
 
             return this;
         }
@@ -111,7 +115,7 @@ namespace WindowsController.Infrastructure.Factory
         public ServiceFactory InitWindowsManagingService()
         {
             //Reset actuator state
-           
+
             _windowsManagingService = new WindowsManagingService(_driversFactory.Window1Actuator,
                 _driversFactory.Window2Actuator, _driversFactory.Window1ReedSwitch, _driversFactory.Window2ReedSwitch,
                 _driversFactory.Window1ControlSwitch, _driversFactory.Window2ControlSwitch,

@@ -5,6 +5,7 @@ using EspIot.Core.Collections;
 using EspIot.Core.Helpers;
 using EspIot.Drivers.StatusLed;
 using EspIot.Infrastructure.Mqtt.Events;
+using EspIot.Infrastructure.Wifi;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
@@ -24,6 +25,8 @@ namespace EspIot.Infrastructure.Mqtt
         private Thread _outboundMessageSendingThread;
         private bool _status;
         private string[] _topics;
+        private bool _isConnectedToNetwork = false;
+
 
         public MqttClientWrapper(string brokerAddress, string deviceId, StatusLed statusLed)
         {
@@ -32,6 +35,9 @@ namespace EspIot.Infrastructure.Mqtt
             _sendTopic = $"devices/{_deviceId}/messages/events/";
             _client = new MqttClient(_brokerAddress);
             _client.MqttMsgPublishReceived += OnMessageReceived;
+            WifiDriver.OnWifiConnected += () => { _isConnectedToNetwork = true;};
+            WifiDriver.OnWifiDisconnected += () => { _isConnectedToNetwork = false;};
+            WifiDriver.OnWifiDuringConnection += () => { _isConnectedToNetwork = false;};
         }
 
         public event MqttConnectedEventHandler OnMqttClientConnected;
@@ -121,6 +127,12 @@ namespace EspIot.Infrastructure.Mqtt
         {
             while (!_client.IsConnected)
             {
+                if (!_isConnectedToNetwork)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                
                 if (_status)
                 {
                     _status = false;
