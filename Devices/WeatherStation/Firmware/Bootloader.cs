@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Diagnostics;
-using EspIot.Core.Helpers;
+﻿using EspIot.Core.Helpers;
 using nanoFramework.Runtime.Native;
 using WeatherStation.Infrastructure.Config;
 using WeatherStation.Infrastructure.Factory;
@@ -11,7 +9,7 @@ namespace WeatherStation.Firmware
     {
         public static void StartServices()
         {
-            Logger.Log(() => $"Free memory after started CLR {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after started CLR {GC.Run(false)}");
             var defaultConfig = new Configuration();
             var driversFactory = new DriversFactory(defaultConfig);
 

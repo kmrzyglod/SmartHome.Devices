@@ -48,42 +48,42 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib, Version=1.7.3.5, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.CoreLibrary.1.7.3\lib\mscorlib.dll</HintPath>
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.CoreLibrary.1.7.3\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.M2Mqtt, Version=4.4.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.M2Mqtt.4.4.1-preview.2\lib\nanoFramework.M2Mqtt.dll</HintPath>
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.M2Mqtt.4.4.1-preview.5\lib\nanoFramework.M2Mqtt.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.Runtime.Events, Version=1.4.2.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.Runtime.Events.1.4.2-preview.11\lib\nanoFramework.Runtime.Events.dll</HintPath>
+    <Reference Include="nanoFramework.Runtime.Events, Version=1.4.2.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Runtime.Events.1.4.2\lib\nanoFramework.Runtime.Events.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.Runtime.Native, Version=1.4.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.Runtime.Native.1.4.0-preview.3\lib\nanoFramework.Runtime.Native.dll</HintPath>
+    <Reference Include="nanoFramework.Runtime.Native, Version=1.4.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Runtime.Native.1.4.0\lib\nanoFramework.Runtime.Native.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.System.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.System.Collections.1.0.1-preview.11\lib\nanoFramework.System.Collections.dll</HintPath>
+    <Reference Include="nanoFramework.System.Collections, Version=1.0.1.5, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.0.1\lib\nanoFramework.System.Collections.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.System.Text, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.System.Text.1.0.0-preview.25\lib\nanoFramework.System.Text.dll</HintPath>
+    <Reference Include="nanoFramework.System.Text, Version=1.0.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Text.1.0.0\lib\nanoFramework.System.Text.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="System.Net, Version=1.5.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.System.Net.1.5.0-preview.2\lib\System.Net.dll</HintPath>
+    <Reference Include="System.Net, Version=1.5.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Net.1.5.0\lib\System.Net.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Windows.Devices.Wifi, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WindowsController\packages\nanoFramework.Windows.Devices.Wifi.1.2.0-preview.22\lib\Windows.Devices.Wifi.dll</HintPath>
+    <Reference Include="Windows.Devices.Wifi, Version=1.2.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Windows.Devices.Wifi.1.2.0\lib\Windows.Devices.Wifi.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

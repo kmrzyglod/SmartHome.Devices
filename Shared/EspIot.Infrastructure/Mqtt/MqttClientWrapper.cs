@@ -14,7 +14,7 @@ namespace EspIot.Infrastructure.Mqtt
     public class MqttClientWrapper
     {
         private const ushort
-            MessageQueueSizeLimit = 10; //Limit maximum queued messages to avoid potential OutOfMemory Exception
+            MessageQueueSizeLimit = 30; //Limit maximum queued messages to avoid potential OutOfMemory Exception
 
         private readonly string _brokerAddress;
         private readonly MqttClient _client;

@@ -2,6 +2,7 @@
 using System.Threading;
 using Windows.Devices.Gpio;
 using EspIot.Core.Gpio;
+using EspIot.Core.Helpers;
 using EspIot.Drivers.SparkFunAnemometer.Enums;
 
 namespace EspIot.Drivers.SparkFunAnemometer
@@ -66,6 +67,8 @@ namespace EspIot.Drivers.SparkFunAnemometer
                     
                     _averageWindSpeed = (_averageWindSpeed * _measurementCounter + _currentWindSpeed) /
                                         ++_measurementCounter;
+
+                    Logger.Log(() => $"Current wind speed: {_currentWindSpeed / 100f}");
 
                     if (_currentWindSpeed > _maxWindSpeed)
                     {

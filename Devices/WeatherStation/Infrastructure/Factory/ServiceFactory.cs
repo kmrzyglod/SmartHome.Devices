@@ -47,7 +47,7 @@ namespace WeatherStation.Infrastructure.Factory
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
             WifiDriver.OnWifiDuringConnection += () => { _driversFactory.StatusLed.SetWifiDuringConnection(); };
             WifiDriver.ConnectToNetwork();
-            Logger.Log(() => $"Free memory after connected to wifi {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after connected to wifi {GC.Run(false)}");
 
             return this;
         }
@@ -66,7 +66,7 @@ namespace WeatherStation.Infrastructure.Factory
             _mqttOutboundEventBus.Send(new DeviceStatusUpdatedEvent("Device was turned on and connected to MQTT broker",
                 DeviceStatusCode.DeviceWasTurnedOn));
 
-            Logger.Log(() => $"Free memory after connected to MQTT broker {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after connected to MQTT broker {GC.Run(false)}");
 
             return this;
         }
@@ -84,7 +84,7 @@ namespace WeatherStation.Infrastructure.Factory
                 new CommandDispatcherService(_commandHandlersFactory, _commandBus, _mqttOutboundEventBus);
             _commandDispatcherService.Start();
 
-            Logger.Log(() => $"Free memory after init inbound message processing {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init inbound message processing {GC.Run(false)}");
 
             return this;
         }
@@ -93,7 +93,7 @@ namespace WeatherStation.Infrastructure.Factory
         {
             _diagnosticService = new DiagnosticService(_mqttOutboundEventBus);
             _diagnosticService.Start();
-            Logger.Log(() => $"Free memory after init diagnostic service {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init diagnostic service {GC.Run(false)}");
             return this;
         }
 
@@ -108,7 +108,7 @@ namespace WeatherStation.Infrastructure.Factory
 
             _telemetryService.Start();
 
-            Logger.Log(() => $"Free memory after init telemetry service {Debug.GC(false)}");
+            Logger.Log(() => $"Free memory after init telemetry service {GC.Run(false)}");
 
             return this;
         }
