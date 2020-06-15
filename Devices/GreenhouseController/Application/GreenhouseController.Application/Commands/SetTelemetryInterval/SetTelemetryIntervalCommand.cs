@@ -1,4 +1,4 @@
-﻿using EspIot.Core.Messaging.Concrete;
+﻿using EspIot.Application.Commands;
 using EspIot.Core.Messaging.Validation;
 using GreenhouseController.Application.Services.Telemetry;
 

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections;
-using EspIot.Core.Messaging.Interfaces;
-using GreenhouseController.Application.Commands.CloseWindow;
-using GreenhouseController.Application.Commands.OpenWindow;
+using EspIot.Application.Commands.Ping;
+using EspIot.Application.Commands.SendDiagnosticData;
+using EspIot.Application.Interfaces;
 
 namespace Infrastructure.Factory
 {
-    class CommandsFactory: ICommandsFactory
+    public class CommandsFactory : ICommandsFactory
     {
         private static Hashtable _mappings { get; } = new Hashtable
         {
-            //Add here all command factories
-            { nameof(CloseWindowCommand), new CloseWindowCommand.Factory() },
-            { nameof(OpenWindowCommand), new OpenWindowCommand.Factory() }
+            //Add here all commands 
+            {nameof(PingCommand), new PingCommand.Factory()},
+            {nameof(SendDiagnosticDataCommand), new SendDiagnosticDataCommand.Factory()}
         };
 
         public ICommand Create(string commandName, Hashtable payload)
@@ -22,7 +22,7 @@ namespace Infrastructure.Factory
                 throw new NotSupportedException($"Command {commandName} is not supported");
             }
 
-            return _mappings[commandName] as ICommand;
+            return (_mappings[commandName] as ICommandFactory)?.Create(payload);
         }
     }
 }

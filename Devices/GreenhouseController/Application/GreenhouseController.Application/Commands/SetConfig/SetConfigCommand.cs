@@ -1,4 +1,4 @@
-﻿using EspIot.Core.Messaging.Concrete;
+﻿using EspIot.Application.Commands;
 
 namespace GreenhouseController.Application.Commands.SetConfig
 {

@@ -24,6 +24,7 @@
     <Compile Include="LinearActuator\LinearActuatorDriver.cs" />
     <Compile Include="LinearActuator\Mode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeedstudioWaterFlowSensor\Enums\WaterFlowSensorMeasurementResolution.cs" />
     <Compile Include="Switch\Enums\SwitchState.cs" />
     <Compile Include="Switch\Events\SwitchClosedEventArgs.cs" />
     <Compile Include="Switch\Events\SwitchClosedEventHandler.cs" />
@@ -32,7 +33,7 @@
     <Compile Include="Switch\Events\SwitchStateChangedEventArgs.cs" />
     <Compile Include="Switch\Events\SwitchStateChangedEventHandler.cs" />
     <Compile Include="Switch\SwitchDriver.cs" />
-    <Compile Include="SeedstudioWaterFlowSensor\WaterFlowSensor.cs" />
+    <Compile Include="SeedstudioWaterFlowSensor\WaterFlowSensorDriver.cs" />
     <Compile Include="SoildStateRelay\Mode.cs" />
     <Compile Include="SoildStateRelay\SolidStateRelays.cs" />
     <Compile Include="SparkFunAnemometer\Enums\AnemometerMeasurementResolution.cs" />

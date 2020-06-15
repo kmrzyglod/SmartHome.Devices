@@ -3,32 +3,27 @@ using System.Threading;
 using Windows.Devices.Gpio;
 using EspIot.Core.Gpio;
 using EspIot.Core.Helpers;
-using EspIot.Drivers.SparkFunAnemometer.Enums;
+using EspIot.Drivers.SeedstudioWaterFlowSensor.Enums;
 
-namespace EspIot.Drivers.SparkFunAnemometer
+namespace EspIot.Drivers.SeedstudioWaterFlowSensor
 {
-    //https://cdn.sparkfun.com/assets/8/4/c/d/6/Weather_Sensor_Assembly_Updated.pdf
-    public class SparkFunAnemometerDriver
+    public class WaterFlowSensorDriver
     {
-        private const uint ONE_HZ_PULSE_SPEED = 67; // 2,4 km/h -> 0,67 [m/s] -> 67 [m/s * 100];
-        private const uint MAX_REAL_WIND_SPEED = 4000; //40 [m/s] -> 144 km/h
+        private const uint MAX_REAL_FLOW = 150; //30 l/min -> 150 [l/min * 5]
         private readonly GpioController _gpioController;
-
         private readonly GpioPin _pin;
         private readonly GpioChangeCounter _pulseCounter;
 
-        //[m/s * 100]
-        private uint _averageWindSpeed;
-        private uint _currentWindSpeed;
-        private uint _minWindSpeed = uint.MaxValue;
-        private uint _maxWindSpeed = 0;
-        private uint _measurementCounter;
+        private uint _averageFlow;
+        private uint _currentFlow;
         private bool _isMeasuring;
-
+        private uint _maxFlow;
+        private uint _measurementCounter;
         private Thread _measuringThread = new Thread(() => { });
-       
+        private uint _minFlow = uint.MaxValue;
+        private uint _totalFlow; 
 
-        public SparkFunAnemometerDriver(GpioController gpioController, GpioPins pin)
+        public WaterFlowSensorDriver(GpioController gpioController, GpioPins pin)
         {
             _gpioController = gpioController;
             _pin = _gpioController.OpenPin((int) pin);
@@ -36,7 +31,8 @@ namespace EspIot.Drivers.SparkFunAnemometer
             _pulseCounter = new GpioChangeCounter(_pin) {Polarity = GpioChangePolarity.Rising};
         }
 
-        public void StartMeasurement(AnemometerMeasurementResolution measurementResolution)
+
+        public void StartMeasurement(WaterFlowSensorMeasurementResolution measurementResolution)
         {
             if (_measuringThread.IsAlive)
             {
@@ -56,28 +52,30 @@ namespace EspIot.Drivers.SparkFunAnemometer
                     Thread.Sleep((int) measurementResolution * 1000);
                     var pulseCount = _pulseCounter.Read();
                     _pulseCounter.Reset();
+                    _currentFlow =
+                        (ushort) (pulseCount.Count / (double) measurementResolution);
 
-                    _currentWindSpeed =
-                        (ushort) (pulseCount.Count / (double) measurementResolution * ONE_HZ_PULSE_SPEED);
-
-                    if (_currentWindSpeed > MAX_REAL_WIND_SPEED)
+                    if (_currentFlow > MAX_REAL_FLOW)
                     {
                         continue;
                     }
-                    
-                    _averageWindSpeed = (_averageWindSpeed * _measurementCounter + _currentWindSpeed) /
-                                        ++_measurementCounter;
 
-                    Logger.Log(() => $"Current wind speed: {_currentWindSpeed / 100f} [m/s]");
+                    _totalFlow += (ushort) pulseCount.Count;
 
-                    if (_currentWindSpeed > _maxWindSpeed)
+                    _averageFlow = (_averageFlow * _measurementCounter + _currentFlow) /
+                                   ++_measurementCounter;
+
+                    Logger.Log(() => $"Current flow: {_currentFlow / 5f} [l/min]");
+                    Logger.Log(() => $"Total flow: {_totalFlow / 5f / 60f} [l]");
+
+                    if (_currentFlow > _maxFlow)
                     {
-                        _maxWindSpeed = _currentWindSpeed;
+                        _maxFlow = _currentFlow;
                     }
 
-                    if (_currentWindSpeed < _minWindSpeed)
+                    if (_currentFlow < _minFlow)
                     {
-                        _minWindSpeed = _currentWindSpeed;
+                        _minFlow = _currentFlow;
                     }
                 }
 
@@ -88,52 +86,63 @@ namespace EspIot.Drivers.SparkFunAnemometer
             _measuringThread.Start();
         }
 
-        public uint GetCurrentWindSpeed()
+        public float GetCurrentFlow()
         {
             if (!_isMeasuring)
             {
                 throw new InvalidOperationException("Cannot get data because measurement wasn't started");
             }
 
-            return _currentWindSpeed;
+            return _currentFlow / 5f;
         }
 
-        public uint GetAverageWindSpeed()
+        public float GetAverageFlow()
         {
             if (!_isMeasuring)
             {
                 throw new InvalidOperationException("Cannot get data because measurement wasn't started");
             }
 
-            return _averageWindSpeed;
+            return _averageFlow / 5f;
         }
 
-        public uint GetMaxWindSpeed()
+        public float GetMaxFlow()
         {
             if (!_isMeasuring)
             {
                 throw new InvalidOperationException("Cannot get data because measurement wasn't started");
             }
 
-            return _maxWindSpeed;
+            return _maxFlow / 5f;
         }
 
-        public uint GetMinWindSpeed()
+        public float GetMinFlow()
         {
             if (!_isMeasuring)
             {
                 throw new InvalidOperationException("Cannot get data because measurement wasn't started");
             }
 
-            return _minWindSpeed;
+            return _minFlow / 5f;
+        }
+
+        public float GetTotalFlow()
+        {
+            if (!_isMeasuring)
+            {
+                throw new InvalidOperationException("Cannot get data because measurement wasn't started");
+            }
+
+            return _totalFlow / 5f / 60f;
         }
 
         public void Reset()
         {
             _measurementCounter = 0;
-            _maxWindSpeed = 0;
-            _averageWindSpeed = 0;
-            _minWindSpeed = uint.MaxValue;
+            _maxFlow = 0;
+            _averageFlow = 0;
+            _minFlow = uint.MaxValue;
+            _totalFlow = 0;
         }
 
         public void StopMeasurement()

@@ -1,98 +1,198 @@
-﻿using System.Threading;
-using EspIot.Core.Messaging.Events;
+﻿using System;
+using System.Threading;
+using EspIot.Application.Events.Outbound;
+using EspIot.Application.Interfaces;
+using EspIot.Core.Messaging.Enum;
 using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
-using EspIot.Drivers.ReedSwitch;
-using EspIot.Drivers.ReedSwitch.Enums;
 using EspIot.Drivers.SeedstudioWaterFlowSensor;
+using EspIot.Drivers.SeedstudioWaterFlowSensor.Enums;
+using EspIot.Drivers.Switch;
+using EspIot.Drivers.Switch.Enums;
 using GreenhouseController.Application.Events.Outbound;
 
 namespace GreenhouseController.Application.Services.Telemetry
 {
-    public class TelemetryService
+    public class TelemetryService : IService
     {
-        private readonly ReedSwitchDriver _doorReedSwitch;
-        private readonly ReedSwitchDriver _window1ReedSwitch;
-        private readonly ReedSwitchDriver _window2ReedSwitch;
-        private readonly IOutboundEventBus _outboundEventBus;
-        private readonly Bh1750 _lightSensorDriver;
         private readonly Bme280 _bme280Driver;
+        private readonly SwitchDriver _doorReedSwitch;
+        private readonly Bh1750 _lightSensorDriver;
+        private readonly IOutboundEventBus _outboundEventBus;
         private readonly DfrobotSoilMoistureSensor _soilMoistureSensorDriver;
-        private readonly WaterFlowSensor _waterFlowSensor;
+        private readonly WaterFlowSensorDriver _waterFlowSensorDriver;
+        private bool _isServiceRunning;
+        private bool _runWorkingThread;
         private int _sentInterval = 600_000; //in [ms], default 10 min 
-        private bool _isServiceActive = false;
+        private Thread _workingThread = new Thread(() => { });
 
         public TelemetryService(
-            ReedSwitchDriver doorReedSwitch,
-            ReedSwitchDriver window1ReedSwitch,
-            ReedSwitchDriver window2ReedSwitch,
+            SwitchDriver doorReedSwitch,
             IOutboundEventBus outboundEventBus,
             Bh1750 lightSensorDriver,
             Bme280 bme280Driver,
             DfrobotSoilMoistureSensor soilMoistureSensorDriver,
-            WaterFlowSensor waterFlowSensor)
+            WaterFlowSensorDriver waterFlowSensorDriver)
         {
             _doorReedSwitch = doorReedSwitch;
-            _window1ReedSwitch = window1ReedSwitch;
-            _window2ReedSwitch = window2ReedSwitch;
             _outboundEventBus = outboundEventBus;
             _lightSensorDriver = lightSensorDriver;
             _bme280Driver = bme280Driver;
             _soilMoistureSensorDriver = soilMoistureSensorDriver;
-            _waterFlowSensor = waterFlowSensor;
+            _waterFlowSensorDriver = waterFlowSensorDriver;
+        }
+
+        public bool IsRunning()
+        {
+            return _isServiceRunning;
+        }
+
+        public void Stop()
+        {
+            _runWorkingThread = false;
+        }
+
+        public void Start()
+        {
+            if (_isServiceRunning || _workingThread.IsAlive)
+            {
+                return;
+            }
+
+            _isServiceRunning = true;
+            _runWorkingThread = true;
+
+            _workingThread = new Thread(() =>
+            {
+                StartMeasurements();
+                _outboundEventBus.Send(new DeviceStatusUpdatedEvent("Telemetry service was started",
+                    DeviceStatusCode.ServiceStarted));
+                while (_runWorkingThread)
+                {
+                    var measurementStartTime = DateTime.UtcNow;
+                    Thread.Sleep(_sentInterval);
+                    var measurementEndTime = DateTime.UtcNow;
+                    var telemetryData = GetTelemetryData(measurementStartTime, measurementEndTime);
+                    ResetMeasurements();
+                    _outboundEventBus.Send(telemetryData);
+                }
+
+                StopMeasurements();
+                _outboundEventBus.Send(new DeviceStatusUpdatedEvent("Telemetry service was stopped",
+                    DeviceStatusCode.ServiceStopped));
+                _isServiceRunning = false;
+            });
+
+            _workingThread.Start();
         }
 
         public void SetInterval(int interval)
         {
             _sentInterval = interval;
+            _outboundEventBus.Send(new TelemetryIntervalChangedEvent(interval));
         }
 
-        public bool IsActive()
+        private void StartMeasurements()
         {
-            return _isServiceActive;
+            _waterFlowSensorDriver.StartMeasurement(WaterFlowSensorMeasurementResolution.OneSecond);
         }
 
-        public void Start()
+        private void StopMeasurements()
         {
-            lock (this)
+            _waterFlowSensorDriver.StopMeasurement();
+        }
+
+        private void ResetMeasurements()
+        {
+            _waterFlowSensorDriver.Reset();
+        }
+
+
+        private TelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
+        {
+            return new TelemetryEvent(measurementStartTime,
+                measurementEndTime,
+                GetTemperature(),
+                GetPressure(),
+                GetHumidity(),
+                GetLightLevel(),
+                GetSoilMoisture(),
+                _waterFlowSensorDriver.GetAverageFlow(),
+                _waterFlowSensorDriver.GetMinFlow(),
+                _waterFlowSensorDriver.GetMaxFlow(),
+                _waterFlowSensorDriver.GetTotalFlow(),
+                _doorReedSwitch.GetState().ToBool());
+        }
+
+        private float GetTemperature()
+        {
+            try
             {
-                if (_isServiceActive)
-                {
-                    return;
-                }
-
-                _isServiceActive = true;
-                
-                new Thread(() =>
-                {
-                    while (_isServiceActive)
-                    {
-                        _outboundEventBus.Send(GetTelemetryData());
-                        Thread.Sleep(_sentInterval);
-                    }
-                }).Start();
+                return _bme280Driver.ReadTemperature();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during temperature measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
             }
         }
 
-        public void Stop()
+        private float GetHumidity()
         {
-            _isServiceActive = false;
+            try
+            {
+                return _bme280Driver.ReadHumidity();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during humidity measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
+            }
         }
 
-        private StatusMessage GetTelemetryData()
+        private float GetPressure()
         {
-            return new StatusMessage(
-                _bme280Driver.ReadTemperature(),
-                _bme280Driver.ReadPreasure(),
-                _bme280Driver.ReadHumidity(),
-                _lightSensorDriver.GetLightLevelInLux(),
-                _soilMoistureSensorDriver.GetUncalibratedMoisture(),
-                _waterFlowSensor.GetMomentaryFlowValue(),
-                _doorReedSwitch.GetState() == ReedShiftState.Opened,
-                _window1ReedSwitch.GetState() == ReedShiftState.Opened,
-                _window2ReedSwitch.GetState() == ReedShiftState.Opened
-                );
+            try
+            {
+                return _bme280Driver.ReadPreasure() / 100;
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during pressure measurement: {e.Message}", ErrorLevel.Critical));
+                return float.NaN;
+            }
+        }
+
+        private int GetLightLevel()
+        {
+            try
+            {
+                return _lightSensorDriver.GetLightLevelInLux();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during light level measurement: {e.Message}", ErrorLevel.Critical));
+                return int.MinValue;
+            }
+        }
+
+        private short GetSoilMoisture()
+        {
+            try
+            {
+                return _soilMoistureSensorDriver.GetUncalibratedMoisture();
+            }
+            catch (Exception e)
+            {
+                _outboundEventBus.Send(new ErrorEvent(
+                    $"Error during soil moisture measurement: {e.Message}", ErrorLevel.Critical));
+                return short.MinValue;
+            }
         }
     }
 }

@@ -10,8 +10,6 @@ using EspIot.Drivers.SparkFunAnemometer.Enums;
 using EspIot.Drivers.SparkFunRainGauge;
 using EspIot.Drivers.SparkFunWindVane;
 using EspIot.Drivers.SparkFunWindVane.Enums;
-using nanoFramework.Runtime.Native;
-using WeatherStation.Application.Commands.SetTelemetryInterval;
 using WeatherStation.Application.Events.Outbound;
 
 namespace WeatherStation.Application.Services

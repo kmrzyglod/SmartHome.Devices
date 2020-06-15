@@ -1,4 +1,4 @@
-﻿using EspIot.Core.Messaging.Concrete;
+﻿using EspIot.Application.Commands;
 using GreenhouseController.Application.Services.AutomaticControl;
 
 namespace GreenhouseController.Application.Commands.SetAutoMode

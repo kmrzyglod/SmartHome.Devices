@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Collections;
-using EspIot.Core.Messaging.Events;
-using EspIot.Core.Messaging.Interfaces;
-using GreenhouseController.Application.Commands.CloseWindow;
-using GreenhouseController.Application.Commands.OpenWindow;
-using GreenhouseController.Application.Services.WindowsManager;
+using EspIot.Application.Commands.Ping;
+using EspIot.Application.Commands.SendDiagnosticData;
+using EspIot.Application.Interfaces;
+using EspIot.Application.Services;
 
 namespace Infrastructure.Factory
 {
-    class CommandHandlersFactory: ICommandHandlersFactory
+    public class CommandHandlersFactory : ICommandHandlersFactory
     {
-        private static Hashtable _mappings { get; set; }
-
-        public CommandHandlersFactory(WindowsManagerService windowsManagerService, IOutboundEventBus outboundEventBus)
+        public CommandHandlersFactory(IOutboundEventBus outboundEventBus, IDiagnosticService diagnosticService)
         {
             _mappings = new Hashtable
             {
                 //Add here all command factories
-                {nameof(CloseWindowCommand), new CloseWindowCommandHandler(windowsManagerService, outboundEventBus)},
-                {nameof(OpenWindowCommand), new OpenWindowCommandHandler(windowsManagerService, outboundEventBus)}
+                {nameof(PingCommand), new PingCommandHandler(outboundEventBus)},
+                {
+                    nameof(SendDiagnosticDataCommand),
+                    new SendDiagnosticDataCommandHandler(outboundEventBus, diagnosticService)
+                }
             };
         }
+
+        private static Hashtable _mappings { get; set; }
 
         public ICommandHandler Get(string commandName)
         {

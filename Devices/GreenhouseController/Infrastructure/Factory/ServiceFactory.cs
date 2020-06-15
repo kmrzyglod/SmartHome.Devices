@@ -1,49 +1,84 @@
-﻿using EspIot.Infrastructure.Handlers;
+﻿using System.Threading;
+using EspIot.Application.Events.Outbound;
+using EspIot.Application.Services;
+using EspIot.Core.Helpers;
+using EspIot.Core.Messaging.Enum;
+using EspIot.Infrastructure.Handlers;
 using EspIot.Infrastructure.MessageBus;
 using EspIot.Infrastructure.Services;
 using EspIot.Infrastructure.Wifi;
 using GreenhouseController.Application.Services.Telemetry;
-using GreenhouseController.Application.Services.WindowsManager;
 using Infrastructure.Config;
+using nanoFramework.Runtime.Native;
 
 namespace Infrastructure.Factory
 {
     public class ServiceFactory
     {
+        private readonly Configuration _configuration;
         private readonly DriversFactory _driversFactory;
-        private readonly GreenhouseControllerConfiguration _configuration;
         private readonly MqttOutboundEventBus _mqttOutboundEventBus;
         private CommandBus _commandBus;
-        private CommandsFactory _commandsFactory;
-        private CommandHandlersFactory _commandHandlersFactory;
-        private InboundMessagesHandler _inboundMessagesHandler;
         private CommandDispatcherService _commandDispatcherService;
+        private CommandHandlersFactory _commandHandlersFactory;
+        private CommandsFactory _commandsFactory;
+        private IDiagnosticService _diagnosticService;
+        private InboundMessagesHandler _inboundMessagesHandler;
+
 
         private TelemetryService _telemetryService;
-        private WindowsManagerService _windowsManagerService;
 
-        public ServiceFactory(DriversFactory driversFactory, GreenhouseControllerConfiguration configuration)
+        public ServiceFactory(DriversFactory driversFactory, Configuration configuration)
         {
             _driversFactory = driversFactory;
+            SetInitialPinStates();
             _configuration = configuration;
             _mqttOutboundEventBus = new MqttOutboundEventBus(_driversFactory.IotHubClient);
+        }
+
+        private ServiceFactory SetInitialPinStates()
+        {
+            _driversFactory.StatusLed.SetWifiDisconnected();
+            _driversFactory.StatusLed.SetMqttBrokerDisconnected();
+
+            return this;
         }
 
         public ServiceFactory InitWifi()
         {
             WifiDriver.OnWifiConnected += () => { _driversFactory.StatusLed.SetWifiConnected(); };
             WifiDriver.OnWifiDisconnected += () => { _driversFactory.StatusLed.SetWifiDisconnected(); };
-            WifiDriver.ConnectToNetwork();
+            WifiDriver.OnWifiDuringConnection += () => { _driversFactory.StatusLed.SetWifiDuringConnection(); };
+            new Thread(() =>
+                {
+                    WifiDriver.ConnectToNetwork();
+                    Logger.Log(() => $"Free memory after connected to wifi {GC.Run(false)}");
+                })
+                .Start();
 
             return this;
         }
 
         public ServiceFactory InitMqttClient()
         {
-            _driversFactory.IotHubClient.OnMqttClientConnected += () => { _driversFactory.StatusLed.SetMqttBrokerConnected(); };
-            _driversFactory.IotHubClient.OnMqttClientDisconnected += () => { _driversFactory.StatusLed.SetMqttBrokerDisconnected(); };
-            _driversFactory.IotHubClient.Connect();
-            _driversFactory.IotHubClient.Subscribe(new[] { "devices/esp32-greenhouse/messages/devicebound/#" });
+            _driversFactory.IotHubClient.OnMqttClientConnected += () =>
+            {
+                _driversFactory.StatusLed.SetMqttBrokerConnected();
+            };
+            _driversFactory.IotHubClient.OnMqttClientDisconnected += () =>
+            {
+                _driversFactory.StatusLed.SetMqttBrokerDisconnected();
+            };
+            new Thread(() =>
+            {
+                _driversFactory.IotHubClient.Connect(new[] {_configuration.InboundMessagesTopic});
+                _mqttOutboundEventBus.Send(new DeviceStatusUpdatedEvent(
+                    "Device was turned on and connected to MQTT broker",
+                    DeviceStatusCode.DeviceWasTurnedOn));
+
+                Logger.Log(() => $"Free memory after connected to MQTT broker {GC.Run(false)}");
+            }).Start();
+
 
             return this;
         }
@@ -52,46 +87,43 @@ namespace Infrastructure.Factory
         {
             _commandBus = new CommandBus(_mqttOutboundEventBus);
             _commandsFactory = new CommandsFactory();
-            _commandHandlersFactory = new CommandHandlersFactory(_windowsManagerService, _mqttOutboundEventBus);
-            _inboundMessagesHandler = new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory);
-            _commandDispatcherService = new CommandDispatcherService(_commandHandlersFactory, _commandBus);
+            _commandHandlersFactory =
+                new CommandHandlersFactory(_mqttOutboundEventBus, _diagnosticService);
+            _inboundMessagesHandler =
+                new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory,
+                    _mqttOutboundEventBus);
+            _commandDispatcherService =
+                new CommandDispatcherService(_commandHandlersFactory, _commandBus, _mqttOutboundEventBus);
             _commandDispatcherService.Start();
+
+            Logger.Log(() => $"Free memory after init inbound message processing {GC.Run(false)}");
 
             return this;
         }
-        
+
+        public ServiceFactory InitDiagnosticService()
+        {
+            _diagnosticService = new DiagnosticService(_mqttOutboundEventBus);
+            _diagnosticService.Start();
+            Logger.Log(() => $"Free memory after init diagnostic service {GC.Run(false)}");
+            return this;
+        }
+
+
         public ServiceFactory InitTelemetry()
         {
             _telemetryService = new TelemetryService(
                 _driversFactory.DoorReedSwitch,
-                _driversFactory.Window1ReedSwitch,
-                _driversFactory.Window2ReedSwitch,
                 _mqttOutboundEventBus,
                 _driversFactory.LightSensor,
                 _driversFactory.Bme280,
                 _driversFactory.SoilMoistureSensor,
-                _driversFactory.WaterFlowSensor
-                );
+                _driversFactory.WaterFlowSensorDriver
+            );
 
-            _telemetryService.SetInterval(10000);
             _telemetryService.Start();
 
             return this;
         }
-
-        public ServiceFactory InitWindowsManager()
-        {
-            _windowsManagerService = new WindowsManagerService(
-                _driversFactory.Window1Actuator,
-                _driversFactory.Window2Actuator,
-                _driversFactory.Window1ReedSwitch,
-                _driversFactory.Window2ReedSwitch,
-                _driversFactory.DoorReedSwitch,
-                _mqttOutboundEventBus
-                );
-
-            return this;
-        }
-
     }
 }

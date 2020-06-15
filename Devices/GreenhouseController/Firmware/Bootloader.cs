@@ -7,13 +7,14 @@ namespace GreenhouseController
     {
         public static void StartServices()
         {
-            var defaultConfig = new GreenhouseControllerConfiguration();
+            var defaultConfig = new Configuration();
             var driversFactory = new DriversFactory(defaultConfig);
-            var servicesFactory = new ServiceFactory(driversFactory, defaultConfig)
+
+            new ServiceFactory(driversFactory, defaultConfig)
                 .InitWifi()
                 .InitMqttClient()
+                .InitDiagnosticService()
                 .InitTelemetry()
-                .InitWindowsManager()
                 .InitInboundMessagesProcessing();
         }
     }
