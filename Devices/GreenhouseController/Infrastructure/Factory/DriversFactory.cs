@@ -3,6 +3,7 @@ using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
 using EspIot.Drivers.SeedstudioWaterFlowSensor;
+using EspIot.Drivers.SoildStateRelay;
 using EspIot.Drivers.StatusLed;
 using EspIot.Drivers.Switch;
 using EspIot.Infrastructure.Mqtt;
@@ -20,6 +21,7 @@ namespace Infrastructure.Factory
         private WaterFlowSensorDriver _waterFlowSensorDriver;
         private SwitchDriver _doorReedSwitch;
         private StatusLed _statusLed;
+        private SolidStateRelaysDriver _solidStateRelaysDriver;
         private MqttClientWrapper _iotHubClient;
         
         public DriversFactory(Configuration configuration)
@@ -41,6 +43,11 @@ namespace Infrastructure.Factory
         public WaterFlowSensorDriver WaterFlowSensorDriver => _waterFlowSensorDriver ?? (_waterFlowSensorDriver = new WaterFlowSensorDriver(GpioController.GetDefault(), _configuration.WaterFlowSensorPin));
         public SwitchDriver DoorReedSwitch => _doorReedSwitch ?? (_doorReedSwitch = new SwitchDriver(GpioController.GetDefault(), _configuration.DoorReedSwitchPin, GpioPinDriveMode.InputPullUp));
         public StatusLed StatusLed => _statusLed ?? (_statusLed = new StatusLed(GpioController.GetDefault(), _configuration.WifiStatusLed, _configuration.MqttStatusLed));
+
+        public SolidStateRelaysDriver SolidStateRelaysDriver => _solidStateRelaysDriver ?? (_solidStateRelaysDriver =
+            new SolidStateRelaysDriver(GpioController.GetDefault(),
+                _configuration.SolidStateRelayPins));
+
         public MqttClientWrapper IotHubClient => _iotHubClient ?? (_iotHubClient = new MqttClientWrapper(_configuration.MqttBrokerAddress, _configuration.DeviceId, _statusLed));
     }
 }

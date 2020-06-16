@@ -1,8 +1,10 @@
-﻿using Windows.Devices.Gpio;
+﻿using System;
+using Windows.Devices.Gpio;
+using EspIot.Core.Gpio;
 
 namespace EspIot.Drivers.SoildStateRelay
 {
-    public class SolidStateRelays
+    public class SolidStateRelaysDriver
     {
         private readonly int _channelsNum;
         private readonly GpioPin[] _channels;
@@ -10,7 +12,7 @@ namespace EspIot.Drivers.SoildStateRelay
         private readonly Mode _mode;
         private readonly bool[] _channelsStates;
 
-        public SolidStateRelays(GpioController gpioController, short[] pins, Mode mode = Mode.Low)
+        public SolidStateRelaysDriver(GpioController gpioController, GpioPins[] pins, Mode mode = Mode.Low)
         {
             _channelsNum = pins.Length;
             _channels = new GpioPin[_channelsNum];
@@ -50,15 +52,15 @@ namespace EspIot.Drivers.SoildStateRelay
         {
             if (channel >= _channelsNum)
             {
-                throw new System.Exception("Solid state relay channel out of range");
+                throw new InvalidOperationException("Solid state relay channel out of range");
             }
         }
 
-        private void InitChannels(short[] pins)
+        private void InitChannels(GpioPins[] pins)
         {
             for (int i = 0; i < _channelsNum; i++)
             {   
-                _channels[i] = _gpioController.OpenPin(pins[i]);
+                _channels[i] = _gpioController.OpenPin((int) pins[i]);
                 _channels[i].SetDriveMode(GpioPinDriveMode.Output);
                 _channels[i].Write(_mode == Mode.Low ? GpioPinValue.High : GpioPinValue.Low);
             }

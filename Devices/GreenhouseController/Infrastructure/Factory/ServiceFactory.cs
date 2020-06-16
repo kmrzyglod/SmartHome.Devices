@@ -7,6 +7,8 @@ using EspIot.Infrastructure.Handlers;
 using EspIot.Infrastructure.MessageBus;
 using EspIot.Infrastructure.Services;
 using EspIot.Infrastructure.Wifi;
+using GreenhouseController.Application.Services.EnvironmentalConditions;
+using GreenhouseController.Application.Services.Irrigation;
 using GreenhouseController.Application.Services.Telemetry;
 using Infrastructure.Config;
 using nanoFramework.Runtime.Native;
@@ -24,7 +26,8 @@ namespace Infrastructure.Factory
         private CommandsFactory _commandsFactory;
         private IDiagnosticService _diagnosticService;
         private InboundMessagesHandler _inboundMessagesHandler;
-
+        private IrrigationService _irrigationService;
+        private EnvironmentalConditionsService _environmentalConditionsService;
 
         private TelemetryService _telemetryService;
 
@@ -122,6 +125,20 @@ namespace Infrastructure.Factory
             );
 
             _telemetryService.Start();
+
+            return this;
+        }
+
+        public ServiceFactory InitIrrigationService()
+        {
+            _irrigationService = new IrrigationService(_driversFactory.SolidStateRelaysDriver, _configuration.WaterPumpRelaySwitchChannel);
+
+            return this;
+        }
+
+        public ServiceFactory InitEnvironmentalConditionsService()
+        {
+            _environmentalConditionsService = new EnvironmentalConditionsService();
 
             return this;
         }

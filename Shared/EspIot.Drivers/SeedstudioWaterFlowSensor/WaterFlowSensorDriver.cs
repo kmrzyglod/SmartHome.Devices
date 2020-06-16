@@ -65,8 +65,8 @@ namespace EspIot.Drivers.SeedstudioWaterFlowSensor
                     _averageFlow = (_averageFlow * _measurementCounter + _currentFlow) /
                                    ++_measurementCounter;
 
-                    Logger.Log(() => $"Current flow: {_currentFlow / 5f} [l/min]");
-                    Logger.Log(() => $"Total flow: {_totalFlow / 5f / 60f} [l]");
+                    //Logger.Log(() => $"Current flow: {_currentFlow / 5f} [l/min]");
+                    //Logger.Log(() => $"Total flow: {_totalFlow / 5f / 60f} [l]");
 
                     if (_currentFlow > _maxFlow)
                     {
