@@ -132,13 +132,14 @@ namespace Infrastructure.Factory
         public ServiceFactory InitIrrigationService()
         {
             _irrigationService = new IrrigationService(_driversFactory.SolidStateRelaysDriver, _configuration.WaterPumpRelaySwitchChannel);
-
+            Logger.Log(() => $"Free memory after init irrigation service {GC.Run(false)}");
             return this;
         }
 
         public ServiceFactory InitEnvironmentalConditionsService()
         {
             _environmentalConditionsService = new EnvironmentalConditionsService();
+            Logger.Log(() => $"Free memory after init environmental condition service {GC.Run(false)}");
 
             return this;
         }

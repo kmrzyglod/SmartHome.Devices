@@ -157,7 +157,7 @@ namespace GreenhouseController.Application.Services.Telemetry
         {
             try
             {
-                return _bme280Driver.ReadPreasure() / 100;
+                return _bme280Driver.ReadPreasure() / 100f;
             }
             catch (Exception e)
             {

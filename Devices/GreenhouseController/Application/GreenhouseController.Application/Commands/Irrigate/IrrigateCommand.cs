@@ -1,21 +1,26 @@
 ﻿using System.Collections;
 using EspIot.Application.Commands;
+using EspIot.Application.Interfaces;
 using EspIot.Core.Extensions;
+using EspIot.Core.Messaging.Validation;
 using GreenhouseController.Application.Services.Irrigation;
 
 namespace GreenhouseController.Application.Commands.Irrigate
 {
     internal class IrrigateCommand : CommandBase
     {
-        //Irigation time in secons (optional)
-        public int IrrigationTime { get; }
+        public const int MAXIMUM_IRRIGATION_TIME = 1200; 
+        public const int MAXIMUM_IRRIGATION_VOLUME = 60; 
+       
+        //Irigation time in seconds
+        public int MaximumIrrigationTime { get; }
 
-        //Water volume in liters (optional)
+        //Water volume in liters 
         public int WaterVolume { get; }
 
-        public IrrigateCommand(string correlationId, int irrigationTime, int waterVolume) : base(correlationId)
+        public IrrigateCommand(string correlationId, int maximumIrrigationTime, int waterVolume) : base(correlationId)
         {
-            IrrigationTime = irrigationTime;
+            MaximumIrrigationTime = maximumIrrigationTime;
             WaterVolume = waterVolume;
         }
 
@@ -23,10 +28,36 @@ namespace GreenhouseController.Application.Commands.Irrigate
         {
             return new IrrigateCommand(
                 obj.GetString(nameof(CorrelationId)),
-                obj.GetInt(nameof(IrrigationTime)),
+                obj.GetInt(nameof(MaximumIrrigationTime)),
                 obj.GetInt(nameof(WaterVolume)));
         }
 
         public override string PartitionKey { get; } = nameof(IrrigationService);
+
+        public override ValidationError[] Validate()
+        {
+            var errors = ValidateBase();
+            if (MaximumIrrigationTime > MAXIMUM_IRRIGATION_TIME)
+            {
+                errors.Add(new ValidationError(nameof(MaximumIrrigationTime),
+                    $"{nameof(MaximumIrrigationTime)} field cannot has value higher than {MAXIMUM_IRRIGATION_TIME}"));
+            }
+
+            if (WaterVolume > MAXIMUM_IRRIGATION_VOLUME)
+            {
+                errors.Add(new ValidationError(nameof(MaximumIrrigationTime),
+                    $"{nameof(WaterVolume)} field cannot has value higher than {MAXIMUM_IRRIGATION_VOLUME}"));
+            }
+
+            return ConvertToArray(errors);
+        }
+
+        public class Factory : ICommandFactory
+        {
+            public ICommand Create(Hashtable obj)
+            {
+                return FromHashtable(obj);
+            }
+        }
     }
 }

@@ -15,7 +15,11 @@ namespace GreenhouseController
                 .InitMqttClient()
                 .InitDiagnosticService()
                 .InitTelemetry()
-                .InitInboundMessagesProcessing();
+                .InitInboundMessagesProcessing()
+                .InitIrrigationService()
+                .InitEnvironmentalConditionsService();
+
+            driversFactory.SolidStateRelaysDriver.On(0);
         }
     }
 }

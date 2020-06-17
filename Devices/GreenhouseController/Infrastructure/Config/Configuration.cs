@@ -5,6 +5,10 @@ using EspIot.Drivers.LinearActuator;
 
 namespace Infrastructure.Config
 {
+    //TODO this should be only default configuration
+    //Current configuration should be dynamically (by command) saved in internal ESP32 storage 
+    //Internal storage manager should be added to achieve this 
+
     public class Configuration : IConfiguration
     {
         //General config
@@ -41,8 +45,6 @@ namespace Infrastructure.Config
 
         //8 channel solid state relay pins
         public GpioPins[] SolidStateRelayPins { get; } = {
-            GpioPins.GPIO_NUM_13,
-            GpioPins.GPIO_NUM_12,
             GpioPins.GPIO_NUM_14,
             GpioPins.GPIO_NUM_27,
             GpioPins.GPIO_NUM_26,
@@ -53,5 +55,25 @@ namespace Infrastructure.Config
 
         //Pump channel 
         public short WaterPumpRelaySwitchChannel = 0;
+
+        //Default greenhouse environmental parameters for tomato cultivation
+
+        public short DayVegetationMaxOptimalTemperature { get; } = 26;
+        public short DayVegetationMinOptimalTemperature { get; } = 18;
+
+        public short NightVegetationMaxOptimalTemperature { get; } = 20;
+        public short NightVegetationMinOptimalTemperature { get; } = 16;
+
+        public short MaxOptimalHumidity { get; } = 65;
+        public short MinOptimalHumidity { get; } = 50;
+
+        public short UpperCriticalTemperature { get; } = 32;
+        public short LowerCriticalTemperature { get; } = 10;
+
+        public short UpperCriticalHumidity { get; } = 95;
+        public short LowerCriticalHumidity { get; } = 20;
+
+        public short UpperCriticalSoilMoisture { get; } = 90;
+        public short LowerCriticalSoilMositure { get; } = 30;
     }
 }
