@@ -5,7 +5,7 @@ namespace WindowsController.Infrastructure.Config
 {
     public class Configuration: IConfiguration 
     {
-        public string MqttBrokerAddress { get; } = "192.168.2.108";
+        public string MqttBrokerAddress { get; } = "192.168.3.8";
         public string DeviceId { get; } = "esp32-windows-controller";
         public string InboundMessagesTopic { get; } = "devices/esp32-windows-controller/messages/devicebound/#";
         

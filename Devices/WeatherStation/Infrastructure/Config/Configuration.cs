@@ -8,7 +8,7 @@ namespace WeatherStation.Infrastructure.Config
     {
         //General config
         //MQTT config
-        public string MqttBrokerAddress { get; } = "192.168.2.108";
+        public string MqttBrokerAddress { get; } = "192.168.3.8";
         public string DeviceId { get; } = "esp32-weather-station";
         public string InboundMessagesTopic { get; } = "devices/esp32-weather-station/messages/devicebound/#";
 

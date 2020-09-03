@@ -13,7 +13,7 @@ namespace Infrastructure.Config
     {
         //General config
         //MQTT config
-        public string MqttBrokerAddress { get; } = "192.168.2.108";
+        public string MqttBrokerAddress { get; } = "192.168.3.8";
         public string DeviceId { get; } = "esp32-greenhouse";
         public string InboundMessagesTopic { get; } = "devices/esp32-greenhouse/messages/devicebound/#";
 
@@ -43,18 +43,15 @@ namespace Infrastructure.Config
         //Water flow sensor
         public GpioPins WaterFlowSensorPin { get; } = GpioPins.GPIO_NUM_2;
 
-        //8 channel solid state relay pins
+        //2 channel solid state relay pins
         public GpioPins[] SolidStateRelayPins { get; } = {
             GpioPins.GPIO_NUM_14,
-            GpioPins.GPIO_NUM_27,
-            GpioPins.GPIO_NUM_26,
-            GpioPins.GPIO_NUM_25,
-            GpioPins.GPIO_NUM_33,
-            GpioPins.GPIO_NUM_32
+            GpioPins.GPIO_NUM_27
         };
 
         //Pump channel 
-        public short WaterPumpRelaySwitchChannel = 0;
+        public ushort WaterPumpRelaySwitchChannel = 0;
+        public ushort ValveRelaySwitchChannel = 1;
 
         //Default greenhouse environmental parameters for tomato cultivation
 

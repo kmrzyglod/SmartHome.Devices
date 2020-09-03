@@ -7,7 +7,7 @@ using GreenhouseController.Application.Services.Irrigation;
 
 namespace GreenhouseController.Application.Commands.Irrigate
 {
-    internal class IrrigateCommand : CommandBase
+    public class IrrigateCommand : CommandBase
     {
         public const int MAXIMUM_IRRIGATION_TIME = 1200; 
         public const int MAXIMUM_IRRIGATION_VOLUME = 60; 

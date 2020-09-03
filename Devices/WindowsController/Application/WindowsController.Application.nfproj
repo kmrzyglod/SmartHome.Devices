@@ -24,7 +24,9 @@
     <Compile Include="Commands\OpenWindow\OpenWindowCommandHandler.cs" />
     <Compile Include="Events\Outbound\WindowClosedEvent.cs" />
     <Compile Include="Events\Outbound\WindowOpenedEvent.cs" />
+    <Compile Include="Events\Outbound\WindowsControllerTelemetryEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\TelemetryService.cs" />
     <Compile Include="Services\WindowsManagingService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -35,11 +37,6 @@
     </Reference>
     <Reference Include="nanoFramework.System.Collections">
       <HintPath>..\packages\nanoFramework.System.Collections.1.1.0\lib\nanoFramework.System.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="nanoFramework.System.Collections, Version=1.0.1.5, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.System.Collections.1.0.1\lib\nanoFramework.System.Collections.dll</HintPath>
-      <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>

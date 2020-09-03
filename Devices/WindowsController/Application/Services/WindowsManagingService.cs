@@ -36,7 +36,6 @@ namespace WindowsController.Application.Services
         private readonly SwitchOpenedEventHandler OnWindow2Opened;
 
         private bool _isRunning;
-        private bool _criticalFailure = false;
 
         public WindowsManagingService(LinearActuatorDriver window1Actuator,
             LinearActuatorDriver window2Actuator,
@@ -133,11 +132,6 @@ namespace WindowsController.Application.Services
         {
             lock (this)
             {
-                if (_criticalFailure)
-                {
-                    return;
-                }
-
                 _workerThreads[windowId] = new Thread(() =>
                 {
                     _windowActuators[windowId].StartMovingExtensionDirection();
@@ -156,7 +150,6 @@ namespace WindowsController.Application.Services
                     _windowActuators[windowId].StopMoving();
                     if (_windowStates[windowId] == SwitchState.Closed)
                     {
-                        _criticalFailure = true;
                         _outboundEventBus.Send(new ErrorEvent($"Window actuator mechanism critical failure. Window with id {windowId} is still closed.", ErrorLevel.Critical));
                     }
                     Logger.Log($"Openning window {windowId} finished.");
@@ -168,14 +161,10 @@ namespace WindowsController.Application.Services
 
         public void OpenWindow(ushort windowId)
         {
-            CanBeExecuted(windowId);
-            OpenWindowAsync(windowId);
-            _workerThreads[windowId].Join();
-
-            if (_windowReedSwitches[windowId].GetState() == SwitchState.Closed)
+            lock (this)
             {
-                throw new Exception(
-                    $"Window actuator mechanism critical failure. Window with id {windowId} is still closed.");
+                CanBeExecuted(windowId);
+                OpenWindowAsync(windowId);
             }
         }
 
@@ -183,7 +172,7 @@ namespace WindowsController.Application.Services
         {
             lock (this)
             {
-                if (_windowStates[windowId] == SwitchState.Closed || _criticalFailure)
+                if (_windowStates[windowId] == SwitchState.Closed)
                 {
                     return;
                 }
@@ -211,7 +200,6 @@ namespace WindowsController.Application.Services
                     _windowActuators[windowId].StopMoving();
                     if (_windowStates[windowId] == SwitchState.Opened)
                     {
-                        _criticalFailure = true;
                         _outboundEventBus.Send(new ErrorEvent($"Window actuator mechanism critical failure. Window with id {windowId} is still opened.", ErrorLevel.Critical));
                     }
                     Logger.Log($"Closing window {windowId} finished.");
@@ -223,31 +211,18 @@ namespace WindowsController.Application.Services
 
         public void CloseWindow(ushort windowId)
         {
-            CanBeExecuted(windowId);
-            CloseWindowAsync(windowId);
-            _workerThreads[windowId].Join();
-            if (_windowReedSwitches[windowId].GetState() == SwitchState.Opened)
+            lock (this)
             {
-                throw new Exception(
-                    $"Window actuator mechanism critical failure. Window with id {windowId} is still opened.");
+                CanBeExecuted(windowId);
+                CloseWindowAsync(windowId);
             }
         }
 
         private void CanBeExecuted(ushort windowId)
         {
-            if (_criticalFailure)
-            {
-                throw new InvalidOperationException("Critical error was detected and mechanism was blocked. Check windows mechanism and restart device.");
-            }
-            
             if (!_isRunning)
             {
                 throw new InvalidOperationException("Windows managing service is not started");
-            }
-
-            if (IsPendingOperationOnWindow(windowId))
-            {
-                throw new InvalidOperationException($"Pending operation on window with id {windowId}");
             }
         }
 

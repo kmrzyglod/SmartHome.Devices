@@ -1,7 +1,11 @@
-﻿using EspIot.Core.Helpers;
-using nanoFramework.Runtime.Native;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using Windows.Devices.Gpio;
+using EspIot.Core.Helpers;
 using WeatherStation.Infrastructure.Config;
 using WeatherStation.Infrastructure.Factory;
+using GC = nanoFramework.Runtime.Native.GC;
 
 namespace WeatherStation.Firmware
 {

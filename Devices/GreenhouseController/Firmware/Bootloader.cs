@@ -17,9 +17,7 @@ namespace GreenhouseController
                 .InitTelemetry()
                 .InitInboundMessagesProcessing()
                 .InitIrrigationService()
-                .InitEnvironmentalConditionsService();
-
-            driversFactory.SolidStateRelaysDriver.On(0);
+                .InitDoorService();
         }
     }
 }

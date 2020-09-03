@@ -1,8 +1,8 @@
-﻿using EspIot.Application.Interfaces;
+﻿using EspIot.Application.Events;
 
 namespace WindowsController.Application.Events.Outbound
 {
-    public class WindowClosedEvent: IEvent
+    public class WindowClosedEvent: EventBase
     {
         public WindowClosedEvent(ushort windowId)
         {

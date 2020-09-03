@@ -23,6 +23,7 @@ namespace WindowsController.Firmware
                 .InitMqttClient()
                 .InitDiagnosticService()
                 .InitWindowsManagingService()
+                .InitTelemetryService()
                 .InitInboundMessagesProcessing();
 
         }

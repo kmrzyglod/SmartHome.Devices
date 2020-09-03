@@ -18,7 +18,10 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Commands\AbortIrrigation\AbortIrrigationCommand.cs" />
+    <Compile Include="Commands\AbortIrrigation\AbortIrrigationCommandHandler.cs" />
     <Compile Include="Commands\Irrigate\IrrigateCommand.cs" />
+    <Compile Include="Commands\Irrigate\IrrigateCommandHandler.cs" />
     <Compile Include="Commands\ScheduleIrrigation\ScheduleIrrigationCommand.cs" />
     <Compile Include="Commands\SetConfig\SetConfigCommand.cs" />
     <Compile Include="Commands\SetTelemetryInterval\SetTelemetryIntervalCommand.cs" />
@@ -26,14 +29,16 @@
     <Compile Include="Events\Outbound\CriticalTemperatureValueEvent.cs" />
     <Compile Include="Events\Outbound\DoorClosedEvent.cs" />
     <Compile Include="Events\Outbound\DoorOpenedEvent.cs" />
+    <Compile Include="Events\Outbound\IrrigationFinishedEvent.cs" />
     <Compile Include="Events\Outbound\NotOptimalHumidityValueEvent.cs" />
     <Compile Include="Events\Outbound\NotOptimalTemperatureValueEvent.cs" />
     <Compile Include="Events\Outbound\TelemetryIntervalChangedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Door\DoorService.cs" />
     <Compile Include="Services\EnvironmentalConditions\EnvironmentalConditionsService.cs" />
     <Compile Include="Services\Irrigation\IrrigationService.cs" />
     <Compile Include="Services\Telemetry\TelemetryService.cs" />
-    <Compile Include="Events\Outbound\TelemetryEvent.cs" />
+    <Compile Include="Events\Outbound\GreenhouseControllerTelemetryEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Shared\EspIot.Application\EspIot.Application.nfproj" />

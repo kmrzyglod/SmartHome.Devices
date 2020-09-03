@@ -28,6 +28,7 @@ namespace WindowsController.Infrastructure.Factory
         private InboundMessagesHandler _inboundMessagesHandler;
 
         private WindowsManagingService _windowsManagingService;
+        private TelemetryService _telemetryService;
 
         public ServiceFactory(DriversFactory driversFactory, Configuration configuration)
         {
@@ -125,6 +126,14 @@ namespace WindowsController.Infrastructure.Factory
 
             Logger.Log(() => $"Free memory after init windows managing service {GC.Run(false)}");
 
+            return this;
+        }
+
+        public ServiceFactory InitTelemetryService()
+        {
+            _telemetryService = new TelemetryService(_mqttOutboundEventBus, _driversFactory.Window1ReedSwitch, _driversFactory.Window2ReedSwitch);
+            _telemetryService.Start();
+            Logger.Log(() => $"Free memory after init telemetry service {GC.Run(false)}");
             return this;
         }
     }

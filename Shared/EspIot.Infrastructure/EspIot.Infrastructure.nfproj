@@ -50,11 +50,13 @@
     <Reference Include="mscorlib">
       <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.CoreLibrary.1.7.3\lib\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="nanoFramework.M2Mqtt">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.M2Mqtt.4.4.1-preview.5\lib\nanoFramework.M2Mqtt.dll</HintPath>
+    <Reference Include="nanoFramework.M2Mqtt, Version=4.6.1.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.M2Mqtt.4.6.1-preview.10\lib\nanoFramework.M2Mqtt.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="nanoFramework.Runtime.Events, Version=1.8.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.Runtime.Events.1.8.0\lib\nanoFramework.Runtime.Events.dll</HintPath>
+    <Reference Include="nanoFramework.Runtime.Events, Version=1.8.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Runtime.Events.1.8.1-preview.22\lib\nanoFramework.Runtime.Events.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
@@ -64,7 +66,7 @@
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.System.Collections, Version=1.1.0.2, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.System.Collections.1.1.0\lib\nanoFramework.System.Collections.dll</HintPath>
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.1.0\lib\nanoFramework.System.Collections.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
@@ -73,13 +75,13 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="System.Net, Version=1.6.1.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.System.Net.1.6.1\lib\System.Net.dll</HintPath>
+    <Reference Include="System.Net, Version=1.6.2.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Net.1.6.2-preview.5\lib\System.Net.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Windows.Devices.Wifi, Version=1.3.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.Windows.Devices.Wifi.1.3.0\lib\Windows.Devices.Wifi.dll</HintPath>
+    <Reference Include="Windows.Devices.Wifi, Version=1.3.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Windows.Devices.Wifi.1.3.1-preview.6\lib\Windows.Devices.Wifi.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

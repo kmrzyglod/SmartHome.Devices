@@ -8,25 +8,25 @@ namespace EspIot.Core.Extensions
         //Try get int value from hashtable or get default if value isn't int
         public static int GetInt(this Hashtable hashtable, string key)
         {
-            return (int)(hashtable[key.ToLower()] is Int64 value ? value : default);
+            return (int)(hashtable[key.ToLower()] is long value ? value : default);
         }
 
         //Try get uint value from hashtable or get default if value isn't uint
         public static uint GetUInt(this Hashtable hashtable, string key)
         {
-            return hashtable[key.ToLower()] is uint value ? value : default;
+            return hashtable[key.ToLower()] is long value ? (uint) value : default;
         }
 
         //Try get short value from hashtable or get default if value isn't short
         public static short GetShort(this Hashtable hashtable, string key)
         {
-            return hashtable[key.ToLower()] is short value ? value : default;
+            return hashtable[key.ToLower()] is long value ? (short) value : default;
         }
 
         //Try get ushort value from hashtable or get default if value isn't ushort
         public static ushort GetUShort(this Hashtable hashtable, string key)
         {
-            return hashtable[key.ToLower()] is ushort value ? value : default;
+            return hashtable[key.ToLower()] is long value ? (ushort) value : default;
         }
 
         //Try get float value from hashtable or get default if value isn't float

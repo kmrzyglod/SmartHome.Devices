@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using EspIot.Application.Events.Outbound;
 using EspIot.Application.Interfaces;
@@ -6,8 +7,6 @@ using EspIot.Core.Messaging.Enum;
 using EspIot.Drivers.Bh1750;
 using EspIot.Drivers.Bme280;
 using EspIot.Drivers.DfrobotSoilMoistureSensor;
-using EspIot.Drivers.SeedstudioWaterFlowSensor;
-using EspIot.Drivers.SeedstudioWaterFlowSensor.Enums;
 using EspIot.Drivers.Switch;
 using EspIot.Drivers.Switch.Enums;
 using GreenhouseController.Application.Events.Outbound;
@@ -21,7 +20,6 @@ namespace GreenhouseController.Application.Services.Telemetry
         private readonly Bh1750 _lightSensorDriver;
         private readonly IOutboundEventBus _outboundEventBus;
         private readonly DfrobotSoilMoistureSensor _soilMoistureSensorDriver;
-        private readonly WaterFlowSensorDriver _waterFlowSensorDriver;
         private bool _isServiceRunning;
         private bool _runWorkingThread;
         private int _sentInterval = 600_000; //in [ms], default 10 min 
@@ -32,15 +30,13 @@ namespace GreenhouseController.Application.Services.Telemetry
             IOutboundEventBus outboundEventBus,
             Bh1750 lightSensorDriver,
             Bme280 bme280Driver,
-            DfrobotSoilMoistureSensor soilMoistureSensorDriver,
-            WaterFlowSensorDriver waterFlowSensorDriver)
+            DfrobotSoilMoistureSensor soilMoistureSensorDriver)
         {
             _doorReedSwitch = doorReedSwitch;
             _outboundEventBus = outboundEventBus;
             _lightSensorDriver = lightSensorDriver;
             _bme280Driver = bme280Driver;
             _soilMoistureSensorDriver = soilMoistureSensorDriver;
-            _waterFlowSensorDriver = waterFlowSensorDriver;
         }
 
         public bool IsRunning()
@@ -65,7 +61,6 @@ namespace GreenhouseController.Application.Services.Telemetry
 
             _workingThread = new Thread(() =>
             {
-                StartMeasurements();
                 _outboundEventBus.Send(new DeviceStatusUpdatedEvent("Telemetry service was started",
                     DeviceStatusCode.ServiceStarted));
                 while (_runWorkingThread)
@@ -74,11 +69,10 @@ namespace GreenhouseController.Application.Services.Telemetry
                     Thread.Sleep(_sentInterval);
                     var measurementEndTime = DateTime.UtcNow;
                     var telemetryData = GetTelemetryData(measurementStartTime, measurementEndTime);
-                    ResetMeasurements();
+                    Debug.WriteLine($"Humidity={telemetryData.Humidity}, Temperature={telemetryData.Temperature}, LightLevel={telemetryData.LightLevel}, SoilMoisture={telemetryData.SoilMoisture}, IsDoorOpen={telemetryData.IsDoorOpen}");
                     _outboundEventBus.Send(telemetryData);
                 }
 
-                StopMeasurements();
                 _outboundEventBus.Send(new DeviceStatusUpdatedEvent("Telemetry service was stopped",
                     DeviceStatusCode.ServiceStopped));
                 _isServiceRunning = false;
@@ -93,35 +87,15 @@ namespace GreenhouseController.Application.Services.Telemetry
             _outboundEventBus.Send(new TelemetryIntervalChangedEvent(interval));
         }
 
-        private void StartMeasurements()
+        private GreenhouseControllerTelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
         {
-            _waterFlowSensorDriver.StartMeasurement(WaterFlowSensorMeasurementResolution.OneSecond);
-        }
-
-        private void StopMeasurements()
-        {
-            _waterFlowSensorDriver.StopMeasurement();
-        }
-
-        private void ResetMeasurements()
-        {
-            _waterFlowSensorDriver.Reset();
-        }
-
-
-        private TelemetryEvent GetTelemetryData(DateTime measurementStartTime, DateTime measurementEndTime)
-        {
-            return new TelemetryEvent(measurementStartTime,
+            return new GreenhouseControllerTelemetryEvent(measurementStartTime,
                 measurementEndTime,
                 GetTemperature(),
                 GetPressure(),
                 GetHumidity(),
                 GetLightLevel(),
                 GetSoilMoisture(),
-                _waterFlowSensorDriver.GetAverageFlow(),
-                _waterFlowSensorDriver.GetMinFlow(),
-                _waterFlowSensorDriver.GetMaxFlow(),
-                _waterFlowSensorDriver.GetTotalFlow(),
                 _doorReedSwitch.GetState().ToBool());
         }
 

@@ -55,7 +55,9 @@ namespace EspIot.Drivers.SparkFunAnemometer
                 {
                     Thread.Sleep((int) measurementResolution * 1000);
                     var pulseCount = _pulseCounter.Read();
+                    _pulseCounter.Stop();
                     _pulseCounter.Reset();
+                    _pulseCounter.Start();
 
                     _currentWindSpeed =
                         (ushort) (pulseCount.Count / (double) measurementResolution * ONE_HZ_PULSE_SPEED);
@@ -68,6 +70,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
                     _averageWindSpeed = (_averageWindSpeed * _measurementCounter + _currentWindSpeed) /
                                         ++_measurementCounter;
 
+                    Logger.Log(() => $"Current wind tick: {pulseCount.Count}");
                     Logger.Log(() => $"Current wind speed: {_currentWindSpeed / 100f} [m/s]");
 
                     if (_currentWindSpeed > _maxWindSpeed)

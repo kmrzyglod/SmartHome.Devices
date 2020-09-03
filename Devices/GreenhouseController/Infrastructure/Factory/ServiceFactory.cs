@@ -7,6 +7,7 @@ using EspIot.Infrastructure.Handlers;
 using EspIot.Infrastructure.MessageBus;
 using EspIot.Infrastructure.Services;
 using EspIot.Infrastructure.Wifi;
+using GreenhouseController.Application.Services.Door;
 using GreenhouseController.Application.Services.EnvironmentalConditions;
 using GreenhouseController.Application.Services.Irrigation;
 using GreenhouseController.Application.Services.Telemetry;
@@ -27,6 +28,7 @@ namespace Infrastructure.Factory
         private IDiagnosticService _diagnosticService;
         private InboundMessagesHandler _inboundMessagesHandler;
         private IrrigationService _irrigationService;
+        private DoorService _doorService;
         private EnvironmentalConditionsService _environmentalConditionsService;
 
         private TelemetryService _telemetryService;
@@ -91,7 +93,7 @@ namespace Infrastructure.Factory
             _commandBus = new CommandBus(_mqttOutboundEventBus);
             _commandsFactory = new CommandsFactory();
             _commandHandlersFactory =
-                new CommandHandlersFactory(_mqttOutboundEventBus, _diagnosticService);
+                new CommandHandlersFactory(_mqttOutboundEventBus, _diagnosticService, _irrigationService);
             _inboundMessagesHandler =
                 new InboundMessagesHandler(_driversFactory.IotHubClient, _commandBus, _commandsFactory,
                     _mqttOutboundEventBus);
@@ -120,8 +122,7 @@ namespace Infrastructure.Factory
                 _mqttOutboundEventBus,
                 _driversFactory.LightSensor,
                 _driversFactory.Bme280,
-                _driversFactory.SoilMoistureSensor,
-                _driversFactory.WaterFlowSensorDriver
+                _driversFactory.SoilMoistureSensor
             );
 
             _telemetryService.Start();
@@ -131,7 +132,8 @@ namespace Infrastructure.Factory
 
         public ServiceFactory InitIrrigationService()
         {
-            _irrigationService = new IrrigationService(_driversFactory.SolidStateRelaysDriver, _configuration.WaterPumpRelaySwitchChannel);
+            _irrigationService = new IrrigationService(_driversFactory.SolidStateRelaysDriver, _configuration.WaterPumpRelaySwitchChannel, _configuration.ValveRelaySwitchChannel, _driversFactory.WaterFlowSensorDriver, _mqttOutboundEventBus);
+            _irrigationService.Start();
             Logger.Log(() => $"Free memory after init irrigation service {GC.Run(false)}");
             return this;
         }
@@ -140,7 +142,14 @@ namespace Infrastructure.Factory
         {
             _environmentalConditionsService = new EnvironmentalConditionsService();
             Logger.Log(() => $"Free memory after init environmental condition service {GC.Run(false)}");
+            return this;
+        }
 
+        public ServiceFactory InitDoorService()
+        {
+            _doorService = new DoorService(_mqttOutboundEventBus, _driversFactory.DoorReedSwitch);
+            _doorService.Start();
+            Logger.Log(() => $"Free memory after init door service {GC.Run(false)}");
             return this;
         }
     }

@@ -51,7 +51,10 @@ namespace EspIot.Drivers.SeedstudioWaterFlowSensor
                 {
                     Thread.Sleep((int) measurementResolution * 1000);
                     var pulseCount = _pulseCounter.Read();
+                    _pulseCounter.Stop();
                     _pulseCounter.Reset();
+                    _pulseCounter.Start();
+
                     _currentFlow =
                         (ushort) (pulseCount.Count / (double) measurementResolution);
 
