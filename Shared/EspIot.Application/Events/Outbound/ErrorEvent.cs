@@ -3,7 +3,7 @@ using EspIot.Core.Messaging.Enum;
 
 namespace EspIot.Application.Events.Outbound
 {
-    public class ErrorEvent : IEvent
+    public class ErrorEvent : EventBase
     {
         public ErrorEvent(string message, ErrorLevel errorLevel)
         {

@@ -1,9 +1,9 @@
 ﻿using System;
-using EspIot.Application.Interfaces;
+using EspIot.Application.Events;
 
 namespace GreenhouseController.Application.Events.Outbound
 {
-    public class GreenhouseControllerTelemetryEvent : IEvent
+    public class GreenhouseControllerTelemetryEvent : EventBase
     {
         public GreenhouseControllerTelemetryEvent(DateTime measurementStartTime,
             DateTime measurementEndTime, float temperature, float pressure, float humidity, int lightLevel,

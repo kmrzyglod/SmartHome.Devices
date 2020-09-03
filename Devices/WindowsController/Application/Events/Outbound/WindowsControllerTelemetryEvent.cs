@@ -1,8 +1,8 @@
-﻿using EspIot.Application.Interfaces;
+﻿using EspIot.Application.Events;
 
 namespace WindowsController.Application.Events.Outbound
 {
-    public class WindowsControllerTelemetryEvent: IEvent
+    public class WindowsControllerTelemetryEvent: EventBase
     {
         public WindowsControllerTelemetryEvent(bool[] windowsStatus)
         {

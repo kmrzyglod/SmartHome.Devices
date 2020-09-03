@@ -2,7 +2,7 @@
 
 namespace EspIot.Application.Events.Outbound
 {
-    public class DiagnosticEvent : IEvent
+    public class DiagnosticEvent : EventBase
     {
         public DiagnosticEvent(string ssid, double rssi, string ip, string gatewayIp, uint freeHeapMemory)
         {

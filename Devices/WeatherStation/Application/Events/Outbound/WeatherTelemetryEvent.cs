@@ -1,10 +1,10 @@
 ﻿using System;
-using EspIot.Application.Interfaces;
 using EspIot.Drivers.SparkFunWindVane.Enums;
+using EspIot.Application.Events;
 
 namespace WeatherStation.Application.Events.Outbound
 {
-    public class WeatherTelemetryEvent : IEvent
+    public class WeatherTelemetryEvent : EventBase
     {
         public WeatherTelemetryEvent(DateTime measurementStartTime,
             DateTime measurementEndTime,

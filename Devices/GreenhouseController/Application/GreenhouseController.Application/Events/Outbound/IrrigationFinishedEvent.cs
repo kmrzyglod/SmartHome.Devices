@@ -1,9 +1,9 @@
 ﻿using System;
-using EspIot.Application.Interfaces;
+using EspIot.Application.Events;
 
 namespace GreenhouseController.Application.Events.Outbound
 {
-    public class IrrigationFinishedEvent: IEvent
+    public class IrrigationFinishedEvent: EventBase
     {
         public IrrigationFinishedEvent(float totalWaterVolume, float averageWaterFlow, float minWaterFlow, float maxWaterFlow, DateTime irrigationStartTime, DateTime irrigationEndTime)
         {

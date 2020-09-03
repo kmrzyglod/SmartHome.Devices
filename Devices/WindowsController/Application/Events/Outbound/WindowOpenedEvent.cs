@@ -1,8 +1,9 @@
-﻿using EspIot.Application.Interfaces;
+﻿using EspIot.Application.Events;
+using EspIot.Application.Interfaces;
 
 namespace WindowsController.Application.Events.Outbound
 {
-    public class WindowOpenedEvent: IEvent
+    public class WindowOpenedEvent: EventBase
     {
         public WindowOpenedEvent(ushort windowId)
         {

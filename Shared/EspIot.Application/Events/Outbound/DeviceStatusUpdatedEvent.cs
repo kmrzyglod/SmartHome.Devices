@@ -4,7 +4,7 @@ using EspIot.Core.Messaging.Enum;
 
 namespace EspIot.Application.Events.Outbound
 {
-    public class DeviceStatusUpdatedEvent: IEvent
+    public class DeviceStatusUpdatedEvent: EventBase
     {
         public DeviceStatusUpdatedEvent(string message, DeviceStatusCode deviceStatusCode)
         {

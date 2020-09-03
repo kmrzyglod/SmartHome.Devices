@@ -3,7 +3,7 @@ using EspIot.Core.Messaging.Enum;
 
 namespace EspIot.Application.Events.Outbound
 {
-    public class CommandResultEvent : ICommandResultEvent
+    public class CommandResultEvent : EventBase, ICommandResultEvent
     {
         public CommandResultEvent(string correlationId, StatusCode status, string commandName, string errorMessage = "")
         {

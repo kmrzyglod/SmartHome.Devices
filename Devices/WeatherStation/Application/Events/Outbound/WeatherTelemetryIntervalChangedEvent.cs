@@ -1,9 +1,10 @@
 ﻿using System;
+using EspIot.Application.Events;
 using EspIot.Application.Interfaces;
 
 namespace WeatherStation.Application.Events.Outbound
 {
-    public class WeatherTelemetryIntervalChangedEvent: IEvent
+    public class WeatherTelemetryIntervalChangedEvent: EventBase
     {
         public WeatherTelemetryIntervalChangedEvent(int newInterval)
         {
