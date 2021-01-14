@@ -123,10 +123,10 @@ namespace WeatherStation.Application.Services
                 GetLightLevel(),
                 _windVaneDriver.GetCurrentWindDirection(),
                 _windVaneDriver.GetMostFrequentWindDirection(),
-                _anemometerDriver.GetAverageWindSpeed() / 100f,
-                _anemometerDriver.GetMaxWindSpeed() / 100f,
-                _anemometerDriver.GetMinWindSpeed() / 100f,
-                _rainGaugeDriver.GetPrecipitation() / 10000f);
+                _anemometerDriver.GetAverageWindSpeed(),
+                _anemometerDriver.GetMaxWindSpeed(),
+                _anemometerDriver.GetMinWindSpeed() ,
+                _rainGaugeDriver.GetPrecipitation());
         }
 
         private float GetTemperature()

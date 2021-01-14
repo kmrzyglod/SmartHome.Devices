@@ -45,16 +45,18 @@
     <ProjectReference Include="..\EspIot.Libraries\Json.NetMF\Json.NetMF.nfproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.CoreLibrary.1.7.3\lib\mscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="nanoFramework.System.Collections, Version=1.1.0.2, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.1.0\lib\nanoFramework.System.Collections.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.10.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.CoreLibrary.1.10.1-preview.9\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Windows.Devices.I2c, Version=1.4.0.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\Devices\GreenhouseController\packages\nanoFramework.Windows.Devices.I2c.1.4.0\lib\Windows.Devices.I2c.dll</HintPath>
+    <Reference Include="nanoFramework.System.Collections, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.2.0-preview.24\lib\nanoFramework.System.Collections.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="Windows.Devices.I2c, Version=1.4.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\Devices\WeatherStation\packages\nanoFramework.Windows.Devices.I2c.1.4.1-preview.24\lib\Windows.Devices.I2c.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

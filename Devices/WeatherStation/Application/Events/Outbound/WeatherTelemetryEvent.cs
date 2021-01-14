@@ -8,15 +8,15 @@ namespace WeatherStation.Application.Events.Outbound
     {
         public WeatherTelemetryEvent(DateTime measurementStartTime,
             DateTime measurementEndTime,
-            float temperature,
-            float pressure,
-            float humidity,
+            double temperature,
+            double pressure,
+            double humidity,
             int lightLevel,
             WindDirection currentWindDirection,
             WindDirection mostFrequentWindDirection,
-            float averageWindSpeed,
-            float maxWindSpeed,
-            float minWindSpeed,
+            double averageWindSpeed,
+            double maxWindSpeed,
+            double minWindSpeed,
             float precipitation)
         {
             MeasurementStartTime = measurementStartTime;
@@ -41,9 +41,9 @@ namespace WeatherStation.Application.Events.Outbound
         public int LightLevel { get; } // [lux]
         public WindDirection CurrentWindDirection { get; }
         public WindDirection MostFrequentWindDirection { get; }
-        public float AverageWindSpeed { get; } // [m/s]
-        public float MaxWindSpeed { get; } // [m/s]
-        public float MinWindSpeed { get; } // [m/s]
+        public double AverageWindSpeed { get; } // [m/s]
+        public double MaxWindSpeed { get; } // [m/s]
+        public double MinWindSpeed { get; } // [m/s]
         public float Precipitation { get; } // [mm]
     }
 }
