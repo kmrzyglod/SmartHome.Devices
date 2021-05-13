@@ -64,9 +64,9 @@ namespace EspIot.Drivers.SparkFunRainGauge
             }).Start();
         }
 
-        public uint GetPrecipitation()
+        public float GetPrecipitation()
         {
-            return _precipitation;
+            return _precipitation / 10000f;
         }
 
         public void Reset()

@@ -95,8 +95,8 @@ namespace WeatherStation.Application.Services
         private void StartMeasurements()
         {
             _rainGaugeDriver.StartMeasurement();
-            _anemometerDriver.StartMeasurement(AnemometerMeasurementResolution.FiveSeconds);
-            _windVaneDriver.StartMeasurement(WindVaneMeasurementResolution.FiveSeconds);
+            _anemometerDriver.StartMeasurement(AnemometerMeasurementResolution.TenSeconds);
+            _windVaneDriver.StartMeasurement(WindVaneMeasurementResolution.TenSeconds);
         }
 
         private void StopMeasurements()

@@ -26,18 +26,18 @@
     <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib, Version=1.10.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.CoreLibrary.1.10.1-preview.9\lib\mscorlib.dll</HintPath>
+    <Reference Include="mscorlib, Version=1.10.3.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.CoreLibrary.1.10.3-preview.20\lib\mscorlib.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.System.Collections, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.2.0-preview.24\lib\nanoFramework.System.Collections.dll</HintPath>
+      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.System.Collections.1.2.0-preview.45\lib\nanoFramework.System.Collections.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="nanoFramework.System.Text, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.System.Text.1.1.1-preview.24\lib\nanoFramework.System.Text.dll</HintPath>
+      <HintPath>..\..\..\Devices\WeatherStation\packages\nanoFramework.System.Text.1.1.1-preview.46\lib\nanoFramework.System.Text.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

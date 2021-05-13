@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Windows.Devices.Adc;
+using EspIot.Core.Helpers;
 using EspIot.Drivers.SparkFunWindVane.Enums;
 
 namespace EspIot.Drivers.SparkFunWindVane
@@ -79,7 +80,7 @@ namespace EspIot.Drivers.SparkFunWindVane
                     }
 
                     //esp32 ADC output is not linear - for voltages in range 3,2 - 3,3 the output value has same, maximum value = 4095. For wind direction "W" input from wind vane = 3,2V 
-                    else if (adcVal >= (ushort) WindDirectionAdcResponse.W - 5 &&
+                    else if (adcVal >= (ushort) WindDirectionAdcResponse.W - 3 &&
                              adcVal <= (ushort) WindDirectionAdcResponse.W)
                     {
                         _windDirectionCounters[(int) WindDirection.W]++;
@@ -87,7 +88,7 @@ namespace EspIot.Drivers.SparkFunWindVane
                     }
 
                     //because for wind direction NW input from wind vane = 3,10 V is near to maximum voltage which can be measured by ADC (3,2V) we must to use lower value uncertainty range
-                    else if (adcVal >= (ushort) WindDirectionAdcResponse.NW - 20 &&
+                    else if (adcVal >= (ushort) WindDirectionAdcResponse.NW - 60 &&
                              adcVal <= (ushort) WindDirectionAdcResponse.NW + 20)
                     {
                         _windDirectionCounters[(ushort) WindDirection.NW]++;
@@ -98,6 +99,9 @@ namespace EspIot.Drivers.SparkFunWindVane
                     {
                         _currentWindDirection = WindDirection.Undefined;
                     }
+
+                    Logger.Log(() => $"Current wind vane direction: {_currentWindDirection } {adcVal}");
+
 
                     Thread.Sleep((ushort) measurementResolution * 1000);
                 }

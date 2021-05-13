@@ -11,7 +11,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
     public class SparkFunAnemometerDriver
     {
         private const double ONE_HZ_PULSE_SPEED = 0.335d; // [m/s]
-        private const double MAX_REAL_WIND_SPEED = 4000d; //40 [m/s] -> 144 km/h
+        private const double MAX_REAL_WIND_SPEED = 40d; //40 [m/s] -> 144 km/h
         private readonly GpioController _gpioController;
 
         private readonly GpioPin _pin;
@@ -33,7 +33,7 @@ namespace EspIot.Drivers.SparkFunAnemometer
             _gpioController = gpioController;
             _pin = _gpioController.OpenPin((int) pin);
             _pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
-            _pulseCounter = new GpioChangeCounter(_pin) {Polarity = GpioChangePolarity.Rising};
+            _pulseCounter = new GpioChangeCounter(_pin) {Polarity = GpioChangePolarity.Falling};
         }
 
         public void StartMeasurement(AnemometerMeasurementResolution measurementResolution)
